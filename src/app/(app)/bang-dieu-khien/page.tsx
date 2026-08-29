@@ -7,12 +7,17 @@ import {
   Megaphone,
   UserRoundPlus,
   Pin,
+  School,
+  Sparkles,
 } from "lucide-react";
 
 import { getCurrentUser } from "@/lib/auth/current";
 import { getDashboardSummary, type DashboardTask } from "@/lib/dashboard";
-import { formatNumber, formatRelativeTime } from "@/lib/utils";
-import { StatCard } from "@/components/dashboard/stat-card";
+import {
+  formatNumber,
+  formatRelativeTime,
+  getInitials,
+} from "@/lib/utils";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import { Badge } from "@/components/ui/badge";
 
@@ -23,30 +28,33 @@ const priorityInfo: Record<
   URGENT: { label: "Khẩn cấp", className: "bg-danger-light text-danger" },
   HIGH: { label: "Cao", className: "bg-warning-light text-warning" },
   MEDIUM: { label: "Trung bình", className: "bg-primary-light text-primary" },
-  LOW: { label: "Thấp", className: "bg-surface-hover text-text-secondary border border-border" },
+  LOW: {
+    label: "Thấp",
+    className: "bg-surface-hover text-text-secondary border border-border",
+  },
 };
 
-function PageHeader({
-  greeting,
-  name,
-  date,
+const roleLabels: Record<string, string> = {
+  TEACHER: "Giáo viên",
+  STUDENT: "Học sinh",
+};
+
+function Chip({
+  icon: Icon,
+  label,
   className,
 }: {
-  greeting: string;
-  name: string;
-  date: string;
-  className?: string | null;
+  icon: React.ComponentType<{ "aria-hidden"?: boolean; className?: string }>;
+  label: string;
+  className: string;
 }) {
   return (
-    <header className="mb-6">
-      <h1 className="text-xl font-bold tracking-tight text-text sm:text-2xl">
-        {greeting}, <span className="text-primary">{name.split(" ").slice(-1)[0]}</span>
-      </h1>
-      <p className="mt-0.5 text-sm text-text-secondary">
-        {date}
-        {className ? ` · ${className}` : ""}
-      </p>
-    </header>
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${className}`}
+    >
+      <Icon aria-hidden className="size-3.5" />
+      {label}
+    </span>
   );
 }
 
@@ -60,62 +68,128 @@ export default async function DashboardPage() {
   const greeting =
     hour < 12 ? "Chào buổi sáng" : hour < 18 ? "Chào buổi chiều" : "Chào buổi tối";
 
+  const firstName = user.fullName.trim().split(/\s+/).at(-1) ?? "bạn";
+
   const today = new Intl.DateTimeFormat("vi-VN", {
     weekday: "long",
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
-  }).format(now);
+  })
+    .format(now)
+    .replace(/^./, (c) => c.toUpperCase());
+
+  const points = data?.totalPoints ?? 0;
+  const rank = data?.personalRank ?? null;
+  const team = data?.team ?? null;
 
   return (
     <div className="space-y-8">
-      <PageHeader
-        greeting={greeting}
-        name={user.fullName}
-        date={today}
-        className={data?.className}
-      />
-
-      {/* Thống kê nhanh */}
-      <section aria-label="Thống kê nhanh" className="grid gap-3 sm:grid-cols-3">
-        <StatCard
-          icon={Trophy}
-          label="Điểm thi đua"
-          value={formatNumber(data?.totalPoints ?? 0)}
-          sub="Tổng điểm cá nhân"
-          tone="accent"
-        />
-        <StatCard
-          icon={Medal}
-          label="Hạng cá nhân"
-          value={data?.personalRank ? `#${data.personalRank}` : "—"}
-          sub={data?.personalRank ? "Trong lớp" : "Chưa có dữ liệu"}
-          tone="primary"
-        />
-        <StatCard
-          icon={Users}
-          label="Đội của tôi"
-          value={data?.team?.name ?? "Chưa có"}
-          sub={
-            data?.team
-              ? `${formatNumber(data.team.totalScore)} điểm · Hạng ${data.team.rank ?? "—"}`
-              : "Anh chị em cùng bàn"
-          }
-          tone="secondary"
-        />
+      {/* Chào mừng — đúng kiểu ngôi nhà của lớp */}
+      <section aria-label="Lời chào" className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-text-muted">
+            {today}
+          </p>
+          <h1 className="mt-1 truncate text-2xl font-extrabold tracking-tight text-text sm:text-3xl">
+            {greeting}, <span className="text-primary">{firstName}</span>
+          </h1>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            {data?.className ? (
+              <Chip
+                icon={School}
+                label={data.className}
+                className="bg-primary-light text-primary"
+              />
+            ) : (
+              <Chip
+                icon={Sparkles}
+                label="Chưa vào lớp"
+                className="bg-warning-light text-warning"
+              />
+            )}
+            {(roleLabels[user.role] ?? "Thành viên") && (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-surface px-2.5 py-1 text-xs font-medium text-text-secondary ring-1 ring-border">
+                {roleLabels[user.role] ?? "Thành viên"}
+              </span>
+            )}
+            {team && (
+              <Chip
+                icon={Users}
+                label={team.name}
+                className="bg-success-light text-secondary"
+              />
+            )}
+          </div>
+        </div>
+        <span
+          aria-hidden
+          className="grid size-12 shrink-0 select-none place-items-center rounded-2xl bg-primary-light text-sm font-extrabold text-primary sm:size-14 sm:text-base"
+        >
+          {getInitials(user.fullName)}
+        </span>
       </section>
 
-      {/* Nhiệm vụ + thông tin bên phải */}
+      {/* Bảng thi đua cá nhân — một thẻ thay cho 3 mảnh nhỏ */}
+      <section
+        aria-label="Thi đua của tôi"
+        className="overflow-hidden rounded-2xl bg-surface shadow-sm ring-1 ring-border"
+      >
+        <div className="grid grid-cols-3 divide-x divide-border">
+          <div className="px-3 py-4 text-center sm:px-5 sm:py-5">
+            <div className="mx-auto flex w-fit items-center gap-1 text-text-muted">
+              <Trophy aria-hidden className="size-3.5" />
+              <p className="text-[11px] font-medium">Điểm thi đua</p>
+            </div>
+            <p className="mt-1.5 text-2xl font-extrabold tracking-tight text-warning sm:text-3xl">
+              {formatNumber(points)}
+            </p>
+            <p className="mt-0.5 text-[11px] text-text-muted">
+              {points > 0 ? "tổng điểm cá nhân" : "chưa có điểm thi đua"}
+            </p>
+          </div>
+          <div className="px-3 py-4 text-center sm:px-5 sm:py-5">
+            <div className="mx-auto flex w-fit items-center gap-1 text-text-muted">
+              <Medal aria-hidden className="size-3.5" />
+              <p className="text-[11px] font-medium">Hạng cá nhân</p>
+            </div>
+            <p className="mt-1.5 text-2xl font-extrabold tracking-tight text-primary sm:text-3xl">
+              {rank ? `#${rank}` : "—"}
+            </p>
+            <p className="mt-0.5 text-[11px] text-text-muted">
+              {rank ? "trong lớp" : "chưa có dữ liệu"}
+            </p>
+          </div>
+          <div className="px-3 py-4 text-center sm:px-5 sm:py-5">
+            <div className="mx-auto flex w-fit items-center gap-1 text-text-muted">
+              <Users aria-hidden className="size-3.5" />
+              <p className="text-[11px] font-medium">Đội của tôi</p>
+            </div>
+            <p className="mt-1.5 truncate text-2xl font-extrabold tracking-tight text-secondary sm:text-3xl">
+              {team ? team.name : "Chưa có"}
+            </p>
+            <p className="mt-0.5 text-[11px] text-text-muted">
+              {team
+                ? `${formatNumber(team.totalScore)} điểm · hạng ${team.rank ?? "—"}`
+                : "anh chị em cùng bàn"}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Nhiệm vụ + chuyện của lớp */}
       <section
         aria-label="Nội dung chính"
         className="grid gap-6 lg:grid-cols-5 lg:items-start"
       >
-        {/* Nhiệm vụ */}
+        {/* Nhiệm vụ của tôi */}
         <div className="lg:col-span-3">
-          <div className="rounded-xl bg-surface p-5 ring-1 ring-border">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="flex items-center gap-2 text-sm font-semibold text-text">
-                <ListTodo aria-hidden="true" className="size-4 text-primary" />
+          <div className="rounded-2xl bg-surface p-5 shadow-sm ring-1 ring-border">
+            <div className="mb-4 flex items-center justify-between gap-2">
+              <h2 className="flex items-center gap-2 text-sm font-bold text-text">
+                <span className="grid size-7 place-items-center rounded-lg bg-primary-light text-primary">
+                  <ListTodo aria-hidden className="size-4" />
+                </span>
                 Nhiệm vụ của tôi
               </h2>
               {data && data.pendingTaskCount > 0 && (
@@ -129,7 +203,7 @@ export default async function DashboardPage() {
               <EmptyState
                 icon={ListTodo}
                 title="Thảnh thơi! Chưa có nhiệm vụ mới"
-                description="Khi giáo viên hoặc tổ trưởng giao nhiệm vụ, danh sách sẽ hiện ngay tại đây."
+                description="Khi giáo viên hoặc tổ trưởng giao việc, danh sách sẽ hiện ngay tại đây."
               />
             ) : (
               <ul className="divide-y divide-border">
@@ -159,50 +233,20 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* Cột phải */}
+        {/* Chuyện của lớp */}
         <div className="space-y-6 lg:col-span-2">
-          {/* Đội */}
-          <div className="rounded-xl bg-surface p-5 ring-1 ring-border">
-            <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold text-text">
-              <Users aria-hidden="true" className="size-4 text-secondary" />
-              Đội của tôi
-            </h2>
-            {data?.team ? (
-              <div className="flex items-center gap-3">
-                <span
-                  aria-hidden="true"
-                  className="size-3 shrink-0 rounded-full bg-secondary"
-                />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-base font-semibold text-text">
-                    {data.team.name}
-                  </p>
-                  <p className="text-xs text-text-muted">
-                    {formatNumber(data.team.totalScore)} điểm · hạng{" "}
-                    {data.team.rank ?? "—"}
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <EmptyState
-                icon={Users}
-                title="Chưa tham gia đội"
-                description="Khi được phân công vào đội, thông tin thi đua của đội sẽ hiển thị ở đây."
-              />
-            )}
-          </div>
-
-          {/* Thông báo */}
-          <div className="rounded-xl bg-surface p-5 ring-1 ring-border">
-            <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold text-text">
-              <Megaphone aria-hidden="true" className="size-4 text-warning" />
-              Thông báo mới
+          <div className="rounded-2xl bg-surface p-5 shadow-sm ring-1 ring-border">
+            <h2 className="mb-4 flex items-center gap-2 text-sm font-bold text-text">
+              <span className="grid size-7 place-items-center rounded-lg bg-warning-light text-warning">
+                <Megaphone aria-hidden className="size-4" />
+              </span>
+              Lớp nói gì?
             </h2>
             {!data || data.announcements.length === 0 ? (
               <EmptyState
                 icon={Megaphone}
-                title="Chưa có thông báo"
-                description="Thông báo từ lớp sẽ xuất hiện ở đây."
+                title="Lớp đang yên lặng"
+                description="Thông báo từ giáo viên và ban cán sự sẽ xuất hiện ở đây."
               />
             ) : (
               <ul className="space-y-3">
@@ -213,7 +257,7 @@ export default async function DashboardPage() {
                   >
                     {a.isPinned && (
                       <Pin
-                        aria-hidden="true"
+                        aria-hidden
                         className="mt-0.5 size-3.5 shrink-0 text-warning"
                       />
                     )}
@@ -236,12 +280,20 @@ export default async function DashboardPage() {
 
       {/* Chưa thuộc lớp */}
       {data && !data.classId && (
-        <section aria-label="Tham gia lớp" className="lg:w-3/5">
-          <EmptyState
-            icon={UserRoundPlus}
-            title="Bạn chưa thuộc lớp nào"
-            description="Nhờ giáo viên hoặc người quản lý lớp thêm bạn vào Lớp 11A6 để bắt đầu sử dụng đầy đủ tính năng."
-          />
+        <section
+          aria-label="Tham gia lớp"
+          className="flex items-start gap-4 rounded-2xl border border-warning/25 bg-warning-light p-5"
+        >
+          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-white text-warning">
+            <UserRoundPlus aria-hidden className="size-5" />
+          </span>
+          <div className="min-w-0">
+            <p className="font-bold text-text">Bạn chưa vào nhà 11A6</p>
+            <p className="mt-1 text-sm leading-relaxed text-text-secondary">
+              Nhờ giáo viên hoặc lớp trưởng thêm bạn vào Lớp 11A6 để bắt đầu
+              dùng đầy đủ tính năng.
+            </p>
+          </div>
         </section>
       )}
     </div>

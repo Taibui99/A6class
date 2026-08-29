@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { SplashScreen } from "@/components/layout/splash-screen";
 
 export const metadata: Metadata = {
   title: "A6Class — Ngôi nhà số của lớp 11A6",
@@ -18,6 +19,7 @@ export default function RootLayout({
         <a href="#main-content" className="skip-link">
           Chuyển đến nội dung chính
         </a>
+        <SplashScreen />
         {children}
       </body>
     </html>
