@@ -71,7 +71,7 @@ async function main() {
     }
     team = await prisma.team.update({
       where: { id: team.id },
-      data: { totalScore: 40 - i * 5, rank: i + 1 },
+      data: { totalScore: 0, rank: null },
     });
     teams.push(team);
   }
@@ -165,14 +165,22 @@ async function main() {
   }
 
   const pointsDemo = [
-    { amount: 10, reason: "Hoàn thành báo cáo tuần 1" },
-    { amount: 5, reason: "Chuẩn bị tiết sinh hoạt lớp" },
+    { targetUserId: teacher.id, amount: 10, reason: "Hoàn thành báo cáo tuần 1" },
+    { targetUserId: teacher.id, amount: 5, reason: "Chuẩn bị tiết sinh hoạt lớp" },
   ];
+  const studentPoints = [12, 10, 9, 8, 7, 6, 5, 4];
+  users.forEach((u, i) => {
+    pointsDemo.push({
+      targetUserId: u.id,
+      amount: studentPoints[i],
+      reason: `Nỗ lực thi đua tuần ${(i % 4) + 1}`,
+    });
+  });
   for (const p of pointsDemo) {
     const exists = await prisma.pointTransaction.findFirst({
       where: {
         classId,
-        targetUserId: teacher.id,
+        targetUserId: p.targetUserId,
         amount: p.amount,
         reason: p.reason,
       },
@@ -181,13 +189,36 @@ async function main() {
       await prisma.pointTransaction.create({
         data: {
           classId,
-          targetUserId: teacher.id,
+          targetUserId: p.targetUserId,
           amount: p.amount,
           reason: p.reason,
           giverId: teacher.id,
         },
       });
     }
+  }
+
+  const members = await prisma.classMembership.findMany({
+    where: { classId },
+    select: { teamId: true, userId: true },
+  });
+  const memberPointSum = new Map();
+  const userPoints = new Map(pointsDemo.map((p) => [p.targetUserId, p.amount]));
+  for (const m of members) {
+    if (!m.teamId) continue;
+    memberPointSum.set(
+      m.teamId,
+      (memberPointSum.get(m.teamId) ?? 0) + (userPoints.get(m.userId) ?? 0)
+    );
+  }
+  const byScore = [...teams]
+    .map((t) => ({ team: t, score: memberPointSum.get(t.id) ?? 0 }))
+    .sort((a, b) => b.score - a.score);
+  for (let i = 0; i < byScore.length; i++) {
+    await prisma.team.update({
+      where: { id: byScore[i].team.id },
+      data: { totalScore: byScore[i].score, rank: i + 1 },
+    });
   }
 
   console.log("Seeded:", {

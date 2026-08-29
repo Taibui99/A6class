@@ -2,11 +2,13 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
   Activity,
+  Flame,
   Sparkles,
   School,
   ListTodo,
   Megaphone,
   Pin,
+  Trophy,
   UserRoundPlus,
   Newspaper,
   MessagesSquare,
@@ -16,8 +18,16 @@ import {
 } from "lucide-react";
 
 import { getCurrentUser } from "@/lib/auth/current";
-import { getDashboardSummary } from "@/lib/dashboard";
-import { formatRelativeTime, getInitials } from "@/lib/utils";
+import {
+  getDashboardSummary,
+  getRecentActivities,
+  getScoreboard,
+} from "@/lib/dashboard";
+import { formatNumber, formatRelativeTime, getInitials } from "@/lib/utils";
+import {
+  TeacherActivityDialog,
+  type ActivityItem,
+} from "@/components/dashboard/teacher-activity-dialog";
 
 const roleLabels: Record<string, string> = {
   TEACHER: "Giáo viên",
@@ -89,6 +99,42 @@ const quickLinks: {
   },
 ];
 
+function rankTone(rank: number | null): string {
+  if (rank === 1) return "bg-warning-light text-warning";
+  if (rank === 2) return "bg-success-light text-secondary";
+  if (rank === 3) return "bg-primary-light text-primary";
+  return "bg-surface-hover text-text-secondary";
+}
+
+function ScoreboardCard({
+  className,
+  icon: Icon,
+  title,
+  tone,
+  children,
+}: {
+  className?: string;
+  icon: LucideIcon;
+  title: string;
+  tone: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section
+      aria-label={title}
+      className={`rounded-2xl bg-surface p-5 shadow-sm ring-1 ring-border ${className ?? ""}`}
+    >
+      <h2 className="flex items-center gap-2 text-sm font-bold text-text">
+        <span className={`grid size-7 place-items-center rounded-lg ${tone}`}>
+          <Icon aria-hidden className="size-4" />
+        </span>
+        {title}
+      </h2>
+      {children}
+    </section>
+  );
+}
+
 export default async function DashboardPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
@@ -110,12 +156,30 @@ export default async function DashboardPage() {
     .format(now)
     .replace(/^./, (c) => c.toUpperCase());
 
+  const isTeacher = user.role === "TEACHER";
+  const classId = data?.classId ?? null;
+
+  const [scoreboard, activities] = classId
+    ? await Promise.all([getScoreboard(classId), getRecentActivities(classId)])
+    : [{ teams: [], students: [] }, []];
+
+  const activityItems: ActivityItem[] = activities.map((a) => ({
+    id: a.id,
+    kind: a.kind,
+    title: a.title,
+    detail: `${a.detail} · ${formatRelativeTime(a.at)}`,
+  }));
+
   const tasks = data?.pendingTasks ?? [];
   const announcements = data?.announcements ?? [];
   const hasLife = tasks.length > 0 || announcements.length > 0;
 
   return (
     <div className="space-y-8">
+      {isTeacher && activityItems.length > 0 && (
+        <TeacherActivityDialog activities={activityItems} />
+      )}
+
       {/* Lời chào */}
       <section aria-label="Lời chào" className="flex items-start justify-between gap-4">
         <div className="min-w-0">
@@ -151,6 +215,88 @@ export default async function DashboardPage() {
           {getInitials(user.fullName)}
         </span>
       </section>
+
+      {/* Giáo viên: bảng thi đua của lớp */}
+      {isTeacher && classId && (
+        <div className="space-y-4">
+          <ScoreboardCard
+            icon={Trophy}
+            title="Bảng thi đua"
+            tone="bg-warning-light text-warning"
+          >
+            {scoreboard.teams.length > 0 ? (
+              <ul className="mt-4 space-y-1">
+                {scoreboard.teams.map((team) => (
+                  <li
+                    key={team.id}
+                    className="flex items-center gap-3 rounded-lg px-2 py-2.5 transition-colors hover:bg-surface-hover"
+                  >
+                    <span
+                      aria-hidden
+                      className="size-3 shrink-0 rounded-full ring-1 ring-black/5"
+                      style={{ backgroundColor: team.color ?? "#94a3b8" }}
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium text-text">
+                        {team.name}
+                      </p>
+                      <p className="text-xs text-text-muted">
+                        {team.memberCount} thành viên
+                      </p>
+                    </div>
+                    <span
+                      className={`grid size-7 shrink-0 place-items-center rounded-lg text-xs font-bold tabular-nums ${rankTone(team.rank)}`}
+                    >
+                      {team.rank ?? "—"}
+                    </span>
+                    <span className="w-16 shrink-0 text-right text-base font-extrabold tabular-nums text-text">
+                      {formatNumber(team.totalScore)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-4 text-sm text-text-muted">
+                Lớp chưa có tổ nào — điểm thi đua sẽ hiện tại đây.
+              </p>
+            )}
+          </ScoreboardCard>
+
+          {scoreboard.students.length > 0 && (
+            <ScoreboardCard
+              icon={Flame}
+              title="Cá nhân nổi bật"
+              tone="bg-primary-light text-primary"
+            >
+              <ul className="mt-4 space-y-0.5">
+                {scoreboard.students.slice(0, 5).map((student, i) => (
+                  <li
+                    key={student.id}
+                    className="flex items-center gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-surface-hover"
+                  >
+                    <span
+                      className={`w-5 shrink-0 text-right text-sm font-bold tabular-nums ${
+                        i === 0 ? "text-warning" : "text-text-muted"
+                      }`}
+                    >
+                      {i + 1}
+                    </span>
+                    <span className="grid size-8 shrink-0 select-none place-items-center rounded-full bg-surface-hover text-xs font-extrabold text-text-secondary">
+                      {getInitials(student.fullName)}
+                    </span>
+                    <span className="min-w-0 flex-1 truncate text-sm font-medium text-text">
+                      {student.fullName}
+                    </span>
+                    <span className="shrink-0 text-sm font-bold tabular-nums text-text">
+                      {formatNumber(student.points)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </ScoreboardCard>
+          )}
+        </div>
+      )}
 
       {/* Nhịp sống lớp hôm nay */}
       <section aria-label="Nhịp sống lớp" className="rounded-2xl bg-surface p-5 shadow-sm ring-1 ring-border">
