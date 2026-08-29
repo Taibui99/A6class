@@ -19,7 +19,7 @@ export function Brand({ size = "md", href = "/bang-dieu-khien" }: { size?: "sm" 
           A6Class
         </span>
         <span className="block text-[11px] font-medium text-text-muted">
-          Lớp 11A6
+          Lớp 12A6
         </span>
       </span>
     </Link>

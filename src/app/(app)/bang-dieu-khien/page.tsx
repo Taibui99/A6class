@@ -279,9 +279,9 @@ export default async function DashboardPage() {
             <UserRoundPlus aria-hidden className="size-5" />
           </span>
           <div className="min-w-0">
-            <p className="font-bold text-text">Bạn chưa vào nhà 11A6</p>
+            <p className="font-bold text-text">Bạn chưa vào nhà 12A6</p>
             <p className="mt-1 text-sm leading-relaxed text-text-secondary">
-              Nhờ giáo viên hoặc lớp trưởng thêm bạn vào Lớp 11A6 để bắt đầu
+              Nhờ giáo viên hoặc lớp trưởng thêm bạn vào Lớp 12A6 để bắt đầu
               dùng đầy đủ tính năng.
             </p>
           </div>

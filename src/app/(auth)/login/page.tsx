@@ -12,7 +12,7 @@ export default async function LoginPage({
   return (
     <AuthShell
       title="Đăng nhập"
-      subtitle="Vào ngôi nhà số của lớp 11A6"
+      subtitle="Vào ngôi nhà số của lớp 12A6"
       footer={<LoginFooter />}
     >
       <LoginForm redirect={redirectTo ?? null} />

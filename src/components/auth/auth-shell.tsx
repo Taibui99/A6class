@@ -30,7 +30,7 @@ export function AuthShell({
       <footer className="mx-auto w-full max-w-sm">
         <p className="flex items-center justify-center gap-1.5 text-center text-xs text-text-muted">
           <GraduationCap aria-hidden="true" className="size-3.5" />
-          A6Class · Ngôi nhà số của lớp 11A6
+          A6Class · Ngôi nhà số của lớp 12A6
         </p>
       </footer>
     </div>

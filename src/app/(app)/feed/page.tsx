@@ -10,7 +10,7 @@ export default function FeedPage() {
           Feed lớp
         </h1>
         <p className="mt-0.5 text-sm text-text-secondary">
-          Nơi lớp 11A6 cập nhật những khoảnh khắc và hoạt động chung.
+          Nơi lớp 12A6 cập nhật những khoảnh khắc và hoạt động chung.
         </p>
       </header>
 

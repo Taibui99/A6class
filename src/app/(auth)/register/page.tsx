@@ -5,7 +5,7 @@ export default function RegisterPage() {
   return (
     <AuthShell
       title="Đăng ký"
-      subtitle="Trở thành thành viên lớp 11A6"
+      subtitle="Trở thành thành viên lớp 12A6"
       footer={<RegisterFooter />}
     >
       <RegisterForm />

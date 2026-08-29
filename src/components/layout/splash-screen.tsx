@@ -43,7 +43,7 @@ export function SplashScreen() {
         <h1 className="mt-4 text-xl font-extrabold tracking-tight text-text">
           A6Class
         </h1>
-        <p className="mt-1 text-sm text-text-muted">Ngôi nhà số của lớp 11A6</p>
+        <p className="mt-1 text-sm text-text-muted">Ngôi nhà số của lớp 12A6</p>
         <p className="mt-6 text-sm font-medium text-text-secondary">
           Đang tải hệ thống…
         </p>

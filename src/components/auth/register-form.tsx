@@ -119,7 +119,7 @@ export function RegisterForm() {
       </Button>
 
       <p className="text-center text-xs leading-relaxed text-text-muted">
-        Bằng cách đăng ký, bạn đồng ý trở thành thành viên của lớp 11A6. Việc
+        Bằng cách đăng ký, bạn đồng ý trở thành thành viên của lớp 12A6. Việc
         phân công vai trò sẽ do giáo viên xác nhận.
       </p>
     </form>

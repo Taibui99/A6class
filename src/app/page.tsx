@@ -67,12 +67,12 @@ export default function HomePage() {
           <div className="mx-auto max-w-2xl text-center">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-light px-3 py-1 text-xs font-semibold text-primary">
               <School aria-hidden className="size-3.5" />
-              Lớp 11A6
+              Lớp 12A6
             </span>
             <h1 className="mt-5 text-3xl font-extrabold leading-tight tracking-tight text-text sm:text-5xl">
               Ngôi nhà số
               <br />
-              của lớp 11A6
+              của lớp 12A6
             </h1>
             <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-text-secondary sm:text-lg">
               Nhiệm vụ, thi đua và những cuộc trò chuyện của cả lớp — gói gọn
@@ -138,7 +138,7 @@ export default function HomePage() {
                 Sẵn sàng về nhà?
               </p>
               <p className="mt-1 text-sm text-text-secondary">
-                Tạo tài khoản trong 30 giây và bước vào ngôi nhà số của 11A6.
+                Tạo tài khoản trong 30 giây và bước vào ngôi nhà số của 12A6.
               </p>
             </div>
             <Link
@@ -155,7 +155,7 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="border-t border-border bg-surface">
         <div className="mx-auto max-w-6xl px-4 py-6 text-center text-sm text-text-muted sm:px-6">
-          A6Class © 2026 — Ngôi nhà số của Lớp 11A6
+          A6Class © 2026 — Ngôi nhà số của Lớp 12A6
         </div>
       </footer>
     </div>
