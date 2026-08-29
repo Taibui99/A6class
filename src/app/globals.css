@@ -102,6 +102,30 @@ body {
   color: var(--text);
   margin: 0;
   min-height: 100vh;
+  overscroll-behavior-y: none;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+button,
+a,
+[role="button"],
+input,
+textarea,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* iOS tự phóng to ô nhập khi font < 16px — giữ 16px trên thiết bị cảm ứng */
+@media (pointer: coarse) {
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
 }
 
 ::-webkit-scrollbar {
@@ -218,5 +242,123 @@ body {
   .splash-dot,
   .splash-hide {
     animation: none !important;
+  }
+}
+
+/* ============ Intro màn hình chờ / chào ============ */
+
+@keyframes introOrb {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(18px, -14px) scale(1.08); }
+}
+
+@keyframes introLogo {
+  0% { opacity: 0; transform: translateY(20px) scale(0.7) rotate(-6deg); }
+  60% { opacity: 1; transform: translateY(-4px) scale(1.06) rotate(2deg); }
+  100% { opacity: 1; transform: translateY(0) scale(1) rotate(0); }
+}
+
+@keyframes introLogoGlint {
+  0% { transform: translateX(-120%) skewX(-18deg); }
+  100% { transform: translateX(220%) skewX(-18deg); }
+}
+
+@keyframes introBootBar {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
+@keyframes introWord {
+  0% { opacity: 0; transform: translateY(26px) scale(0.88); filter: blur(6px); }
+  60% { opacity: 1; filter: blur(0); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+@keyframes introFade {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes introBtn {
+  0% { opacity: 0; transform: translateY(22px) scale(0.9); }
+  60% { opacity: 1; transform: translateY(-3px) scale(1.02); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes introPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.82; transform: scale(1.045); }
+}
+
+.intro-orb-1 {
+  animation: introOrb 7s ease-in-out infinite;
+}
+
+.intro-orb-2 {
+  animation: introOrb 9s ease-in-out 1.2s infinite reverse;
+}
+
+.intro-logo {
+  animation: introLogo 620ms var(--ease-spring) both;
+}
+
+.intro-logo:hover .intro-glint,
+.intro-glint {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+}
+
+.intro-glint::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 46%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+  animation: introLogoGlint 1.8s ease-in-out 1s infinite;
+}
+
+.intro-boot-bar {
+  animation: introBootBar 1.5s cubic-bezier(0.5, 0, 0.2, 1) both;
+}
+
+.intro-word {
+  opacity: 0;
+  animation: introWord 760ms var(--ease-spring) both;
+}
+
+.intro-fade {
+  opacity: 0;
+  animation: introFade 560ms var(--ease-smooth) both;
+}
+
+.intro-btn {
+  opacity: 0;
+  animation: introBtn 580ms var(--ease-spring) both;
+}
+
+.intro-pulse {
+  animation: introPulse 1.15s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-orb-1,
+  .intro-orb-2,
+  .intro-logo,
+  .intro-glint::after,
+  .intro-boot-bar,
+  .intro-word,
+  .intro-fade,
+  .intro-btn,
+  .intro-pulse {
+    animation: none !important;
+  }
+  .intro-word,
+  .intro-fade,
+  .intro-btn {
+    opacity: 1;
   }
 }

@@ -35,12 +35,6 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (pathname === "/" && user) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/bang-dieu-khien";
-    return NextResponse.redirect(url);
-  }
-
   return NextResponse.next();
 }
 

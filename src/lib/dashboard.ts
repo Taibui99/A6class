@@ -50,7 +50,7 @@ export type Scoreboard = {
 
 export type RecentActivity = {
   id: string;
-  kind: "POINT" | "SUBMISSION" | "REPORT" | "ANNOUNCEMENT";
+  kind: "POINT" | "SUBMISSION" | "REPORT" | "ANNOUNCEMENT" | "POST";
   title: string;
   detail: string;
   at: Date;
@@ -118,35 +118,42 @@ export async function getScoreboard(classId: string): Promise<Scoreboard> {
 export async function getRecentActivities(classId: string): Promise<RecentActivity[]> {
   try {
     const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    const [points, submissions, reports, announcements] = await Promise.all([
-      prisma.pointTransaction.findMany({
-        where: { classId, createdAt: { gte: since } },
-        include: { targetUser: { select: { fullName: true } } },
-        orderBy: { createdAt: "desc" },
-        take: 10,
-      }),
-      prisma.taskSubmission.findMany({
-        where: { task: { classId }, submittedAt: { gte: since } },
-        include: {
-          user: { select: { fullName: true } },
-          task: { select: { title: true } },
-        },
-        orderBy: { submittedAt: "desc" },
-        take: 10,
-      }),
-      prisma.report.findMany({
-        where: { classId, createdAt: { gte: since } },
-        include: { creator: { select: { fullName: true } } },
-        orderBy: { createdAt: "desc" },
-        take: 10,
-      }),
-      prisma.announcement.findMany({
-        where: { classId, createdAt: { gte: since } },
-        include: { author: { select: { fullName: true } } },
-        orderBy: { createdAt: "desc" },
-        take: 10,
-      }),
-    ]);
+    const [points, submissions, reports, announcements, posts] =
+      await Promise.all([
+        prisma.pointTransaction.findMany({
+          where: { classId, createdAt: { gte: since } },
+          include: { targetUser: { select: { fullName: true } } },
+          orderBy: { createdAt: "desc" },
+          take: 10,
+        }),
+        prisma.taskSubmission.findMany({
+          where: { task: { classId }, submittedAt: { gte: since } },
+          include: {
+            user: { select: { fullName: true } },
+            task: { select: { title: true } },
+          },
+          orderBy: { submittedAt: "desc" },
+          take: 10,
+        }),
+        prisma.report.findMany({
+          where: { classId, createdAt: { gte: since } },
+          include: { creator: { select: { fullName: true } } },
+          orderBy: { createdAt: "desc" },
+          take: 10,
+        }),
+        prisma.announcement.findMany({
+          where: { classId, createdAt: { gte: since } },
+          include: { author: { select: { fullName: true } } },
+          orderBy: { createdAt: "desc" },
+          take: 10,
+        }),
+        prisma.post.findMany({
+          where: { classId, createdAt: { gte: since } },
+          include: { author: { select: { fullName: true } } },
+          orderBy: { createdAt: "desc" },
+          take: 10,
+        }),
+      ]);
 
     const items: RecentActivity[] = [
       ...points.map((p) => ({
@@ -176,6 +183,13 @@ export async function getRecentActivities(classId: string): Promise<RecentActivi
         title: `Thông báo mới: ${a.title}`,
         detail: `Từ ${a.author.fullName}`,
         at: a.createdAt,
+      })),
+      ...posts.map((p) => ({
+        id: p.id,
+        kind: "POST" as const,
+        title: `Bài viết mới của ${p.author.fullName}`,
+        detail: p.content,
+        at: p.createdAt,
       })),
     ];
 

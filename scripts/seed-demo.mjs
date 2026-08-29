@@ -221,6 +221,63 @@ async function main() {
     });
   }
 
+  const postsDemo = [
+    {
+      authorId: teacher.id,
+      content:
+        "Chào cả lớp 12A6! Năm học cuối cấp rồi, cô mong cả lớp đoàn kết và có một năm thật đáng nhớ. Nhớ bấm theo dõi bảng tin để không bỏ lỡ thông báo nhé.",
+      isPinned: true,
+    },
+    {
+      authorId: users[0].id,
+      content:
+        "Năm nay tổ 1 quyết tâm giành hạng nhất thi đua! Tổ 1 máu chưa mọi người?",
+      isPinned: false,
+    },
+  ];
+  const postIds = [];
+  for (const p of postsDemo) {
+    const exists = await prisma.post.findFirst({
+      where: { classId, content: p.content },
+    });
+    if (!exists) {
+      const created = await prisma.post.create({
+        data: { classId, authorId: p.authorId, content: p.content, isPinned: p.isPinned },
+      });
+      postIds.push(created.id);
+    } else {
+      postIds.push(exists.id);
+    }
+  }
+  const commentsDemo = [
+    { postId: postIds[0], authorId: users[2].id, content: "Cô ơi, em thấy bảng tin này hay quá ạ!" },
+    { postId: postIds[0], authorId: teacher.id, content: "Cảm ơn em. nhớ chăm chỉ mỗi ngày nhé." },
+    { postId: postIds[1], authorId: users[0].id, content: "Tổ 1 quyết tâm, máu lắm!" },
+  ];
+  for (const c of commentsDemo) {
+    const exists = await prisma.comment.findFirst({
+      where: { postId: c.postId, content: c.content },
+    });
+    if (!exists) {
+      await prisma.comment.create({
+        data: { postId: c.postId, authorId: c.authorId, content: c.content },
+      });
+    }
+  }
+  const likeDemo = [
+    { postId: postIds[0], userId: teacher.id },
+    { postId: postIds[0], userId: users[0].id },
+    { postId: postIds[0], userId: users[1].id },
+    { postId: postIds[1], userId: users[0].id },
+  ];
+  for (const l of likeDemo) {
+    await prisma.reaction.upsert({
+      where: { userId_postId: { userId: l.userId, postId: l.postId } },
+      update: {},
+      create: { userId: l.userId, postId: l.postId, type: "LIKE" },
+    });
+  }
+
   console.log("Seeded:", {
     classId,
     className: CLASS_NAME,

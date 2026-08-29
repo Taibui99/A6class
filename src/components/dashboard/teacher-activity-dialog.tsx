@@ -6,6 +6,7 @@ import {
   ClipboardCheck,
   FileText,
   Megaphone,
+  Newspaper,
   Trophy,
   type LucideIcon,
 } from "lucide-react";
@@ -23,12 +24,15 @@ import { Button } from "@/components/ui/button";
 
 export type ActivityItem = {
   id: string;
-  kind: "POINT" | "SUBMISSION" | "REPORT" | "ANNOUNCEMENT";
+  kind: "POINT" | "SUBMISSION" | "REPORT" | "ANNOUNCEMENT" | "POST";
   title: string;
   detail: string;
 };
 
-const kindMeta: Record<ActivityItem["kind"], { icon: LucideIcon; tone: string }> = {
+const kindMeta: Record<
+  ActivityItem["kind"],
+  { icon: LucideIcon; tone: string }
+> = {
   POINT: { icon: Trophy, tone: "bg-warning-light text-warning" },
   SUBMISSION: { icon: ClipboardCheck, tone: "bg-success-light text-secondary" },
   REPORT: {
@@ -36,6 +40,7 @@ const kindMeta: Record<ActivityItem["kind"], { icon: LucideIcon; tone: string }>
     tone: "bg-surface-hover text-text-secondary ring-1 ring-border",
   },
   ANNOUNCEMENT: { icon: Megaphone, tone: "bg-primary-light text-primary" },
+  POST: { icon: Newspaper, tone: "bg-primary-light text-primary" },
 };
 
 export function TeacherActivityDialog({
