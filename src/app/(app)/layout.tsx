@@ -17,7 +17,7 @@ export default async function AppLayout({
   if (!user) redirect("/login");
 
   return (
-    <div className="min-h-dvh">
+    <div className="bg-hello min-h-dvh">
       {/* Mobile top bar */}
       <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-surface/95 px-4 backdrop-blur-md lg:hidden">
         <Brand size="sm" markClassName="vt-mascot-topbar" />

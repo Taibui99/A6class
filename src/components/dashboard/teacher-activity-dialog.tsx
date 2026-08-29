@@ -43,12 +43,18 @@ const kindMeta: Record<
   POST: { icon: Newspaper, tone: "bg-primary-light text-primary" },
 };
 
+let dialogShown = false;
+
 export function TeacherActivityDialog({
   activities,
 }: {
   activities: ActivityItem[];
 }) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(() => {
+    if (dialogShown) return false;
+    dialogShown = true;
+    return true;
+  });
   if (activities.length === 0) return null;
 
   return (

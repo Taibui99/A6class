@@ -15,7 +15,7 @@ export function AuthShell({
   footer?: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-dvh flex-col bg-bg px-4 py-8 sm:py-12">
+    <div className="bg-hello flex min-h-dvh flex-col px-4 py-8 sm:py-12">
       <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center">
         <div className="mb-7 text-center">
           <div className="vt-mascot mx-auto w-fit">
