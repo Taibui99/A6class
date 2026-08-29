@@ -1,38 +1,23 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
-  Trophy,
-  Medal,
-  Users,
+  Activity,
+  Sparkles,
+  School,
   ListTodo,
   Megaphone,
-  UserRoundPlus,
   Pin,
-  School,
-  Sparkles,
+  UserRoundPlus,
+  Newspaper,
+  MessagesSquare,
+  CircleHelp,
+  UserRound,
+  type LucideIcon,
 } from "lucide-react";
 
 import { getCurrentUser } from "@/lib/auth/current";
-import { getDashboardSummary, type DashboardTask } from "@/lib/dashboard";
-import {
-  formatNumber,
-  formatRelativeTime,
-  getInitials,
-} from "@/lib/utils";
-import { EmptyState } from "@/components/dashboard/empty-state";
-import { Badge } from "@/components/ui/badge";
-
-const priorityInfo: Record<
-  DashboardTask["priority"],
-  { label: string; className: string }
-> = {
-  URGENT: { label: "Khẩn cấp", className: "bg-danger-light text-danger" },
-  HIGH: { label: "Cao", className: "bg-warning-light text-warning" },
-  MEDIUM: { label: "Trung bình", className: "bg-primary-light text-primary" },
-  LOW: {
-    label: "Thấp",
-    className: "bg-surface-hover text-text-secondary border border-border",
-  },
-};
+import { getDashboardSummary } from "@/lib/dashboard";
+import { formatRelativeTime, getInitials } from "@/lib/utils";
 
 const roleLabels: Record<string, string> = {
   TEACHER: "Giáo viên",
@@ -44,7 +29,7 @@ function Chip({
   label,
   className,
 }: {
-  icon: React.ComponentType<{ "aria-hidden"?: boolean; className?: string }>;
+  icon: LucideIcon;
   label: string;
   className: string;
 }) {
@@ -57,6 +42,52 @@ function Chip({
     </span>
   );
 }
+
+type Tone = "primary" | "secondary" | "warning" | "neutral";
+
+const quickTones: Record<Tone, string> = {
+  primary: "bg-primary-light text-primary",
+  secondary: "bg-success-light text-secondary",
+  warning: "bg-warning-light text-warning",
+  neutral: "bg-surface-hover text-text-secondary ring-1 ring-border",
+};
+
+const quickLinks: {
+  href: string;
+  icon: LucideIcon;
+  label: string;
+  desc: string;
+  tone: Tone;
+}[] = [
+  {
+    href: "/feed",
+    icon: Newspaper,
+    label: "Bảng tin",
+    desc: "Bài viết & hoạt động của lớp",
+    tone: "primary",
+  },
+  {
+    href: "/nhan-tin",
+    icon: MessagesSquare,
+    label: "Nhắn tin",
+    desc: "Trò chuyện cùng nhau",
+    tone: "secondary",
+  },
+  {
+    href: "/cau-hoi",
+    icon: CircleHelp,
+    label: "Hỏi đáp",
+    desc: "Hỏi gì đáp nấy",
+    tone: "warning",
+  },
+  {
+    href: "/ho-so",
+    icon: UserRound,
+    label: "Hồ sơ",
+    desc: "Thông tin của bạn",
+    tone: "neutral",
+  },
+];
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
@@ -79,13 +110,13 @@ export default async function DashboardPage() {
     .format(now)
     .replace(/^./, (c) => c.toUpperCase());
 
-  const points = data?.totalPoints ?? 0;
-  const rank = data?.personalRank ?? null;
-  const team = data?.team ?? null;
+  const tasks = data?.pendingTasks ?? [];
+  const announcements = data?.announcements ?? [];
+  const hasLife = tasks.length > 0 || announcements.length > 0;
 
   return (
     <div className="space-y-8">
-      {/* Chào mừng — đúng kiểu ngôi nhà của lớp */}
+      {/* Lời chào */}
       <section aria-label="Lời chào" className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-text-muted">
@@ -108,18 +139,9 @@ export default async function DashboardPage() {
                 className="bg-warning-light text-warning"
               />
             )}
-            {(roleLabels[user.role] ?? "Thành viên") && (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-surface px-2.5 py-1 text-xs font-medium text-text-secondary ring-1 ring-border">
-                {roleLabels[user.role] ?? "Thành viên"}
-              </span>
-            )}
-            {team && (
-              <Chip
-                icon={Users}
-                label={team.name}
-                className="bg-success-light text-secondary"
-              />
-            )}
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-surface px-2.5 py-1 text-xs font-medium text-text-secondary ring-1 ring-border">
+              {roleLabels[user.role] ?? "Thành viên"}
+            </span>
           </div>
         </div>
         <span
@@ -130,89 +152,37 @@ export default async function DashboardPage() {
         </span>
       </section>
 
-      {/* Bảng thi đua cá nhân — một thẻ thay cho 3 mảnh nhỏ */}
-      <section
-        aria-label="Thi đua của tôi"
-        className="overflow-hidden rounded-2xl bg-surface shadow-sm ring-1 ring-border"
-      >
-        <div className="grid grid-cols-3 divide-x divide-border">
-          <div className="px-3 py-4 text-center sm:px-5 sm:py-5">
-            <div className="mx-auto flex w-fit items-center gap-1 text-text-muted">
-              <Trophy aria-hidden className="size-3.5" />
-              <p className="text-[11px] font-medium">Điểm thi đua</p>
-            </div>
-            <p className="mt-1.5 text-2xl font-extrabold tracking-tight text-warning sm:text-3xl">
-              {formatNumber(points)}
-            </p>
-            <p className="mt-0.5 text-[11px] text-text-muted">
-              {points > 0 ? "tổng điểm cá nhân" : "chưa có điểm thi đua"}
-            </p>
-          </div>
-          <div className="px-3 py-4 text-center sm:px-5 sm:py-5">
-            <div className="mx-auto flex w-fit items-center gap-1 text-text-muted">
-              <Medal aria-hidden className="size-3.5" />
-              <p className="text-[11px] font-medium">Hạng cá nhân</p>
-            </div>
-            <p className="mt-1.5 text-2xl font-extrabold tracking-tight text-primary sm:text-3xl">
-              {rank ? `#${rank}` : "—"}
-            </p>
-            <p className="mt-0.5 text-[11px] text-text-muted">
-              {rank ? "trong lớp" : "chưa có dữ liệu"}
-            </p>
-          </div>
-          <div className="px-3 py-4 text-center sm:px-5 sm:py-5">
-            <div className="mx-auto flex w-fit items-center gap-1 text-text-muted">
-              <Users aria-hidden className="size-3.5" />
-              <p className="text-[11px] font-medium">Đội của tôi</p>
-            </div>
-            <p className="mt-1.5 truncate text-2xl font-extrabold tracking-tight text-secondary sm:text-3xl">
-              {team ? team.name : "Chưa có"}
-            </p>
-            <p className="mt-0.5 text-[11px] text-text-muted">
-              {team
-                ? `${formatNumber(team.totalScore)} điểm · hạng ${team.rank ?? "—"}`
-                : "anh chị em cùng bàn"}
-            </p>
-          </div>
-        </div>
-      </section>
+      {/* Nhịp sống lớp hôm nay */}
+      <section aria-label="Nhịp sống lớp" className="rounded-2xl bg-surface p-5 shadow-sm ring-1 ring-border">
+        <h2 className="flex items-center gap-2 text-sm font-bold text-text">
+          <span className="grid size-7 place-items-center rounded-lg bg-primary-light text-primary">
+            <Activity aria-hidden className="size-4" />
+          </span>
+          Nhịp sống lớp hôm nay
+        </h2>
 
-      {/* Nhiệm vụ + chuyện của lớp */}
-      <section
-        aria-label="Nội dung chính"
-        className="grid gap-6 lg:grid-cols-5 lg:items-start"
-      >
-        {/* Nhiệm vụ của tôi */}
-        <div className="lg:col-span-3">
-          <div className="rounded-2xl bg-surface p-5 shadow-sm ring-1 ring-border">
-            <div className="mb-4 flex items-center justify-between gap-2">
-              <h2 className="flex items-center gap-2 text-sm font-bold text-text">
-                <span className="grid size-7 place-items-center rounded-lg bg-primary-light text-primary">
-                  <ListTodo aria-hidden className="size-4" />
-                </span>
-                Nhiệm vụ của tôi
-              </h2>
-              {data && data.pendingTaskCount > 0 && (
-                <Badge className="bg-primary-light text-primary">
-                  {data.pendingTaskCount} đang chờ
-                </Badge>
-              )}
-            </div>
-
-            {!data || data.pendingTasks.length === 0 ? (
-              <EmptyState
-                icon={ListTodo}
-                title="Thảnh thơi! Chưa có nhiệm vụ mới"
-                description="Khi giáo viên hoặc tổ trưởng giao việc, danh sách sẽ hiện ngay tại đây."
-              />
-            ) : (
-              <ul className="divide-y divide-border">
-                {data.pendingTasks.map((task) => {
-                  const p = priorityInfo[task.priority];
-                  return (
+        {!hasLife ? (
+          <div className="mt-4 flex items-start gap-3 rounded-xl bg-surface-hover/60 p-4">
+            <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-surface text-text-muted">
+              <Sparkles aria-hidden className="size-4" />
+            </span>
+            <p className="text-sm leading-relaxed text-text-secondary">
+              Lớp đang yên tĩnh — chưa có việc gì gấp. Quay lại sau nhé!
+            </p>
+          </div>
+        ) : (
+          <div className="mt-4 space-y-5">
+            {tasks.length > 0 && (
+              <div>
+                <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-text-secondary">
+                  <ListTodo aria-hidden className="size-3.5 text-primary" />
+                  Bạn còn {tasks.length} nhiệm vụ:
+                </p>
+                <ul className="space-y-1">
+                  {tasks.map((task) => (
                     <li
                       key={task.id}
-                      className="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"
+                      className="flex items-center justify-between gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-surface-hover"
                     >
                       <div className="min-w-0">
                         <p className="truncate text-sm font-medium text-text">
@@ -224,57 +194,78 @@ export default async function DashboardPage() {
                             : "Chưa có hạn chót"}
                         </p>
                       </div>
-                      <Badge className={p.className}>{p.label}</Badge>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </div>
-        </div>
-
-        {/* Chuyện của lớp */}
-        <div className="space-y-6 lg:col-span-2">
-          <div className="rounded-2xl bg-surface p-5 shadow-sm ring-1 ring-border">
-            <h2 className="mb-4 flex items-center gap-2 text-sm font-bold text-text">
-              <span className="grid size-7 place-items-center rounded-lg bg-warning-light text-warning">
-                <Megaphone aria-hidden className="size-4" />
-              </span>
-              Lớp nói gì?
-            </h2>
-            {!data || data.announcements.length === 0 ? (
-              <EmptyState
-                icon={Megaphone}
-                title="Lớp đang yên lặng"
-                description="Thông báo từ giáo viên và ban cán sự sẽ xuất hiện ở đây."
-              />
-            ) : (
-              <ul className="space-y-3">
-                {data.announcements.map((a) => (
-                  <li
-                    key={a.id}
-                    className="flex items-start gap-2.5 rounded-lg p-2 transition-colors hover:bg-surface-hover"
-                  >
-                    {a.isPinned && (
-                      <Pin
+                      <span
                         aria-hidden
-                        className="mt-0.5 size-3.5 shrink-0 text-warning"
+                        className="size-2 shrink-0 rounded-full bg-primary/30"
                       />
-                    )}
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium text-text">{a.title}</p>
-                      <p className="mt-0.5 line-clamp-2 text-xs text-text-muted">
-                        {a.content}
-                      </p>
-                      <p className="mt-1 text-[11px] text-text-muted">
-                        {formatRelativeTime(a.createdAt)}
-                      </p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {announcements.length > 0 && (
+              <div>
+                <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-text-secondary">
+                  <Megaphone aria-hidden className="size-3.5 text-warning" />
+                  Lớp vừa nói:
+                </p>
+                <ul className="space-y-1">
+                  {announcements.map((a) => (
+                    <li
+                      key={a.id}
+                      className="flex items-start gap-2 rounded-lg px-2 py-2 transition-colors hover:bg-surface-hover"
+                    >
+                      {a.isPinned && (
+                        <Pin
+                          aria-hidden
+                          className="mt-0.5 size-3.5 shrink-0 text-warning"
+                        />
+                      )}
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-text">{a.title}</p>
+                        <p className="mt-0.5 line-clamp-2 text-xs text-text-muted">
+                          {a.content}
+                        </p>
+                        <p className="mt-1 text-[11px] text-text-muted">
+                          {formatRelativeTime(a.createdAt)}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
           </div>
+        )}
+      </section>
+
+      {/* Bắt đầu */}
+      <section aria-label="Bắt đầu">
+        <h2 className="mb-3 text-sm font-bold text-text">Bắt đầu</h2>
+        <div className="grid grid-cols-2 gap-3">
+          {quickLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="group flex items-start gap-3 rounded-2xl bg-surface p-4 shadow-sm ring-1 ring-border transition-colors hover:ring-primary/40"
+            >
+              <span
+                aria-hidden
+                className={`grid size-11 shrink-0 place-items-center rounded-xl ${quickTones[link.tone]}`}
+              >
+                <link.icon className="size-5" />
+              </span>
+              <span className="min-w-0">
+                <span className="block truncate text-sm font-bold text-text">
+                  {link.label}
+                </span>
+                <span className="mt-0.5 block text-xs leading-tight text-text-muted">
+                  {link.desc}
+                </span>
+              </span>
+            </Link>
+          ))}
         </div>
       </section>
 

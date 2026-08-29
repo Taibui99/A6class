@@ -1,5 +1,5 @@
 import {
-  LayoutDashboard,
+  Home,
   Newspaper,
   MessagesSquare,
   CircleHelp,
@@ -17,9 +17,9 @@ export type NavItem = {
 export const navItems: NavItem[] = [
   {
     href: "/bang-dieu-khien",
-    label: "Bảng điều khiển",
-    shortLabel: "Điều khiển",
-    icon: LayoutDashboard,
+    label: "Nhà",
+    shortLabel: "Nhà",
+    icon: Home,
   },
   {
     href: "/feed",
