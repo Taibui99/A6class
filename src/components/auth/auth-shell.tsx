@@ -1,6 +1,7 @@
 import { GraduationCap } from "lucide-react";
 
 import { Mascot } from "@/components/mascot";
+import { Logo } from "@/components/layout/logo";
 
 export function AuthShell({
   title,
@@ -18,9 +19,12 @@ export function AuthShell({
       <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center">
         <div className="mb-7 text-center">
           <div className="vt-mascot mx-auto w-fit">
-            <Mascot size={64} />
+            <Mascot size={52} />
           </div>
-          <h1 className="mt-3 text-2xl font-bold tracking-tight text-text">
+          <div className="mt-4 flex justify-center">
+            <Logo size="md" />
+          </div>
+          <h1 className="mt-4 text-2xl font-bold tracking-tight text-text">
             {title}
           </h1>
           <p className="mt-1 text-sm text-text-secondary">{subtitle}</p>

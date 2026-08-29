@@ -1,13 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 import { Mascot } from "@/components/mascot";
+import { Logo } from "@/components/layout/logo";
 
 const HOLD_MS = 1000;
 const TOTAL_MS = 1500;
 
 export function SplashScreen() {
+  const pathname = usePathname();
   const [stage, setStage] = useState<"show" | "hide" | "gone">("show");
 
   useEffect(() => {
@@ -27,6 +30,7 @@ export function SplashScreen() {
   }, []);
 
   if (stage === "gone") return null;
+  if (pathname === "/") return null;
 
   return (
     <div
@@ -38,12 +42,11 @@ export function SplashScreen() {
     >
       <div className="splash-panel mx-6 w-full max-w-xs rounded-2xl border border-border bg-surface px-8 py-10 text-center shadow-lg">
         <div className="mascot-bob mx-auto w-fit">
-          <Mascot size={56} />
+          <Mascot size={52} />
         </div>
-        <h1 className="mt-4 text-xl font-extrabold tracking-tight text-text">
-          A6Class
-        </h1>
-        <p className="mt-1 text-sm text-text-muted">Ngôi nhà số của lớp 12A6</p>
+        <div className="mt-4 flex justify-center">
+          <Logo size="md" />
+        </div>
         <p className="mt-6 text-sm font-medium text-text-secondary">
           Đang tải hệ thống…
         </p>

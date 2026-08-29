@@ -421,3 +421,277 @@ select {
     animation-delay: 0s !important;
   }
 }
+
+/* ============ Cảnh cổng trường hoạt hình ============ */
+
+@keyframes crPop {
+  0% { opacity: 0; transform: scale(0.4) rotate(-6deg); }
+  60% { opacity: 1; transform: scale(1.08) rotate(2deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0); }
+}
+
+.cr-pop {
+  animation: crPop 0.6s var(--ease-spring) both;
+}
+
+@keyframes crCloudDrift {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-9vw); }
+}
+
+.cr-cloud {
+  animation: crCloudDrift 26s ease-in-out infinite;
+}
+
+@keyframes crSunSpin {
+  to { transform: rotate(360deg); }
+}
+
+.cr-rays {
+  animation: crSunSpin 40s linear infinite;
+}
+
+@keyframes crFloat {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-10px) rotate(1.5deg); }
+}
+
+.cr-float {
+  animation: crFloat 3.6s ease-in-out infinite;
+}
+
+@keyframes crTwinkle {
+  0%, 100% { opacity: 0.25; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+.cr-twinkle {
+  animation: crTwinkle 2.4s ease-in-out infinite;
+}
+
+@keyframes crFly0 {
+  0% { transform: translate(110vw, 0) scaleX(1); }
+  48% { transform: translate(50vw, -4vh) scaleX(1); }
+  50% { transform: translate(48vw, -4vh) scaleX(-1); }
+  100% { transform: translate(-6vw, 0) scaleX(-1); }
+}
+
+@keyframes crFly1 {
+  0% { transform: translate(-6vw, 0) scaleX(-1); }
+  48% { transform: translate(44vw, -3vh) scaleX(-1); }
+  50% { transform: translate(46vw, -3vh) scaleX(1); }
+  100% { transform: translate(110vw, 0) scaleX(1); }
+}
+
+@keyframes crFlap {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.45); }
+}
+
+/* ============ Robot chạy từ xa tới gần ============ */
+
+@keyframes crRunIn {
+  0% { transform: translate(0, -32vh) scale(0.22) rotate(-2deg); }
+  40% { transform: translate(0, -22vh) scale(0.4) rotate(1.6deg); }
+  78% { transform: translate(0, -6vh) scale(0.82) rotate(-1deg); }
+  100% { transform: translate(0, 0) scale(1) rotate(0); }
+}
+
+.cr-run {
+  animation: crRunIn 2.2s cubic-bezier(0.5, 0.06, 0.28, 1) both;
+}
+
+@keyframes crRunLean {
+  0%, 100% { transform: rotate(0); }
+  30% { transform: rotate(2.4deg); }
+  70% { transform: rotate(-2.6deg); }
+}
+
+@keyframes crRunBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.cr-lean {
+  animation: crRunLean 0.22s linear 8;
+}
+
+.cr-bounce {
+  animation: crRunBounce 0.22s linear 8;
+}
+
+@keyframes crArmRun {
+  0%, 100% { transform: rotate(0); }
+  50% { transform: rotate(-40deg); }
+}
+
+.cr-arms-run .mascot-arm-left {
+  animation: crArmRun 0.22s linear 8;
+}
+
+.cr-arms-run .mascot-arm-right {
+  animation: crArmRun 0.22s linear 8 reverse;
+}
+
+@keyframes crShadowGrow {
+  0% { transform: scaleX(0.14); opacity: 0.18; }
+  100% { transform: scaleX(1); opacity: 0.3; }
+}
+
+.cr-shadow {
+  animation: crShadowGrow 2.2s cubic-bezier(0.5, 0.06, 0.28, 1) both;
+}
+
+@keyframes crPuff {
+  0% { transform: translate(0, 0) scale(0.35); opacity: 0.55; }
+  100% { transform: translate(12px, -18px) scale(1.7); opacity: 0; }
+}
+
+.cr-puff {
+  position: absolute;
+  width: 15px;
+  height: 10px;
+  border-radius: 9999px;
+  background: rgba(148, 163, 184, 0.55);
+  filter: blur(2px);
+  animation: crPuff 0.7s ease-out both;
+}
+
+@keyframes crPuffStop {
+  0% { transform: scale(0.4); opacity: 0.65; }
+  100% { transform: translate(0, -8px) scale(2); opacity: 0; }
+}
+
+.cr-puff-stop {
+  animation: crPuffStop 0.6s ease-out 2.04s both;
+}
+
+@keyframes crWave {
+  0%, 100% { transform: rotate(0); }
+  16% { transform: rotate(-54deg); }
+  32% { transform: rotate(-6deg); }
+  48% { transform: rotate(-56deg); }
+  64% { transform: rotate(-4deg); }
+  80% { transform: rotate(-50deg); }
+}
+
+.cr-arms-wave .mascot-arm-left {
+  animation: crWave 1.15s ease-in-out 0.35s 2 both;
+}
+
+.cr-hello-bob {
+  animation: mascotBob 2.2s ease-in-out 0.7s 2;
+}
+
+/* ============ Tương tác linh vật (ấn vào robot) ============ */
+
+@keyframes mascotJump {
+  0%, 100% { transform: translateY(0); }
+  38% { transform: translateY(-18px); }
+  58% { transform: translateY(-18px); }
+  74% { transform: translateY(0); }
+}
+
+@keyframes mascotReact {
+  0%, 100% { transform: rotate(0) scale(1); }
+  25% { transform: rotate(-7deg) scale(1.06); }
+  50% { transform: rotate(6deg) scale(1.04); }
+  75% { transform: rotate(-4deg); }
+}
+
+@keyframes mascotSpin {
+  from { transform: rotate(0); }
+  to { transform: rotate(360deg); }
+}
+
+.mascot-jump {
+  animation: mascotJump 0.8s var(--ease-spring) both;
+}
+
+.mascot-react {
+  animation: mascotReact 0.8s var(--ease-spring) both;
+}
+
+.mascot-spin {
+  animation: mascotSpin 0.75s cubic-bezier(0.3, 0.1, 0.2, 1) both;
+}
+
+@keyframes mascotParticle {
+  0% { transform: translateY(0) scale(0.5); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translateY(-36px) scale(1.2); opacity: 0; }
+}
+
+.mascot-particle {
+  position: absolute;
+  bottom: 24%;
+  pointer-events: none;
+  animation: mascotParticle 0.9s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cr-pop,
+  .cr-cloud,
+  .cr-rays,
+  .cr-float,
+  .cr-twinkle,
+  .cr-run,
+  .cr-lean,
+  .cr-bounce,
+  .cr-arms-run .mascot-arm-left,
+  .cr-arms-run .mascot-arm-right,
+  .cr-shadow,
+  .cr-puff,
+  .cr-puff-stop,
+  .cr-arms-wave .mascot-arm-left,
+  .cr-hello-bob,
+  .crFly0,
+  .crFly1,
+  .cr-flap,
+  .mascot-jump,
+  .mascot-react,
+  .mascot-spin,
+  .mascot-particle {
+    animation: none !important;
+  }
+  .cr-puff,
+  .cr-puff-stop,
+  .mascot-particle {
+    display: none;
+  }
+}
+
+/* ============ Logo A6Class: từng chữ nảy lên ============ */
+
+@keyframes logoPop {
+  0% { opacity: 0; transform: translateY(20px) scale(0.35) rotate(-9deg); filter: blur(5px); }
+  55% { opacity: 1; transform: translateY(-3px) scale(1.1) rotate(2deg); filter: blur(0); }
+  100% { opacity: 1; transform: none; filter: blur(0); }
+}
+
+.logo-letter {
+  animation: logoPop 0.55s var(--ease-spring) both;
+}
+
+.logo-sub {
+  animation: logoPop 0.55s var(--ease-spring) 0.66s both;
+}
+
+@keyframes introBubble {
+  0% { opacity: 0; transform: translate(-50%, 14px) scale(0.7); }
+  55% { opacity: 1; transform: translate(-50%, -2px) scale(1.03); }
+  100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+.intro-bubble {
+  transform: translate(-50%, 0);
+  animation: introBubble 0.5s var(--ease-spring) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-letter,
+  .logo-sub,
+  .intro-bubble {
+    animation: none;
+  }
+}

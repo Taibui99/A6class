@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { cn } from "@/lib/utils";
 import { Mascot } from "@/components/mascot";
+import { Logo } from "@/components/layout/logo";
 
 export function Brand({
   size = "md",
@@ -13,24 +14,17 @@ export function Brand({
   markClassName?: string;
 }) {
   return (
-    <Link href={href} className="flex min-w-0 items-center gap-2.5">
+    <Link href={href} className="flex min-w-0 items-center gap-2">
+      <Logo size="sm" className="shrink-0" />
       <span
         aria-hidden="true"
         className={cn(
           "shrink-0",
-          size === "sm" ? "size-8" : "size-9",
+          size === "sm" ? "size-6" : "size-8",
           markClassName
         )}
       >
-        <Mascot size={size === "sm" ? 28 : 34} />
-      </span>
-      <span className={cn("leading-tight", size === "sm" && "hidden min-[400px]:block")}>
-        <span className="block text-[15px] font-bold tracking-tight text-text">
-          A6Class
-        </span>
-        <span className="block text-[11px] font-medium text-text-muted">
-          Lớp 12A6
-        </span>
+        <Mascot size={size === "sm" ? 22 : 30} />
       </span>
     </Link>
   );
