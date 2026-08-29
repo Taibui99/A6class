@@ -20,7 +20,7 @@ export default async function AppLayout({
     <div className="min-h-dvh">
       {/* Mobile top bar */}
       <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-surface/95 px-4 backdrop-blur-md lg:hidden">
-        <Brand size="sm" />
+        <Brand size="sm" markClassName="vt-mascot-topbar" />
         <MobilePageTitle />
         <UserMenu user={user} variant="mobile" />
       </header>
@@ -28,7 +28,7 @@ export default async function AppLayout({
       {/* Desktop sidebar */}
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-border bg-surface lg:flex">
         <div className="flex h-16 items-center border-b border-border px-5">
-          <Brand />
+          <Brand markClassName="vt-mascot-sidebar" />
         </div>
         <SidebarNav />
         <UserMenu user={user} />

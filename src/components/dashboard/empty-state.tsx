@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { Mascot } from "@/components/mascot";
 
 export function EmptyState({
   icon: Icon,
@@ -8,12 +9,14 @@ export function EmptyState({
   description,
   action,
   className,
+  mascot = false,
 }: {
   icon: LucideIcon;
   title: string;
   description?: string;
   action?: React.ReactNode;
   className?: string;
+  mascot?: boolean;
 }) {
   return (
     <div
@@ -22,8 +25,17 @@ export function EmptyState({
         className
       )}
     >
-      <span className="grid size-12 place-items-center rounded-full bg-surface-hover text-text-muted">
-        <Icon aria-hidden="true" className="size-6" />
+      <span
+        className={cn(
+          "grid place-items-center rounded-full bg-surface-hover",
+          mascot ? "size-16" : "size-12 text-text-muted"
+        )}
+      >
+        {mascot ? (
+          <Mascot size={56} />
+        ) : (
+          <Icon aria-hidden="true" className="size-6" />
+        )}
       </span>
       <div className="space-y-1">
         <p className="text-sm font-semibold text-text">{title}</p>

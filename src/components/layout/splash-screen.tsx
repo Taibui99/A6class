@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 
+import { Mascot } from "@/components/mascot";
+
 const HOLD_MS = 1000;
 const TOTAL_MS = 1500;
 
@@ -35,10 +37,8 @@ export function SplashScreen() {
       }`}
     >
       <div className="splash-panel mx-6 w-full max-w-xs rounded-2xl border border-border bg-surface px-8 py-10 text-center shadow-lg">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-primary shadow-md">
-          <span className="text-xl font-extrabold tracking-tight text-primary-foreground">
-            A6
-          </span>
+        <div className="mascot-bob mx-auto w-fit">
+          <Mascot size={56} />
         </div>
         <h1 className="mt-4 text-xl font-extrabold tracking-tight text-text">
           A6Class

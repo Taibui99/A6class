@@ -1,18 +1,28 @@
 import Link from "next/link";
 
 import { cn } from "@/lib/utils";
+import { Mascot } from "@/components/mascot";
 
-export function Brand({ size = "md", href = "/bang-dieu-khien" }: { size?: "sm" | "md"; href?: string }) {
+export function Brand({
+  size = "md",
+  href = "/bang-dieu-khien",
+  markClassName,
+}: {
+  size?: "sm" | "md";
+  href?: string;
+  markClassName?: string;
+}) {
   return (
     <Link href={href} className="flex min-w-0 items-center gap-2.5">
       <span
         aria-hidden="true"
         className={cn(
-          "grid shrink-0 place-items-center rounded-xl bg-primary font-extrabold tracking-tight text-white shadow-sm",
-          size === "sm" ? "size-8 text-xs" : "size-9 text-[13px]"
+          "shrink-0",
+          size === "sm" ? "size-8" : "size-9",
+          markClassName
         )}
       >
-        A6
+        <Mascot size={size === "sm" ? 28 : 34} />
       </span>
       <span className={cn("leading-tight", size === "sm" && "hidden min-[400px]:block")}>
         <span className="block text-[15px] font-bold tracking-tight text-text">

@@ -16,6 +16,7 @@ export default function ChatPage() {
 
       <EmptyState
         icon={MessagesSquare}
+        mascot
         title="Chưa có hội thoại nào"
         description="Khi có tin nhắn từ bạn bè hoặc từ nhóm, các hội thoại sẽ hiện ra tại đây."
       />

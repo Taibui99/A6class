@@ -16,6 +16,7 @@ export default function QuestionPage() {
 
       <EmptyState
         icon={CircleHelp}
+        mascot
         title="Chưa có câu hỏi nào"
         description="Khi ai đó đặt câu hỏi, nội dung và câu trả lời sẽ được hiển thị tại đây."
       />

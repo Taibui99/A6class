@@ -5,51 +5,53 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { LogIn, UserPlus } from "lucide-react";
 
+import { Mascot } from "@/components/mascot";
+import {
+  isReducedMotion,
+  navigateWithTransition,
+} from "@/lib/transition-nav";
+
 const BOOT_MS = 1500;
 const HELLO_MS = 1500;
 const ENTER_MS = 900;
 
 type Stage = "boot" | "hello" | "choice" | "entering";
 
-function prefersReducedMotion(): boolean {
-  return (
-    typeof window !== "undefined" &&
-    window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches === true
-  );
-}
-
 export function WelcomeScreen({ signedIn }: { signedIn: boolean }) {
   const router = useRouter();
   const [stage, setStage] = useState<Stage>("boot");
 
   useEffect(() => {
-    const reduce = prefersReducedMotion();
     const t = window.setTimeout(
       () => setStage("hello"),
-      reduce ? 200 : BOOT_MS
+      isReducedMotion() ? 200 : BOOT_MS
     );
     return () => window.clearTimeout(t);
   }, []);
 
   useEffect(() => {
     if (stage !== "hello") return;
-    const reduce = prefersReducedMotion();
     const t = window.setTimeout(
       () => setStage(signedIn ? "entering" : "choice"),
-      reduce ? 300 : HELLO_MS
+      isReducedMotion() ? 300 : HELLO_MS
     );
     return () => window.clearTimeout(t);
   }, [stage, signedIn]);
 
   useEffect(() => {
     if (stage !== "entering") return;
-    const reduce = prefersReducedMotion();
-    const t = window.setTimeout(
-      () => router.replace("/bang-dieu-khien"),
-      reduce ? 0 : ENTER_MS
-    );
+    const t = window.setTimeout(() => {
+      void navigateWithTransition(() =>
+        router.replace("/bang-dieu-khien")
+      );
+    }, isReducedMotion() ? 0 : ENTER_MS);
     return () => window.clearTimeout(t);
   }, [stage, router]);
+
+  const go = (href: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    void navigateWithTransition(() => router.push(href));
+  };
 
   const entering = stage === "entering";
 
@@ -71,11 +73,10 @@ export function WelcomeScreen({ signedIn }: { signedIn: boolean }) {
       <div className="relative flex w-full max-w-xs flex-col items-center text-center">
         {stage === "boot" && (
           <div className="flex flex-col items-center">
-            <div className="intro-logo relative grid size-24 select-none place-items-center rounded-[1.75rem] bg-primary text-3xl font-extrabold tracking-tight text-white shadow-[0_24px_48px_-16px_rgba(30,64,175,0.5)]">
-              A6
-              <span aria-hidden className="intro-glint" />
+            <div className="intro-logo mascot-bob">
+              <Mascot size={104} />
             </div>
-            <p className="intro-fade mt-8 text-xs font-semibold uppercase tracking-[0.35em] text-text-muted">
+            <p className="intro-fade mt-7 text-xs font-semibold uppercase tracking-[0.35em] text-text-muted">
               Ngôi nhà số của
             </p>
             <h1 className="intro-word mt-2 text-2xl font-extrabold tracking-tight text-text">
@@ -89,12 +90,11 @@ export function WelcomeScreen({ signedIn }: { signedIn: boolean }) {
 
         {!entering && stage !== "boot" && (
           <div className="flex flex-col items-center">
-            <div className="intro-logo relative grid size-16 select-none place-items-center rounded-2xl bg-primary text-xl font-extrabold tracking-tight text-white shadow-[0_16px_32px_-10px_rgba(30,64,175,0.5)]">
-              A6
-              <span aria-hidden className="intro-glint" />
+            <div className="vt-mascot intro-logo">
+              <Mascot size={128} />
             </div>
 
-            <h1 className="mt-8 text-4xl font-extrabold tracking-tight text-text sm:text-5xl">
+            <h1 className="mt-7 text-4xl font-extrabold tracking-tight text-text sm:text-5xl">
               <span className="intro-word inline-block">Xin</span>{" "}
               <span
                 className="intro-word inline-block text-primary"
@@ -116,6 +116,7 @@ export function WelcomeScreen({ signedIn }: { signedIn: boolean }) {
               <div className="mt-10 w-full max-w-xs space-y-3">
                 <Link
                   href="/register"
+                  onClick={go("/register")}
                   className="intro-btn flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary text-sm font-bold text-white transition-transform hover:scale-[1.02] hover:bg-primary-hover active:scale-[0.99]"
                 >
                   <UserPlus aria-hidden className="size-4" />
@@ -123,6 +124,7 @@ export function WelcomeScreen({ signedIn }: { signedIn: boolean }) {
                 </Link>
                 <Link
                   href="/login"
+                  onClick={go("/login")}
                   className="intro-btn flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-surface text-sm font-semibold text-text ring-1 ring-border transition-colors hover:bg-surface-hover"
                   style={{ animationDelay: "140ms" }}
                 >
@@ -136,8 +138,8 @@ export function WelcomeScreen({ signedIn }: { signedIn: boolean }) {
 
         {entering && (
           <div className="flex flex-col items-center">
-            <div className="intro-pulse grid size-20 select-none place-items-center rounded-[1.6rem] bg-primary text-2xl font-extrabold tracking-tight text-white shadow-[0_20px_40px_-14px_rgba(30,64,175,0.5)]">
-              A6
+            <div className="vt-mascot intro-pulse">
+              <Mascot size={100} />
             </div>
             <p className="mt-8 text-sm font-medium text-text-secondary">
               Đang vào ngôi nhà của lớp…

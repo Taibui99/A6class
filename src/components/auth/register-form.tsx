@@ -1,10 +1,12 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Loader2, TriangleAlert, UserPlus } from "lucide-react";
 
 import { signUp, type AuthState } from "@/lib/auth/actions";
+import { navigateWithTransition } from "@/lib/transition-nav";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,6 +24,15 @@ export function RegisterForm() {
   const [state, formAction, pending] = useActionState(signUp, initialState);
   const [showPassword, setShowPassword] = useState(false);
   const [role, setRole] = useState("STUDENT");
+  const router = useRouter();
+
+  useEffect(() => {
+    if (state?.ok && state.redirectTo) {
+      void navigateWithTransition(() =>
+        router.push(state.redirectTo as string)
+      );
+    }
+  }, [state, router]);
 
   return (
     <form action={formAction} className="space-y-4">

@@ -1,5 +1,7 @@
 import { GraduationCap } from "lucide-react";
 
+import { Mascot } from "@/components/mascot";
+
 export function AuthShell({
   title,
   subtitle,
@@ -15,10 +17,10 @@ export function AuthShell({
     <div className="flex min-h-dvh flex-col bg-bg px-4 py-8 sm:py-12">
       <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center">
         <div className="mb-7 text-center">
-          <span className="mx-auto grid size-12 place-items-center rounded-xl bg-primary text-lg font-extrabold tracking-tight text-white shadow-sm">
-            A6
-          </span>
-          <h1 className="mt-4 text-2xl font-bold tracking-tight text-text">
+          <div className="vt-mascot mx-auto w-fit">
+            <Mascot size={64} />
+          </div>
+          <h1 className="mt-3 text-2xl font-bold tracking-tight text-text">
             {title}
           </h1>
           <p className="mt-1 text-sm text-text-secondary">{subtitle}</p>

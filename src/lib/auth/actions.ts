@@ -6,7 +6,7 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth/server";
 import { prisma } from "@/lib/prisma";
 
-export type AuthState = { error?: string; ok?: boolean };
+export type AuthState = { error?: string; ok?: boolean; redirectTo?: string };
 
 const INTERNAL_PREFIXES = [
   "/bang-dieu-khien",
@@ -47,7 +47,10 @@ export async function signIn(
     return { error: "Email hoặc mật khẩu không đúng. Vui lòng thử lại." };
   }
 
-  redirect(safeRedirect(formData.get("redirect") as string | null));
+  return {
+    ok: true,
+    redirectTo: safeRedirect(formData.get("redirect") as string | null),
+  };
 }
 
 export async function signUp(
@@ -94,7 +97,7 @@ export async function signUp(
     // Hồ sơ DB chưa được tạo — auth vẫn hoạt động; sẽ đồng bộ ở lần sau.
   }
 
-  redirect("/bang-dieu-khien");
+  return { ok: true, redirectTo: "/bang-dieu-khien" };
 }
 
 export async function signOut(): Promise<void> {

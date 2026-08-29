@@ -362,3 +362,62 @@ select {
     opacity: 1;
   }
 }
+
+/* ============ Linh vật cú & view transitions ============ */
+
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-group(mascot) {
+  animation-duration: 460ms;
+  animation-timing-function: cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.vt-mascot {
+  view-transition-name: mascot;
+}
+
+.vt-mascot-sidebar,
+.vt-mascot-topbar {
+  view-transition-name: none;
+}
+
+@media (min-width: 1024px) {
+  .vt-mascot-sidebar {
+    view-transition-name: mascot;
+  }
+  .vt-mascot-topbar {
+    view-transition-name: none;
+  }
+}
+
+@media (max-width: 1023px) {
+  .vt-mascot-sidebar {
+    view-transition-name: none;
+  }
+  .vt-mascot-topbar {
+    view-transition-name: mascot;
+  }
+}
+
+@keyframes mascotBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.mascot-bob {
+  animation: mascotBob 3s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mascot-bob {
+    animation: none;
+  }
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}

@@ -62,6 +62,7 @@ export default async function FeedPage() {
           ) : (
             <EmptyState
               icon={Newspaper}
+              mascot
               title="Chưa có bài viết nào"
               description="Đăng bài đầu tiên để mở đầu bảng tin của lớp!"
             />
