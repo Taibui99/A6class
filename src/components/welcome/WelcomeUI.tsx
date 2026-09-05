@@ -1,89 +1,85 @@
 "use client";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { isReducedMotion } from "@/lib/transition-nav";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { LogIn, UserPlus } from "lucide-react";
+interface WelcomeUIProps {
+  onSignup?: () => void;
+  onLogin?: () => void;
+}
 
-import { Logo } from "@/components/layout/logo";
-import { navigateWithTransition } from "@/lib/transition-nav";
+const LETTERS = [..."A6Class"];
 
-export function WelcomeUI({
-  stage,
-}: {
-  stage: "intro" | "choice" | "entering";
-}) {
-  const router = useRouter();
+export default function WelcomeUI({ onSignup, onLogin }: WelcomeUIProps) {
+  const [mounted, setMounted] = useState(false);
+  const reducedMotion = isReducedMotion();
 
-  const go = (href: string) => (e: React.MouseEvent) => {
-    e.preventDefault();
-    void navigateWithTransition(() => router.push(href));
-  };
+  useEffect(() => {
+    const t = setTimeout(() => setMounted(true), 100);
+    return () => clearTimeout(t);
+  }, []);
 
   return (
-    <div className="flex flex-col items-center text-center">
-      {/* Logo */}
+    <>
+      {/* Logo letter-bounce — z-index:11 */}
       <div
-        className={`transition-all duration-500 ${
-          stage === "intro" ? "translate-y-4 opacity-0" : "translate-y-0 opacity-100"
-        }`}
+        className="absolute left-1/2 -translate-x-1/2 flex gap-px"
+        style={{ top: "3%", zIndex: 11 }}
       >
-        <Logo size="lg" animate={stage !== "intro"} />
+        {LETTERS.map((ch, i) => (
+          <motion.span
+            key={i}
+            className="font-extrabold"
+            style={{
+              color: "#8C3B24",
+              textShadow: "0 2px 0 rgba(255,255,255,.55)",
+              fontSize: "clamp(18px,3.2vw,32px)",
+              fontFamily: "'Be Vietnam Pro',sans-serif",
+            }}
+            initial={{ opacity: 0, y: -18 }}
+            animate={mounted && !reducedMotion ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 1.4 + i * 0.06, ease: [0.34, 1.6, 0.5, 1] }}
+          >
+            {ch}
+          </motion.span>
+        ))}
       </div>
 
-      {/* Tagline */}
-      <p
-        className={`mt-2 text-[11px] font-semibold uppercase tracking-[0.32em] text-white/70 transition-all duration-500 delay-100 ${
-          stage === "intro" ? "translate-y-3 opacity-0" : "translate-y-0 opacity-100"
-        }`}
+      {/* CTA buttons — z-index:12 */}
+      <motion.div
+        className="absolute left-1/2 -translate-x-1/2 flex flex-col gap-2"
+        style={{ bottom: "4%", width: "min(80%,360px)", zIndex: 12 }}
+        initial={{ opacity: 0, y: 10 }}
+        animate={mounted && !reducedMotion ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 4.6, ease: "easeOut" }}
       >
-        Ngôi nhà số của Lớp 12A6
-      </p>
-
-      {/* Buttons — choice stage */}
-      {stage === "choice" && (
-        <div className="mt-6 w-full max-w-[280px] space-y-3">
-          <Link
-            href="/register"
-            onClick={go("/register")}
-            className="intro-btn flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary text-sm font-bold text-white shadow-lg shadow-primary/25 transition-transform hover:scale-[1.02] hover:bg-primary-hover active:scale-[0.99]"
-          >
-            <UserPlus aria-hidden className="size-4" />
-            Đăng ký
-          </Link>
-          <Link
-            href="/login"
-            onClick={go("/login")}
-            className="intro-btn flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-white/90 text-sm font-semibold text-text shadow-lg ring-1 ring-white/20 transition-colors hover:bg-white"
-            style={{ animationDelay: "140ms" }}
-          >
-            <LogIn aria-hidden className="size-4" />
-            Đăng nhập
-          </Link>
-        </div>
-      )}
-
-      {/* Entering stage */}
-      {stage === "entering" && (
-        <div className="mt-6 flex flex-col items-center">
-          <p className="text-sm font-medium text-white/80">
-            Đang vào ngôi nhà của lớp…
-          </p>
-          <div className="mt-3 flex items-center justify-center gap-1.5">
-            <span
-              className="splash-dot h-1.5 w-1.5 rounded-full bg-white"
-              style={{ animationDelay: "0ms" }}
-            />
-            <span
-              className="splash-dot h-1.5 w-1.5 rounded-full bg-white"
-              style={{ animationDelay: "120ms" }}
-            />
-            <span
-              className="splash-dot h-1.5 w-1.5 rounded-full bg-white"
-              style={{ animationDelay: "240ms" }}
-            />
-          </div>
-        </div>
-      )}
-    </div>
+        <button
+          onClick={onSignup}
+          className="flex items-center justify-center gap-2 h-11 rounded-xl font-bold border-none cursor-pointer"
+          style={{
+            background: "linear-gradient(180deg,#3B82F6,#1E40AF)",
+            color: "#fff",
+            boxShadow: "0 5px 0 #16306E",
+            fontSize: "clamp(12px,1.6vw,15px)",
+            fontFamily: "'Be Vietnam Pro',sans-serif",
+          }}
+        >
+          Đăng ký tham gia →
+        </button>
+        <button
+          onClick={onLogin}
+          className="flex items-center justify-center gap-2 h-11 rounded-xl font-bold cursor-pointer"
+          style={{
+            background: "#fff",
+            color: "#16306E",
+            border: "1px solid #E7E5E4",
+            fontSize: "clamp(12px,1.6vw,15px)",
+            fontFamily: "'Be Vietnam Pro',sans-serif",
+          }}
+        >
+          Đã có tài khoản? Đăng nhập
+        </button>
+      </motion.div>
+    </>
   );
 }

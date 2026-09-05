@@ -1,61 +1,56 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 
-import { WelcomeScene } from "@/components/welcome/WelcomeScene";
-import { WelcomeUI } from "@/components/welcome/WelcomeUI";
+import WelcomeUI from "@/components/welcome/WelcomeUI";
 import {
   isReducedMotion,
   navigateWithTransition,
 } from "@/lib/transition-nav";
 
-const INTRO_MS = 2200;
-const HELLO_MS = 1500;
-const ENTER_MS = 900;
+const WelcomeScene = dynamic(
+  () => import("@/components/welcome/WelcomeScene"),
+  { ssr: false },
+);
 
-type Stage = "intro" | "choice" | "entering";
+const INTRO_MS = 5200;
 
 export function WelcomeScreen({ signedIn }: { signedIn: boolean }) {
   const router = useRouter();
-  const [stage, setStage] = useState<Stage>("intro");
-  const [introComplete, setIntroComplete] = useState(false);
+  const [sceneReady, setSceneReady] = useState(false);
 
   useEffect(() => {
-    const t = window.setTimeout(
+    if (!sceneReady) return;
+    const t = setTimeout(
       () => {
-        setIntroComplete(true);
-        setStage(signedIn ? "entering" : "choice");
+        void navigateWithTransition(() => router.replace("/bang-dieu-khien"));
       },
-      isReducedMotion() ? 400 : INTRO_MS
+      isReducedMotion() ? 200 : INTRO_MS,
     );
-    return () => window.clearTimeout(t);
-  }, [signedIn]);
+    return () => clearTimeout(t);
+  }, [sceneReady, router]);
 
-  useEffect(() => {
-    if (stage !== "choice") return;
-    const t = window.setTimeout(
-      () => setStage("entering"),
-      isReducedMotion() ? 300 : HELLO_MS
-    );
-    return () => window.clearTimeout(t);
-  }, [stage]);
+  const handleSignup = useCallback(() => {
+    void navigateWithTransition(() => router.replace("/dang-ky"));
+  }, [router]);
 
-  useEffect(() => {
-    if (stage !== "entering") return;
-    const t = window.setTimeout(() => {
-      void navigateWithTransition(() =>
-        router.replace("/bang-dieu-khien")
-      );
-    }, isReducedMotion() ? 0 : ENTER_MS);
-    return () => window.clearTimeout(t);
-  }, [stage, router]);
+  const handleLogin = useCallback(() => {
+    void navigateWithTransition(() => router.replace("/dang-nhap"));
+  }, [router]);
 
   return (
-    <main id="main-content" className="h-dvh w-full">
-      <WelcomeScene introComplete={introComplete}>
-        <WelcomeUI stage={stage} />
-      </WelcomeScene>
+    <main
+      id="main-content"
+      className="h-dvh w-full flex items-center justify-center p-2 sm:p-4"
+      style={{ background: "#FBEFE6" }}
+    >
+      <div className="relative w-full max-w-[1100px]">
+        <WelcomeScene onReady={() => setSceneReady(true)}>
+          <WelcomeUI onSignup={handleSignup} onLogin={handleLogin} />
+        </WelcomeScene>
+      </div>
     </main>
   );
 }
