@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1366, initial-scale=1.0">
+<title>A6Class Welcome Animation</title>
+<style>
+  :root{ --navy:#1E40AF; --navy-dark:#16306E; }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html,body{ width:1366px; height:911px; overflow:hidden; background:#FBEFE6; }
+  .page{ width:1366px; height:911px; margin:0 auto; }
+  .stage{ position:relative; width:100%; height:100%; border-radius:22px; overflow:hidden;
+    background:linear-gradient(180deg,#F6C6A8 0%,#F8D3B9 26%,#FBE0C9 46%,#FDECDD 66%,#FEF6ED 84%,#FFFBF6 100%);
+  }
+  .layer{ position:absolute; }
+  .layer img{ width:100%; height:100%; display:block; }
+
+  /* Dawn overlay */
+  .dawn-overlay{ position:absolute; inset:0; z-index:5; pointer-events:none;
+    background:linear-gradient(180deg,rgba(40,30,40,.55),rgba(40,30,40,.15) 55%,rgba(40,30,40,0) 100%);
+    animation:dawnLift 2s ease-out .1s forwards;
+  }
+  @keyframes dawnLift{ to{ opacity:0; } }
+
+  /* Sun */
+  #sun{ z-index:2; animation:sunrise 2.1s cubic-bezier(.2,.7,.3,1) .15s both; }
+  @keyframes sunrise{
+    0%{ transform:translateY(60%); opacity:0; }
+    10%{ opacity:1; }
+    100%{ transform:translateY(0); opacity:1; }
+  }
+
+  /* Hills */
+  #hillFarLeft{ z-index:3; }
+  #hillFarRight{ z-index:3; }
+
+  /* School */
+  #school{ z-index:4; filter:drop-shadow(0 4px 6px rgba(90,40,20,.15)); }
+
+  /* Trees */
+  #treesRight{ z-index:4; }
+  #treeSmall1, #treeSmall2{ z-index:4; }
+  .sway{ transform-origin:50% 92%; animation:sway 4s ease-in-out infinite; }
+  @keyframes sway{ 0%,100%{ transform:rotate(-1deg);} 50%{ transform:rotate(1deg);} }
+
+  /* Near hills */
+  #hillNearPath{ z-index:6; }
+  #hillNearPlain{ z-index:9; }
+
+  /* Props */
+  .prop{ z-index:7; opacity:0; transform:translateY(10px) scale(.85);
+    animation:popIn .6s cubic-bezier(.34,1.56,.64,1) forwards; }
+  @keyframes popIn{ to{ opacity:1; transform:translateY(0) scale(1);} }
+  #star{ animation-delay:3.1s; }
+  #star img{ animation:twinkle 2.6s ease-in-out infinite 3.8s; }
+  @keyframes twinkle{ 0%,100%{ transform:scale(1) rotate(0deg);} 50%{ transform:scale(1.1) rotate(6deg);} }
+  #bell{ animation-delay:3.3s; }
+  #bell img{ transform-origin:50% 8%; animation:bellswing 3s ease-in-out infinite 3.9s; }
+  @keyframes bellswing{ 0%,100%{ transform:rotate(0deg);} 50%{ transform:rotate(7deg);} }
+  #globe{ animation-delay:2.9s; }
+  #rocket{ animation-delay:3.2s; }
+  #book{ animation-delay:2.7s; }
+
+  /* Robot */
+  #robotWrap{ z-index:8; opacity:0; transform:translate(-60%,10%) scale(.85);
+    animation:robotIn 1s cubic-bezier(.22,.9,.3,1.15) 2.15s forwards; }
+  @keyframes robotIn{ to{ opacity:1; transform:translate(0,0) scale(1);} }
+  #robotWrap .bob{ animation:idleBob 3.3s ease-in-out infinite 3.2s; }
+  @keyframes idleBob{ 0%,100%{ transform:translateY(0) rotate(0deg);} 50%{ transform:translateY(-1.5%) rotate(-1.2deg);} }
+  #robotWrap .greetWiggle{ animation:wiggle .55s ease-in-out 3.1s 3; transform-origin:70% 55%; }
+  @keyframes wiggle{ 0%,100%{ transform:rotate(0deg);} 35%{ transform:rotate(-4deg);} 65%{ transform:rotate(2deg);} }
+
+  /* Robot shadow */
+  .robot-shadow{ position:absolute; z-index:7; left:52%; bottom:19%; width:15%; aspect-ratio:5/1; border-radius:50%;
+    background:rgba(30,45,20,.22); filter:blur(3px); opacity:0; transform:scale(.6);
+    animation:shadowIn 1s ease-out 2.2s forwards; }
+  @keyframes shadowIn{ to{ opacity:1; transform:scale(1);} }
+
+  /* Logo */
+  .logo{ position:absolute; top:3%; left:50%; transform:translateX(-50%); z-index:11; display:flex; gap:1px; }
+  .logo span{ font-family:'Be Vietnam Pro',sans-serif; font-weight:800; font-size:32px; color:#8C3B24;
+    text-shadow:0 2px 0 rgba(255,255,255,.55);
+    opacity:0; transform:translateY(-18px);
+    animation:letterBounce .6s cubic-bezier(.34,1.6,.5,1) forwards; }
+  @keyframes letterBounce{ to{ opacity:1; transform:translateY(0);} }
+
+  /* CTA */
+  .cta{ position:absolute; left:50%; bottom:4%; transform:translateX(-50%); z-index:12;
+    width:min(80%,360px); display:flex; flex-direction:column; gap:8px;
+    opacity:0; animation:fadeUp .6s ease-out 4.6s forwards; }
+  @keyframes fadeUp{ to{ opacity:1; } }
+  .btn{ display:flex; align-items:center; justify-content:center; gap:8px; height:44px; border-radius:12px;
+    font-family:'Be Vietnam Pro',sans-serif; font-weight:700; font-size:15px; border:none; }
+  .btn-primary{ background:linear-gradient(180deg,#3B82F6,var(--navy)); color:#fff; box-shadow:0 5px 0 var(--navy-dark); }
+  .btn-secondary{ background:#fff; color:var(--navy-dark); border:1px solid #E7E5E4; }
+
+  @media (prefers-reduced-motion:reduce){
+    *{ animation-duration:.01ms !important; animation-delay:0s !important; animation-iteration-count:1 !important; }
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@500;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="page">
+  <div class="stage" id="stage">
+
+    <div class="dawn-overlay"></div>
+
+    <div class="layer" id="sun" style="left:43.95%; top:4.79%; width:20.12%; height:16.21%;">
+      <img src="assets/sun.png" alt="">
+    </div>
+    <div class="layer" id="hillFarRight" style="left:51.95%; top:12.01%; width:47.33%; height:17.29%;">
+      <img src="assets/hill-far-right.png" alt="">
+    </div>
+    <div class="layer" id="hillFarLeft" style="left:1.17%; top:20.02%; width:46.68%; height:9.57%;">
+      <img src="assets/hill-far-left.png" alt="">
+    </div>
+
+    <div class="layer" id="school" style="left:4.30%; top:30.18%; width:23.50%; height:31.45%;">
+      <img src="assets/school.png" alt="">
+    </div>
+    <div class="layer" id="treesRight" style="left:73.83%; top:30.37%; width:24.80%; height:34.77%;">
+      <img class="sway" src="assets/trees-bush-right.png" alt="">
+    </div>
+    <div class="layer" id="treeSmall1" style="left:30.08%; top:34.08%; width:10.94%; height:19.53%;">
+      <img class="sway" src="assets/tree-small-1.png" alt="">
+    </div>
+    <div class="layer" id="treeSmall2" style="left:41.41%; top:36.04%; width:8.40%; height:16.99%;">
+      <img class="sway" src="assets/tree-small-2.png" alt="">
+    </div>
+
+    <div class="layer" id="hillNearPath" style="left:1.76%; top:58.50%; width:49.02%; height:11.91%;">
+      <img src="assets/hill-near-path.png" alt="">
+    </div>
+
+    <div class="robot-shadow"></div>
+    <div class="layer" id="robotWrap" style="left:50.00%; top:33.50%; width:20.25%; height:40.23%;">
+      <div class="bob">
+        <div class="greetWiggle" style="position:relative; width:100%; height:100%;">
+          <img src="assets/robot.png" alt="Robot A6Class" style="width:100%; height:100%;">
+        </div>
+      </div>
+    </div>
+
+    <div class="layer prop" id="book" style="left:15.04%; top:69.43%; width:16.80%; height:15.62%;">
+      <img src="assets/book.png" alt="">
+    </div>
+    <div class="layer prop" id="globe" style="left:34.51%; top:67.48%; width:7.88%; height:14.26%;">
+      <img src="assets/globe.png" alt="">
+    </div>
+    <div class="layer prop" id="rocket" style="left:72.66%; top:67.48%; width:8.40%; height:10.16%;">
+      <img src="assets/rocket.png" alt="">
+    </div>
+    <div class="layer prop" id="star" style="left:83.27%; top:66.60%; width:6.18%; height:8.50%;">
+      <img src="assets/star.png" alt="">
+    </div>
+    <div class="layer prop" id="bell" style="left:88.35%; top:67.09%; width:8.33%; height:17.48%;">
+      <img src="assets/bell.png" alt="">
+    </div>
+
+    <div class="layer" id="hillNearPlain" style="left:0.98%; top:78.03%; width:98.24%; height:19.73%;">
+      <img src="assets/hill-near-plain.png" alt="">
+    </div>
+
+    <div class="logo" id="logo"></div>
+    <div class="cta">
+      <button class="btn btn-primary">Đăng ký tham gia →</button>
+      <button class="btn btn-secondary">Đã có tài khoản? Đăng nhập</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const logo = document.getElementById('logo');
+  [..."A6Class"].forEach((ch,i)=>{
+    const span=document.createElement('span'); span.textContent=ch;
+    span.style.animationDelay=(1.4+i*0.06)+'s'; logo.appendChild(span);
+  });
+</script>
+</body>
+</html>

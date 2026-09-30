@@ -12,13 +12,13 @@ export default async function CompetitionPage() {
     score: 0,
     memberCount: ROSTER.filter((student) => student.team === name).length,
   }));
-  let students = ROSTER.map((student, index) => ({
+  let students: { id: string; name: string; teamName: string; score: number }[] = ROSTER.map((student, index) => ({
     id: `roster-${index + 1}`,
     name: student.name,
     teamName: student.team,
     score: 0,
   }));
-  let teams = fallbackTeams;
+  let teams: { id: string; name: string; score: number; memberCount: number }[] = fallbackTeams;
   let events: { id: string; amount: number; reason: string; targetName: string; giverName: string; createdAt: string }[] = [];
   let canManage = false;
   let hasDatabaseClass = false;
