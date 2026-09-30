@@ -4,6 +4,7 @@ import {
   MessagesSquare,
   CircleHelp,
   UserRound,
+  Trophy,
   type LucideIcon,
 } from "lucide-react";
 
@@ -16,10 +17,16 @@ export type NavItem = {
 
 export const navItems: NavItem[] = [
   {
-    href: "/bang-dieu-khien",
+    href: "/dashboard",
     label: "Nhà",
     shortLabel: "Nhà",
     icon: Home,
+  },
+  {
+    href: "/competition",
+    label: "Thi đua",
+    shortLabel: "Thi đua",
+    icon: Trophy,
   },
   {
     href: "/feed",
@@ -28,19 +35,19 @@ export const navItems: NavItem[] = [
     icon: Newspaper,
   },
   {
-    href: "/nhan-tin",
+    href: "/messages",
     label: "Nhắn tin",
     shortLabel: "Nhắn tin",
     icon: MessagesSquare,
   },
   {
-    href: "/cau-hoi",
+    href: "/help",
     label: "Hỏi đáp",
     shortLabel: "Hỏi đáp",
     icon: CircleHelp,
   },
   {
-    href: "/ho-so",
+    href: "/profile",
     label: "Hồ sơ",
     shortLabel: "Hồ sơ",
     icon: UserRound,

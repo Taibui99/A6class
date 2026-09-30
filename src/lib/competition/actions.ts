@@ -103,5 +103,5 @@ export async function recordCompetitionPoint(formData: FormData) {
       note: note || null,
     },
   });
-  revalidatePath("/thi-dua");
+  revalidatePath("/competition");
 }

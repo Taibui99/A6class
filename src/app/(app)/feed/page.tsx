@@ -42,7 +42,7 @@ export default async function FeedPage() {
               đọc và đăng bài nhé.
             </p>
             <Link
-              href="/bang-dieu-khien"
+              href="/dashboard"
               className="mt-3 inline-flex items-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
             >
               Về trang chủ

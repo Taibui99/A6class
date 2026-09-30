@@ -26,7 +26,7 @@ export async function createPost(input: {
 
     await prisma.post.create({ data: { classId, authorId: user.id, content } });
     revalidatePath("/feed");
-    revalidatePath("/bang-dieu-khien");
+    revalidatePath("/dashboard");
     return { ok: true };
   } catch {
     return fail("Có lỗi xảy ra, thử lại nhé.");

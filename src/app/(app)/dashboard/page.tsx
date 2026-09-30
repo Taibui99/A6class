@@ -77,63 +77,27 @@ const quickLinks: {
     tone: "primary",
   },
   {
-    href: "/nhan-tin",
+    href: "/messages",
     icon: MessagesSquare,
     label: "Nhắn tin",
     desc: "Trò chuyện cùng nhau",
     tone: "secondary",
   },
   {
-    href: "/cau-hoi",
+    href: "/help",
     icon: CircleHelp,
     label: "Hỏi đáp",
     desc: "Hỏi gì đáp nấy",
     tone: "warning",
   },
   {
-    href: "/ho-so",
+    href: "/profile",
     icon: UserRound,
     label: "Hồ sơ",
     desc: "Thông tin của bạn",
     tone: "neutral",
   },
 ];
-
-function rankTone(rank: number | null): string {
-  if (rank === 1) return "bg-warning-light text-warning";
-  if (rank === 2) return "bg-success-light text-secondary";
-  if (rank === 3) return "bg-primary-light text-primary";
-  return "bg-surface-hover text-text-secondary";
-}
-
-function ScoreboardCard({
-  className,
-  icon: Icon,
-  title,
-  tone,
-  children,
-}: {
-  className?: string;
-  icon: LucideIcon;
-  title: string;
-  tone: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section
-      aria-label={title}
-      className={`rounded-2xl bg-surface p-5 shadow-sm ring-1 ring-border ${className ?? ""}`}
-    >
-      <h2 className="flex items-center gap-2 text-sm font-bold text-text">
-        <span className={`grid size-7 place-items-center rounded-lg ${tone}`}>
-          <Icon aria-hidden className="size-4" />
-        </span>
-        {title}
-      </h2>
-      {children}
-    </section>
-  );
-}
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
@@ -216,86 +180,72 @@ export default async function DashboardPage() {
         </span>
       </section>
 
-      {/* Giáo viên: bảng thi đua của lớp */}
+      {/* Thi đua: bảng đầy đủ đã chuyển sang /competition, ở đây chỉ chốt nhanh */}
       {isTeacher && classId && (
-        <div className="space-y-4">
-          <ScoreboardCard
-            icon={Trophy}
-            title="Bảng thi đua"
-            tone="bg-warning-light text-warning"
-          >
-            {scoreboard.teams.length > 0 ? (
-              <ul className="mt-4 space-y-1">
-                {scoreboard.teams.map((team) => (
-                  <li
-                    key={team.id}
-                    className="flex items-center gap-3 rounded-lg px-2 py-2.5 transition-colors hover:bg-surface-hover"
-                  >
-                    <span
-                      aria-hidden
-                      className="size-3 shrink-0 rounded-full ring-1 ring-black/5"
-                      style={{ backgroundColor: team.color ?? "#94a3b8" }}
-                    />
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-text">
-                        {team.name}
-                      </p>
-                      <p className="text-xs text-text-muted">
-                        {team.memberCount} thành viên
-                      </p>
-                    </div>
-                    <span
-                      className={`grid size-7 shrink-0 place-items-center rounded-lg text-xs font-bold tabular-nums ${rankTone(team.rank)}`}
-                    >
-                      {team.rank ?? "—"}
-                    </span>
-                    <span className="w-16 shrink-0 text-right text-base font-extrabold tabular-nums text-text">
-                      {formatNumber(team.totalScore)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="mt-4 text-sm text-text-muted">
-                Lớp chưa có tổ nào — điểm thi đua sẽ hiện tại đây.
-              </p>
-            )}
-          </ScoreboardCard>
+        <section
+          aria-label="Tóm tắt thi đua"
+          className="relative overflow-hidden rounded-2xl bg-[#070B1A] p-5 text-white shadow-sm ring-1 ring-white/10"
+        >
+          <div aria-hidden className="pointer-events-none absolute inset-0">
+            <span className="absolute -left-16 -top-20 h-52 w-52 rounded-full bg-sky-500/20 blur-[70px]" />
+            <span className="absolute -right-12 top-6 h-44 w-44 rounded-full bg-violet-500/20 blur-[70px]" />
+          </div>
+
+          <div className="relative flex flex-wrap items-center justify-between gap-3">
+            <h2 className="flex items-center gap-2 text-sm font-bold">
+              <Trophy aria-hidden className="size-4 text-amber-300" />
+              Thi đua lớp
+            </h2>
+            <Link
+              href="/competition"
+              className="inline-flex items-center gap-1 rounded-xl bg-white/10 px-3 py-1.5 text-xs font-bold text-white ring-1 ring-white/15 transition hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2"
+            >
+              Vào đấu trường
+            </Link>
+          </div>
+
+          {scoreboard.teams.length > 0 ? (
+            <ol className="relative mt-4 grid gap-2 sm:grid-cols-2">
+              {scoreboard.teams.slice(0, 4).map((team) => (
+                <li
+                  key={team.id}
+                  className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5"
+                >
+                  <span
+                    aria-hidden
+                    className="size-2.5 shrink-0 rounded-full ring-1 ring-white/25"
+                    style={{ backgroundColor: team.color ?? "#94a3b8" }}
+                  />
+                  <span className="min-w-0 flex-1 truncate text-sm font-bold">
+                    {team.name}
+                  </span>
+                  <span className="shrink-0 text-base font-black tabular-nums">
+                    {formatNumber(team.totalScore)}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <p className="relative mt-3 text-sm text-slate-400">
+              Lớp chưa có tổ nào — điểm thi đua sẽ hiện tại đây.
+            </p>
+          )}
 
           {scoreboard.students.length > 0 && (
-            <ScoreboardCard
-              icon={Flame}
-              title="Cá nhân nổi bật"
-              tone="bg-primary-light text-primary"
-            >
-              <ul className="mt-4 space-y-0.5">
-                {scoreboard.students.slice(0, 5).map((student, i) => (
-                  <li
-                    key={student.id}
-                    className="flex items-center gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-surface-hover"
-                  >
-                    <span
-                      className={`w-5 shrink-0 text-right text-sm font-bold tabular-nums ${
-                        i === 0 ? "text-warning" : "text-text-muted"
-                      }`}
-                    >
-                      {i + 1}
-                    </span>
-                    <span className="grid size-8 shrink-0 select-none place-items-center rounded-full bg-surface-hover text-xs font-extrabold text-text-secondary">
-                      {getInitials(student.fullName)}
-                    </span>
-                    <span className="min-w-0 flex-1 truncate text-sm font-medium text-text">
-                      {student.fullName}
-                    </span>
-                    <span className="shrink-0 text-sm font-bold tabular-nums text-text">
-                      {formatNumber(student.points)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </ScoreboardCard>
+            <p className="relative mt-3 flex items-center gap-2 border-t border-white/10 pt-3 text-xs text-slate-300">
+              <Flame aria-hidden className="size-3.5 shrink-0 text-orange-300" />
+              <span className="truncate">
+                <strong className="font-bold text-white">
+                  {scoreboard.students[0].fullName}
+                </strong>{" "}
+                đang dẫn đầu cá nhân ·{" "}
+                <strong className="font-bold tabular-nums">
+                  {formatNumber(scoreboard.students[0].points)} đ
+                </strong>
+              </span>
+            </p>
           )}
-        </div>
+        </section>
       )}
 
       {/* Nhịp sống lớp hôm nay */}

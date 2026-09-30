@@ -6,7 +6,7 @@ import { Logo } from "@/components/layout/logo";
 
 export function Brand({
   size = "md",
-  href = "/bang-dieu-khien",
+  href = "/dashboard",
   markClassName,
 }: {
   size?: "sm" | "md";

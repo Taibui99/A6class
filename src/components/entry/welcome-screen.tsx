@@ -30,7 +30,7 @@ export function WelcomeScreen({ signedIn }: { signedIn: boolean }) {
 
   useEffect(() => {
     if (!mounted || !signedIn) return;
-    const t = window.setTimeout(() => go("/bang-dieu-khien"), AUTO_ENTER_MS);
+    const t = window.setTimeout(() => go("/dashboard"), AUTO_ENTER_MS);
     return () => window.clearTimeout(t);
   }, [mounted, signedIn, go]);
 

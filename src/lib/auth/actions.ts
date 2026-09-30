@@ -9,21 +9,21 @@ import { prisma } from "@/lib/prisma";
 export type AuthState = { error?: string; ok?: boolean; redirectTo?: string };
 
 const INTERNAL_PREFIXES = [
-  "/bang-dieu-khien",
+  "/dashboard",
   "/feed",
-  "/nhan-tin",
-  "/cau-hoi",
-  "/ho-so",
+  "/messages",
+  "/help",
+  "/profile",
   "/",
 ];
 
 function safeRedirect(raw: string | null): string {
-  if (!raw || !raw.startsWith("/")) return "/bang-dieu-khien";
-  if (raw.startsWith("//")) return "/bang-dieu-khien";
+  if (!raw || !raw.startsWith("/")) return "/dashboard";
+  if (raw.startsWith("//")) return "/dashboard";
   const sameOriginOk = INTERNAL_PREFIXES.some(
     (p) => raw === "/" || raw.startsWith(p)
   );
-  if (!sameOriginOk) return "/bang-dieu-khien";
+  if (!sameOriginOk) return "/dashboard";
   return raw;
 }
 
@@ -97,7 +97,7 @@ export async function signUp(
     // Hồ sơ DB chưa được tạo — auth vẫn hoạt động; sẽ đồng bộ ở lần sau.
   }
 
-  return { ok: true, redirectTo: "/bang-dieu-khien" };
+  return { ok: true, redirectTo: "/dashboard" };
 }
 
 export async function signOut(): Promise<void> {

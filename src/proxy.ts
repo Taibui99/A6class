@@ -2,7 +2,14 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { auth } from "@/lib/auth/server";
 
-const PROTECTED_PATHS = ["/bang-dieu-khien", "/feed", "/nhan-tin", "/cau-hoi", "/ho-so"];
+const PROTECTED_PATHS = [
+  "/dashboard",
+  "/competition",
+  "/feed",
+  "/messages",
+  "/help",
+  "/profile",
+];
 const AUTH_PATHS = ["/login", "/register"];
 
 function isPath(pathname: string, prefixes: string[]): boolean {
@@ -31,7 +38,7 @@ export async function proxy(request: NextRequest) {
 
   if (isAuthPage && user) {
     const url = request.nextUrl.clone();
-    url.pathname = "/bang-dieu-khien";
+    url.pathname = "/dashboard";
     return NextResponse.redirect(url);
   }
 
