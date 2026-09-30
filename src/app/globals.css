@@ -233,6 +233,41 @@ select {
   animation: splashOut 360ms ease-in both;
 }
 
+/* ============ Welcome: lớp cộng thêm trên nền scene.png ============ */
+/* Tất cả chỉ là lớp phủ/glow — không dịch chuyển bố cục gốc. */
+
+@keyframes wl-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.012); }
+}
+
+@keyframes wl-sunpulse {
+  0%, 100% { opacity: 0.72; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.07); }
+}
+
+@keyframes wl-rays {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes wl-drift {
+  from { transform: translateX(-40%); }
+  to { transform: translateX(150vw); }
+}
+
+@keyframes wl-mote {
+  0% { opacity: 0; transform: translate(0, 0); }
+  12% { opacity: 0.9; }
+  88% { opacity: 0.5; }
+  100% { opacity: 0; transform: translate(var(--drift), -260px); }
+}
+
+@keyframes wl-fly {
+  from { transform: translate(-60px, 150px); }
+  to { transform: translate(1440px, 132px); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-in,
   .animate-slide-in,
