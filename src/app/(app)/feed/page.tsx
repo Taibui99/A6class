@@ -32,7 +32,7 @@ export default async function FeedPage() {
           aria-label="Tham gia lớp"
           className="flex items-start gap-4 rounded-2xl border border-warning/25 bg-warning-light p-5"
         >
-          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-white text-warning">
+          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-surface text-warning">
             <UserRoundPlus aria-hidden className="size-5" />
           </span>
           <div className="min-w-0">
@@ -43,7 +43,7 @@ export default async function FeedPage() {
             </p>
             <Link
               href="/dashboard"
-              className="mt-3 inline-flex items-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
+              className="mt-3 inline-flex items-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover"
             >
               Về trang chủ
             </Link>

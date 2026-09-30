@@ -1,12 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { Sparkles } from "lucide-react";
 import { isReducedMotion } from "@/lib/transition-nav";
 
 interface WelcomeUIProps {
   onSignup?: () => void;
   onLogin?: () => void;
+}
+
+const noopSubscribe = () => () => {};
+
+/** true sau khi hydrate — chỉ chạy animation/effect phía client. */
+function useMounted() {
+  return useSyncExternalStore(
+    noopSubscribe,
+    () => true,
+    () => false,
+  );
 }
 
 const LETTERS = [..."A6Class"];
@@ -19,30 +30,27 @@ const GREETINGS = [
 ];
 
 export default function WelcomeUI({ onSignup, onLogin }: WelcomeUIProps) {
-  const [mounted, setMounted] = useState(false);
-  const [greeting, setGreeting] = useState<string | null>(null);
   const [greetIndex, setGreetIndex] = useState(0);
+  const [hidden, setHidden] = useState(true);
   const reduced = isReducedMotion();
-
-  useEffect(() => setMounted(true), []);
+  const mounted = useMounted();
 
   // Robot chào người dùng, xoay vòng câu mỗi 6s.
   useEffect(() => {
-    if (!mounted || reduced) {
-      if (reduced) setGreeting(GREETINGS[0]);
-      return;
-    }
-    setGreeting(GREETINGS[0]);
+    if (!mounted || reduced) return;
+
     const id = window.setInterval(() => {
-      setGreeting(null);
+      setHidden(true);
       window.setTimeout(() => {
         setGreetIndex((i) => (i + 1) % GREETINGS.length);
-        setGreeting(GREETINGS[(greetIndex + 1) % GREETINGS.length]);
+        setHidden(false);
       }, 320);
     }, 6000);
     return () => window.clearInterval(id);
   }, [mounted, reduced]);
 
+  const greeting = GREETINGS[greetIndex];
+  const visible = mounted && !hidden;
   const live = mounted && !reduced;
 
   return (
@@ -96,10 +104,10 @@ export default function WelcomeUI({ onSignup, onLogin }: WelcomeUIProps) {
         style={{ pointerEvents: "none" }}
       >
         <span
-          className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-2xl bg-white/95 px-3.5 py-2 text-[11px] font-bold text-[#16306E] shadow-[0_10px_24px_rgba(60,40,30,.18)] sm:text-sm"
+          className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-2xl bg-[#0D1226]/95 px-3.5 py-2 text-[11px] font-bold text-[#EEF2FF] shadow-[0_10px_30px_rgba(2,6,23,.55)] ring-1 ring-white/15 sm:text-sm"
           style={{
-            opacity: greeting ? 1 : 0,
-            transform: greeting ? "scale(1)" : "scale(.7)",
+            opacity: visible ? 1 : 0,
+            transform: visible ? "scale(1)" : "scale(.7)",
             transformOrigin: "20% 130%",
             transition:
               "opacity .28s cubic-bezier(.34,1.56,.64,1), transform .28s cubic-bezier(.34,1.56,.64,1)",
@@ -119,10 +127,10 @@ export default function WelcomeUI({ onSignup, onLogin }: WelcomeUIProps) {
         <button
           type="button"
           onClick={onSignup}
-          className="group flex h-11 items-center justify-center gap-2 rounded-xl border-none text-[13px] font-bold text-white transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#16306E] sm:text-sm"
+          className="group flex h-11 items-center justify-center gap-2 rounded-xl border-none text-[13px] font-bold text-[#04101F] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#16306E] sm:text-sm"
           style={{
-            background: "linear-gradient(180deg,#3B82F6,#1E40AF)",
-            boxShadow: "0 5px 0 #16306E",
+            background: "linear-gradient(180deg,#38BDF8,#7C3AED)",
+            boxShadow: "0 5px 0 #0B1226",
             opacity: live ? 0 : 1,
             transform: live ? "translateY(14px)" : "translateY(0)",
             transition:
@@ -141,7 +149,7 @@ export default function WelcomeUI({ onSignup, onLogin }: WelcomeUIProps) {
         <button
           type="button"
           onClick={onLogin}
-          className="h-11 rounded-xl border border-[#E7E5E4] bg-white/95 text-[13px] font-bold text-[#16306E] transition-colors hover:bg-[#EFF6FF] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#16306E] sm:text-sm"
+          className="h-11 rounded-xl border border-white/15 bg-[#0D1226]/95 text-[13px] font-bold text-[#EEF2FF] transition-colors hover:bg-[#141B33] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#16306E] sm:text-sm"
           style={{
             opacity: live ? 0 : 1,
             transform: live ? "translateY(14px)" : "translateY(0)",

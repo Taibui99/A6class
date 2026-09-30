@@ -166,7 +166,7 @@ export function PostCard({ post }: { post: SerializedPost }) {
               type="submit"
               disabled={pending || !comment.trim()}
               aria-label="Gửi bình luận"
-              className="grid size-10 shrink-0 place-items-center rounded-lg bg-primary text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+              className="grid size-10 shrink-0 place-items-center rounded-lg bg-primary text-primary-foreground transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
             >
               {pending ? (
                 <Loader2 aria-hidden className="size-4 animate-spin" />

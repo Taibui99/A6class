@@ -572,7 +572,7 @@ export function CompetitionArena({
             <div className="flex items-end">
               <button
                 type="submit"
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-sky-500 to-violet-500 px-4 py-2.5 text-sm font-black text-white transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-sky-600 to-violet-600 px-4 py-2.5 text-sm font-black text-white transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2"
               >
                 <Flame aria-hidden className="size-4" />
                 Ghi nhận điểm

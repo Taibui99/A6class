@@ -50,7 +50,7 @@ export function PostComposer() {
         <button
           type="submit"
           disabled={pending || !trimmed}
-          className="inline-flex min-h-11 items-center gap-1.5 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex min-h-11 items-center gap-1.5 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
         >
           {pending ? (
             <Loader2 aria-hidden className="size-4 animate-spin" />

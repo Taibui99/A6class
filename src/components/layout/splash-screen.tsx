@@ -19,22 +19,25 @@ const FACES: MascotFace[] = ["friendly", "happy", "wink", "love"];
 
 export function SplashScreen() {
   const pathname = usePathname();
+  // Trang chủ tự chạy welcome riêng nên splash không cần ở lại.
+  const skip = pathname === "/";
+  const [reduced] = useState(() =>
+    typeof window === "undefined"
+      ? false
+      : (window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ??
+         false),
+  );
   const [stage, setStage] = useState<"run" | "fade" | "gone">("run");
   const [progress, setProgress] = useState(0);
   const [face, setFace] = useState<MascotFace>("friendly");
+  // Ở chế độ giảm chuyển động, thanh tiến trình nhảy thẳng về 100.
+  const shownProgress = reduced ? 100 : progress;
   const startedAt = useRef<number>(0);
 
   useEffect(() => {
-    if (pathname === "/") {
-      setStage("gone");
-      return;
-    }
+    if (skip) return;
 
-    const reduce =
-      window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
-
-    if (reduce) {
-      setProgress(100);
+    if (reduced) {
       const t = window.setTimeout(() => setStage("gone"), 420);
       return () => window.clearTimeout(t);
     }
@@ -66,7 +69,7 @@ export function SplashScreen() {
       window.clearTimeout(t1);
       window.clearTimeout(t2);
     };
-  }, [pathname]);
+  }, [skip, reduced]);
 
   const stars = useMemo(
     () =>
@@ -86,7 +89,7 @@ export function SplashScreen() {
     [],
   );
 
-  if (stage === "gone") return null;
+  if (skip || stage === "gone") return null;
 
   return (
     <div
@@ -238,7 +241,7 @@ export function SplashScreen() {
         >
           <div
             role="progressbar"
-            aria-valuenow={progress}
+            aria-valuenow={shownProgress}
             aria-valuemin={0}
             aria-valuemax={100}
             aria-label="Tiến trình tải"
@@ -247,7 +250,7 @@ export function SplashScreen() {
             <div
               className="h-full rounded-full"
               style={{
-                width: `${progress}%`,
+                width: `${shownProgress}%`,
                 background: "linear-gradient(90deg,#38BDF8,#A78BFA)",
                 boxShadow: "0 0 14px rgba(167,139,250,.7)",
                 transition: "width 90ms linear",
@@ -255,7 +258,7 @@ export function SplashScreen() {
             />
           </div>
           <p className="mt-2.5 text-center text-[11px] font-semibold tabular-nums text-sky-200/70">
-            Đang mở ngôi nhà của lớp… {progress}%
+            Đang mở ngôi nhà của lớp… {shownProgress}%
           </p>
         </div>
       </div>

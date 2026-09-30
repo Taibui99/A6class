@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useCallback, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 
@@ -15,11 +15,20 @@ const WelcomeScene = dynamic(() => import("@/components/welcome/WelcomeScene"), 
  *  Khách: ở lại để chọn Đăng ký / Đăng nhập — không bị cướp màn hình. */
 const AUTO_ENTER_MS = 7000;
 
+const noopSubscribe = () => () => {};
+
+/** true sau khi hydrate — dùng để chỉ chạy timer phía client. */
+function useMounted() {
+  return useSyncExternalStore(
+    noopSubscribe,
+    () => true,
+    () => false,
+  );
+}
+
 export function WelcomeScreen({ signedIn }: { signedIn: boolean }) {
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
+  const mounted = useMounted();
 
   const go = useCallback(
     (path: string) => {
@@ -37,15 +46,11 @@ export function WelcomeScreen({ signedIn }: { signedIn: boolean }) {
   return (
     <main
       id="main-content"
-      className="flex min-h-dvh w-full items-center justify-center p-3 sm:p-6"
-      style={{ background: "#FBEFE6" }}
+      className="bg-hello flex min-h-dvh w-full items-center justify-center p-3 sm:p-6"
     >
       <div className="w-full max-w-[1100px]">
         <WelcomeScene>
-          <WelcomeUI
-            onSignup={() => go("/dang-ky")}
-            onLogin={() => go("/dang-nhap")}
-          />
+          <WelcomeUI onSignup={() => go("/register")} onLogin={() => go("/login")} />
         </WelcomeScene>
       </div>
     </main>
