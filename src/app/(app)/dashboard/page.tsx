@@ -70,6 +70,13 @@ const quickLinks: {
   tone: Tone;
 }[] = [
   {
+    href: "/competition",
+    icon: Trophy,
+    label: "Thi đua",
+    desc: "Xếp hạng tuần & nhập điểm",
+    tone: "primary",
+  },
+  {
     href: "/feed",
     icon: Newspaper,
     label: "Bảng tin",
@@ -180,25 +187,27 @@ export default async function DashboardPage() {
         </span>
       </section>
 
-      {/* Thi đua: bảng đầy đủ đã chuyển sang /competition, ở đây chỉ chốt nhanh */}
-      {isTeacher && classId && (
+      {/* Thi đua: bảng đầy đủ ở /competition. Card này hiện cho MỌI vai trò
+          vì nav đã ẩn — nếu chỉ hiện cho giáo viên thì học sinh không có
+          đường vào trang chính. */}
+      {classId && (
         <section
           aria-label="Tóm tắt thi đua"
-          className="relative overflow-hidden rounded-2xl bg-[#070B1A] p-5 text-white shadow-sm ring-1 ring-white/10"
+          className="relative overflow-hidden rounded-2xl bg-surface p-5 shadow-sm ring-1 ring-border"
         >
           <div aria-hidden className="pointer-events-none absolute inset-0">
-            <span className="absolute -left-16 -top-20 h-52 w-52 rounded-full bg-sky-500/20 blur-[70px]" />
-            <span className="absolute -right-12 top-6 h-44 w-44 rounded-full bg-violet-500/20 blur-[70px]" />
+            <span className="absolute -left-16 -top-20 h-52 w-52 rounded-full bg-sky-500/15 blur-[70px]" />
+            <span className="absolute -right-12 top-6 h-44 w-44 rounded-full bg-violet-500/15 blur-[70px]" />
           </div>
 
           <div className="relative flex flex-wrap items-center justify-between gap-3">
-            <h2 className="flex items-center gap-2 text-sm font-bold">
-              <Trophy aria-hidden className="size-4 text-amber-300" />
+            <h2 className="flex items-center gap-2 text-sm font-bold text-text">
+              <Trophy aria-hidden className="size-4 text-amber" />
               Thi đua lớp
             </h2>
             <Link
               href="/competition"
-              className="inline-flex items-center gap-1 rounded-xl bg-white/10 px-3 py-1.5 text-xs font-bold text-white ring-1 ring-white/15 transition hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2"
+              className="inline-flex items-center gap-1 rounded-xl bg-sky-500/15 px-3 py-1.5 text-xs font-bold text-sky-300 ring-1 ring-sky-500/30 transition hover:bg-sky-500/25 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky"
             >
               Vào đấu trường
             </Link>
@@ -209,17 +218,17 @@ export default async function DashboardPage() {
               {scoreboard.teams.slice(0, 4).map((team) => (
                 <li
                   key={team.id}
-                  className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5"
+                  className="flex items-center gap-3 rounded-xl bg-canvas px-3 py-2.5 ring-1 ring-border"
                 >
                   <span
                     aria-hidden
-                    className="size-2.5 shrink-0 rounded-full ring-1 ring-white/25"
+                    className="size-2.5 shrink-0 rounded-full"
                     style={{ backgroundColor: team.color ?? "#94a3b8" }}
                   />
-                  <span className="min-w-0 flex-1 truncate text-sm font-bold">
+                  <span className="min-w-0 flex-1 truncate text-sm font-bold text-text">
                     {team.name}
                   </span>
-                  <span className="shrink-0 text-base font-black tabular-nums">
+                  <span className="shrink-0 text-base font-black tabular-nums text-sky">
                     {formatNumber(team.totalScore)}
                   </span>
                 </li>
@@ -232,14 +241,14 @@ export default async function DashboardPage() {
           )}
 
           {scoreboard.students.length > 0 && (
-            <p className="relative mt-3 flex items-center gap-2 border-t border-white/10 pt-3 text-xs text-slate-300">
+            <p className="relative mt-3 flex items-center gap-2 border-t border-border pt-3 text-xs text-muted">
               <Flame aria-hidden className="size-3.5 shrink-0 text-orange-300" />
               <span className="truncate">
-                <strong className="font-bold text-white">
+                <strong className="font-bold text-text">
                   {scoreboard.students[0].fullName}
                 </strong>{" "}
                 đang dẫn đầu cá nhân ·{" "}
-                <strong className="font-bold tabular-nums">
+                <strong className="font-bold tabular-nums text-text">
                   {formatNumber(scoreboard.students[0].points)} đ
                 </strong>
               </span>

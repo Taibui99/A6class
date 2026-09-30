@@ -1,107 +1,119 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { auth } from "@/lib/auth/server";
-import { prisma } from "@/lib/prisma";
-import { COMPETITION_CLASS, POSITIVE_CATEGORIES, NEGATIVE_CATEGORIES } from "@/lib/competition/config";
 
-function currentWeek() {
-  const now = new Date();
-  const start = new Date(now);
-  const day = (start.getDay() + 6) % 7;
-  start.setDate(start.getDate() - day);
-  start.setHours(0, 0, 0, 0);
-  const end = new Date(start);
-  end.setDate(end.getDate() + 6);
-  end.setHours(23, 59, 59, 999);
-  return { start, end };
+import * as service from "@/lib/competition/service";
+
+export type ActionState = {
+  ok: boolean;
+  message: string;
+};
+
+/** Bọc service để form dùng useActionState: luôn trả về state thay vì throw. */
+function toState(e: unknown): ActionState {
+  return {
+    ok: false,
+    message: e instanceof Error ? e.message : "Có lỗi xảy ra, thử lại nhé.",
+  };
 }
 
-export async function recordCompetitionPoint(formData: FormData) {
-  const { data: session } = await auth.getSession();
-  const email = session?.user?.email;
-  if (!email) throw new Error("Bạn cần đăng nhập để ghi nhận điểm.");
-
-  const klass = await prisma.class.findFirst({
-    where: { name: COMPETITION_CLASS.name, schoolYear: COMPETITION_CLASS.schoolYear },
-    select: { id: true },
-  });
-  if (!klass) throw new Error("Chưa thiết lập lớp 12A6 trong A6Class.");
-
-  const user = await prisma.user.findUnique({
-    where: { email },
-    select: {
-      id: true,
-      role: true,
-      memberships: { where: { classId: klass.id }, select: { role: true } },
-    },
-  });
-  const allowedMemberRoles = ["CLASS_MONITOR", "ACADEMIC_VICE_MONITOR", "ACTIVITY_VICE_MONITOR", "LABOR_VICE_MONITOR", "TEAM_LEADER", "TEAM_VICE_LEADER"];
-  const authorized = user?.role === "TEACHER" || Boolean(user?.memberships.some((membership) => allowedMemberRoles.includes(membership.role)));
-  if (!user || !authorized) throw new Error("Bạn không có quyền ghi nhận điểm thi đua.");
-
-  const targetType = String(formData.get("targetType") ?? "");
-  const targetId = String(formData.get("targetId") ?? "");
-  const category = String(formData.get("category") ?? "");
-  const rawAmount = Number(formData.get("amount"));
-  const note = String(formData.get("note") ?? "").trim().slice(0, 240);
-  if (!Number.isInteger(rawAmount) || rawAmount === 0 || rawAmount < -100 || rawAmount > 100) {
-    throw new Error("Số điểm phải là số nguyên từ -100 đến 100 và khác 0.");
-  }
-  const validCategory = [...POSITIVE_CATEGORIES, ...NEGATIVE_CATEGORIES].includes(category as never);
-  if (!validCategory || !targetId || !["student", "team"].includes(targetType)) {
-    throw new Error("Dữ liệu ghi nhận điểm không hợp lệ.");
-  }
-  if ((POSITIVE_CATEGORIES as readonly string[]).includes(category) && rawAmount < 0) {
-    throw new Error("Danh mục điểm cộng cần nhập số điểm dương.");
-  }
-  if ((NEGATIVE_CATEGORIES as readonly string[]).includes(category) && rawAmount > 0) {
-    throw new Error("Danh mục điểm trừ cần nhập số điểm âm.");
-  }
-
-  let targetUserId: string | null = null;
-  let targetTeamId: string | null = null;
-  if (targetType === "student") {
-    const membership = await prisma.classMembership.findFirst({
-      where: { classId: klass.id, userId: targetId },
-      select: { userId: true },
-    });
-    if (!membership) throw new Error("Học sinh không thuộc lớp 12A6.");
-    targetUserId = membership.userId;
-  } else {
-    const team = await prisma.team.findFirst({
-      where: { id: targetId, classId: klass.id },
-      select: { id: true },
-    });
-    if (!team) throw new Error("Tổ không thuộc lớp 12A6.");
-    targetTeamId = team.id;
-  }
-
-  let period = await prisma.competitionPeriod.findFirst({
-    where: { classId: klass.id, isActive: true },
-    orderBy: { startDate: "desc" },
-    select: { id: true },
-  });
-  if (!period) {
-    const { start, end } = currentWeek();
-    period = await prisma.competitionPeriod.create({
-      data: { classId: klass.id, name: "Thi đua tuần", startDate: start, endDate: end, isActive: true },
-      select: { id: true },
-    });
-  }
-
-  await prisma.pointTransaction.create({
-    data: {
-      classId: klass.id,
-      targetUserId,
-      targetTeamId,
-      amount: rawAmount,
-      reason: category,
-      category: rawAmount > 0 ? "POSITIVE" : "NEGATIVE",
-      giverId: user.id,
-      periodId: period.id,
-      note: note || null,
-    },
-  });
+function refresh() {
   revalidatePath("/competition");
+  revalidatePath("/competition/settings");
+  revalidatePath("/dashboard");
+}
+
+export async function saveEntryAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const classId = String(formData.get("classId") ?? "");
+    const periodId = String(formData.get("periodId") ?? "");
+    const criterionId = String(formData.get("criterionId") ?? "");
+    const targetUserId = String(formData.get("targetUserId") ?? "");
+    const count = Number(formData.get("count"));
+    if (!classId || !periodId || !criterionId || !targetUserId) {
+      return { ok: false, message: "Thiếu dữ liệu ô cần lưu." };
+    }
+    const r = await service.saveEntry({ classId, periodId, criterionId, targetUserId, count });
+    refresh();
+    return {
+      ok: true,
+      message:
+        r.count === 0
+          ? "Đã xoá ô."
+          : `Đã ghi ${r.count} lần (${r.points > 0 ? "+" : ""}${r.points} điểm).`,
+    };
+  } catch (e) {
+    return toState(e);
+  }
+}
+
+export async function setPublishedAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const classId = String(formData.get("classId") ?? "");
+    const periodId = String(formData.get("periodId") ?? "");
+    const published = formData.get("published") === "1";
+    await service.setPeriodPublished(classId, periodId, published);
+    refresh();
+    return {
+      ok: true,
+      message: published
+        ? "Đã công bố kết quả — cả lớp xem được tất cả các tổ."
+        : "Đã chuyển lại chế độ riêng tưng tổ.",
+    };
+  } catch (e) {
+    return toState(e);
+  }
+}
+
+export async function activatePeriodAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const classId = String(formData.get("classId") ?? "");
+    const periodId = String(formData.get("periodId") ?? "");
+    await service.activatePeriod(classId, periodId);
+    refresh();
+    return { ok: true, message: "Đã chuyển sang kỳ thi mới." };
+  } catch (e) {
+    return toState(e);
+  }
+}
+
+export async function updateCriterionPointsAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const classId = String(formData.get("classId") ?? "");
+    const criterionId = String(formData.get("criterionId") ?? "");
+    const points = Number(formData.get("points"));
+    await service.updateCriterionPoints(classId, criterionId, points);
+    refresh();
+    return { ok: true, message: "Đã cập nhật mức điểm." };
+  } catch (e) {
+    return toState(e);
+  }
+}
+
+export async function updateCriterionLabelAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const classId = String(formData.get("classId") ?? "");
+    const criterionId = String(formData.get("criterionId") ?? "");
+    const label = String(formData.get("label") ?? "");
+    await service.updateCriterionLabel(classId, criterionId, label);
+    refresh();
+    return { ok: true, message: "Đã cập nhật tên tiêu chí." };
+  } catch (e) {
+    return toState(e);
+  }
 }

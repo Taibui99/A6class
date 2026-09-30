@@ -79,6 +79,7 @@ model Class {
   announcements      Announcement[]
   competitionPeriods CompetitionPeriod[]
   pointTransactions  PointTransaction[]
+  criteria           Criterion[]
   reports            Report[]
 }
 
@@ -220,6 +221,11 @@ enum SubmissionStatus {
 // ============================================
 // COMPETITION SYSTEM
 // ============================================
+// COMPETITION
+// Mỗi tuần = 1 CompetitionPeriod. Mỗi ô trong bảng Excel = 1 PointTransaction
+// với (học sinh, tiêu chí, kỳ). Điểm luôn tính lại = Criterion.points × count,
+// nên khi giáo viên sửa mức điểm thì mọi tuần đã ghi cũng đổi theo.
+// ============================================
 
 model CompetitionPeriod {
   id        String   @id @default(cuid())
@@ -228,10 +234,36 @@ model CompetitionPeriod {
   startDate DateTime
   endDate   DateTime
   isActive  Boolean  @default(true)
+  /// Đặt khi kết thúc kỳ tổng kết. Từ thời điểm này mọi người xem công khai.
+  publishedAt DateTime?
   createdAt DateTime @default(now())
 
   class        Class              @relation(fields: [classId], references: [id])
   transactions PointTransaction[]
+}
+
+/// Tiêu chí chấm điểm — giáo viên sửa được mức điểm trên trang Cấu hình.
+model Criterion {
+  id        String        @id @default(cuid())
+  classId   String
+  key       String
+  label     String
+  kind      CriterionKind
+  points    Int           @default(1)
+  sortOrder Int           @default(0)
+  isActive  Boolean       @default(true)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  class        Class               @relation(fields: [classId], references: [id], onDelete: Cascade)
+  transactions PointTransaction[]
+
+  @@unique([classId, key])
+}
+
+enum CriterionKind {
+  POSITIVE
+  NEGATIVE
 }
 
 model PointTransaction {
@@ -239,20 +271,29 @@ model PointTransaction {
   classId      String
   targetUserId String?
   targetTeamId String?
+  /// Số lần (cột "Số lần" của bảng Excel). Điểm = Criterion.points × count.
+  count        Int      @default(1)
+  /// Tổng điểm đã ghi lúc nhập. Chỉ dùng khi criterionId = null (dữ liệu cũ).
   amount       Int
   reason       String
   category     String?
+  criterionId  String?
   giverId      String
   periodId     String?
   note         String?
   evidenceUrls String[]
   createdAt    DateTime @default(now())
 
-  class      Class               @relation(fields: [classId], references: [id])
+  class     Class               @relation(fields: [classId], references: [id])
   targetUser User?               @relation("PointTarget", fields: [targetUserId], references: [id])
   targetTeam Team?               @relation(fields: [targetTeamId], references: [id])
   giver      User                @relation("PointGiver", fields: [giverId], references: [id])
   period     CompetitionPeriod?  @relation(fields: [periodId], references: [id])
+  criterion  Criterion?          @relation(fields: [criterionId], references: [id], onDelete: SetNull)
+
+  /// Một ô bảng = một bản ghi: duy nhất theo (kỳ, tiêu chí, học sinh).
+  @@unique([periodId, criterionId, targetUserId])
+  @@index([classId, periodId])
 }
 
 model RankHistory {
