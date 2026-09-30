@@ -31,6 +31,7 @@ const podium = [
 export function CompetitionArena({ className, schoolYear, students, teams, events, canManage, hasDatabaseClass }: Props) {
   const [tab, setTab] = useState<"teams" | "students" | "history">("teams");
   const [search, setSearch] = useState("");
+  const [targetType, setTargetType] = useState<"student" | "team">("student");
   const sortedTeams = useMemo(() => [...teams].sort((a, b) => b.score - a.score || a.name.localeCompare(b.name, "vi")), [teams]);
   const sortedStudents = useMemo(() => [...students].sort((a, b) => b.score - a.score || a.name.localeCompare(b.name, "vi")), [students]);
   const leaderScore = Math.max(0, ...sortedTeams.map((team) => team.score));
@@ -178,14 +179,13 @@ export function CompetitionArena({ className, schoolYear, students, teams, event
             </div>
             <form action={recordCompetitionPoint} className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <label className="text-xs font-semibold text-slate-300">Đối tượng
-                <select name="targetType" className="mt-2 w-full rounded-xl border border-white/10 bg-[#0c1428] px-3 py-3 text-sm text-white" required>
+                <select name="targetType" value={targetType} onChange={(event) => setTargetType(event.target.value as "student" | "team")} className="mt-2 w-full rounded-xl border border-white/10 bg-[#0c1428] px-3 py-3 text-sm text-white" required>
                   <option value="student">Học sinh</option><option value="team">Tổ</option>
                 </select>
               </label>
               <label className="text-xs font-semibold text-slate-300">Học sinh / tổ
                 <select name="targetId" className="mt-2 w-full rounded-xl border border-white/10 bg-[#0c1428] px-3 py-3 text-sm text-white" required>
-                  <optgroup label="Học sinh">{students.map((student) => <option key={student.id} value={student.id}>{student.name} · {student.teamName}</option>)}</optgroup>
-                  <optgroup label="Tổ">{teams.map((team) => <option key={team.id} value={team.id}>{team.name}</option>)}</optgroup>
+                  {targetType === "student" ? students.map((student) => <option key={student.id} value={student.id}>{student.name} · {student.teamName}</option>) : teams.map((team) => <option key={team.id} value={team.id}>{team.name}</option>)}
                 </select>
               </label>
               <label className="text-xs font-semibold text-slate-300">Loại ghi nhận
