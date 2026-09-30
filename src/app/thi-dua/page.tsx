@@ -31,7 +31,7 @@ export default async function CompetitionPage() {
         memberships: { include: { user: true, team: true } },
       },
     });
-    if (klass) {
+    if (klass && klass.memberships.length > 0 && klass.teams.length > 0) {
       hasDatabaseClass = true;
       const { data: session } = await auth.getSession();
       if (session?.user?.email) {
