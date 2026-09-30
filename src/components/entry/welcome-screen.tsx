@@ -7,9 +7,9 @@ import dynamic from "next/dynamic";
 import WelcomeUI from "@/components/welcome/WelcomeUI";
 import { navigateWithTransition } from "@/lib/transition-nav";
 
-const WelcomeScene = dynamic(() => import("@/components/welcome/WelcomeScene"), {
-  ssr: false,
-});
+// Cảnh vector render sẵn ở server (SVG + CSS thuần, không lệch hydration)
+// nên khách không đợi JS mới thấy khung cảnh.
+const WelcomeScene = dynamic(() => import("@/components/welcome/WelcomeScene"));
 
 /** Người đã đăng nhập: tự vào dashboard sau khi xem xong cảnh.
  *  Khách: ở lại để chọn Đăng ký / Đăng nhập — không bị cướp màn hình. */

@@ -361,7 +361,7 @@ select {
   50% { opacity: .95; transform: scale(1.25); }
 }
 
-/* ============ Welcome: lớp cộng thêm trên nền scene.png ============ */
+/* ============ Welcome: cac lop phu glow (nen vector) ============ */
 /* Tất cả chỉ là lớp phủ/glow — không dịch chuyển bố cục gốc. */
 
 @keyframes wl-breathe {
@@ -700,10 +700,279 @@ select {
   animation: ambientFloat 8s ease-in-out infinite;
 }
 
+
+
+/* ==========================================================
+   Cảnh chào tối vector (WelcomeScene) — không dùng ảnh
+   ========================================================== */
+
+@keyframes wsTwinkle {
+  0%,
+  100% {
+    opacity: 0.18;
+    transform: scale(0.82);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.15);
+  }
+}
+
+@keyframes wsAurora {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(6%, 4%, 0) scale(1.14);
+  }
+  66% {
+    transform: translate3d(-5%, 3%, 0) scale(0.94);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes wsShoot {
+  0% {
+    transform: translate3d(-140px, -60px, 0);
+    opacity: 0;
+  }
+  4% {
+    opacity: 1;
+  }
+  18% {
+    transform: translate3d(880px, 340px, 0);
+    opacity: 0;
+  }
+  100% {
+    transform: translate3d(880px, 340px, 0);
+    opacity: 0;
+  }
+}
+
+@keyframes wsWinOn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* đèn chập chờn cho vài cửa sổ */
+@keyframes wsWin {
+  0%,
+  88%,
+  100% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 0.25;
+  }
+  95% {
+    opacity: 0.9;
+  }
+}
+
+@keyframes wsFlagWave {
+  0%,
+  100% {
+    transform: skewY(0deg) scaleX(1);
+  }
+  25% {
+    transform: skewY(4deg) scaleX(0.9);
+  }
+  50% {
+    transform: skewY(-3deg) scaleX(1.04);
+  }
+  75% {
+    transform: skewY(3deg) scaleX(0.94);
+  }
+}
+
+@keyframes wsTreeSway {
+  0%,
+  100% {
+    transform: rotate(-1.4deg);
+  }
+  50% {
+    transform: rotate(1.4deg);
+  }
+}
+
+@keyframes wsParallaxFar {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-16px);
+  }
+}
+
+@keyframes wsParallaxNear {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(12px);
+  }
+}
+
+@keyframes wsFireflyDrift {
+  from {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 0.95;
+  }
+  to {
+    transform: translate3d(var(--ws-drift, 28px), -46px, 0);
+    opacity: 0.15;
+  }
+}
+
+@keyframes wsRise {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(0.7);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.85;
+  }
+  50% {
+    transform: translate3d(22px, -46vh, 0) rotate(14deg) scale(1.06);
+    opacity: 0.6;
+  }
+  88% {
+    opacity: 0.2;
+  }
+  100% {
+    transform: translate3d(-14px, -96vh, 0) rotate(-10deg) scale(0.86);
+    opacity: 0;
+  }
+}
+
+@keyframes wsMascotFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+@keyframes wsMascotWave {
+  0%,
+  55%,
+  100% {
+    transform: rotate(0deg);
+  }
+  62% {
+    transform: rotate(-13deg);
+  }
+  70% {
+    transform: rotate(9deg);
+  }
+  78% {
+    transform: rotate(-7deg);
+  }
+  86% {
+    transform: rotate(4deg);
+  }
+}
+
+@keyframes wsGlowPulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.12);
+  }
+}
+
+@keyframes wsDust {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 0.6;
+    transform: translateY(-9px);
+  }
+}
+
+.ws-scene .ws-aurora {
+  animation: wsAurora 22s ease-in-out infinite;
+  will-change: transform;
+}
+
+.ws-scene .ws-parallax-far {
+  animation: wsParallaxFar 26s ease-in-out infinite;
+}
+
+.ws-scene .ws-parallax-near {
+  animation: wsParallaxNear 19s ease-in-out infinite;
+}
+
+.ws-scene .ws-tree {
+  animation: wsTreeSway 6.5s ease-in-out infinite;
+  transform-box: fill-box;
+}
+
+.ws-scene .ws-flag {
+  animation: wsFlagWave 2.4s ease-in-out infinite;
+}
+
+.ws-scene .ws-firefly {
+  animation-name: wsFireflyDrift;
+  will-change: transform, opacity;
+}
+
+.ws-scene .ws-orb {
+  will-change: transform, opacity;
+}
+
+.ws-scene .ws-dust {
+  animation: wsDust 7s ease-in-out infinite;
+}
+
+.ws-scene .ws-mascot-float {
+  animation: wsMascotFloat 3.6s ease-in-out infinite;
+}
+
+.ws-scene .ws-mascot-wave {
+  animation: wsMascotWave 4.2s ease-in-out infinite;
+  transform-origin: 70% 85%;
+}
+
+.ws-scene .ws-glow {
+  animation: wsGlowPulse 3.6s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .scene-idle-robot,
-  .ambient-glow,
-  .ambient-particle {
+  .ws-scene .ws-aurora,
+  .ws-scene .ws-parallax-far,
+  .ws-scene .ws-parallax-near,
+  .ws-scene .ws-tree,
+  .ws-scene .ws-flag,
+  .ws-scene .ws-firefly,
+  .ws-scene .ws-orb,
+  .ws-scene .ws-dust,
+  .ws-scene .ws-mascot-float,
+  .ws-scene .ws-mascot-wave,
+  .ws-scene .ws-glow {
     animation: none !important;
+  }
+  .ws-scene .ws-orb {
+    display: none;
   }
 }

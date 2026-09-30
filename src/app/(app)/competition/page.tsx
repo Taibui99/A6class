@@ -114,14 +114,15 @@ export default async function CompetitionPage() {
         orderBy: { startDate: "desc" },
       });
       if (active) {
-        const now = Date.now();
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
         period = {
           name: active.name,
           start: active.startDate.toISOString(),
           end: active.endDate.toISOString(),
           daysLeft: Math.max(
             0,
-            Math.ceil((active.endDate.getTime() - now) / DAY_MS),
+            Math.ceil((active.endDate.getTime() - today.getTime()) / DAY_MS),
           ),
         };
       }

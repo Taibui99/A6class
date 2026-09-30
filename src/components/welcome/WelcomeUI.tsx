@@ -21,6 +21,15 @@ function useMounted() {
 }
 
 const LETTERS = [..."A6Class"];
+const LETTER_GRADIENT = [
+  "#7DD3FC",
+  "#38BDF8",
+  "#A78BFA",
+  "#C4B5FD",
+  "#7DD3FC",
+  "#FDE68A",
+  "#FBBF24",
+];
 const SUBTITLE = "Ngôi nhà số của lớp 12A6";
 const GREETINGS = [
   "Xin chào! 👋",
@@ -71,8 +80,8 @@ export default function WelcomeUI({ onSignup, onLogin }: WelcomeUIProps) {
               className="font-extrabold"
               style={{
                 fontSize: "clamp(26px, 5.4vw, 52px)",
-                color: "#8C3B24",
-                textShadow: "0 2px 0 rgba(255,255,255,.6)",
+                color: LETTER_GRADIENT[i % LETTER_GRADIENT.length],
+                textShadow: "0 0 26px rgba(56,189,248,.45), 0 2px 10px rgba(2,6,23,.8)",
                 opacity: live ? 0 : 1,
                 transform: live ? "translateY(-22px)" : "translateY(0)",
                 transition: `opacity .6s cubic-bezier(.34,1.6,.5,1) ${
@@ -87,7 +96,7 @@ export default function WelcomeUI({ onSignup, onLogin }: WelcomeUIProps) {
           ))}
         </h1>
         <p
-          className="mt-1.5 text-[10px] font-bold uppercase tracking-[0.3em] text-[#8C3B24]/70 sm:text-xs"
+          className="mt-1.5 text-[10px] font-bold uppercase tracking-[0.3em] text-slate-300/80 sm:text-xs"
           style={{
             opacity: live ? 0 : 1,
             transition: "opacity .6s ease .95s",
@@ -127,7 +136,7 @@ export default function WelcomeUI({ onSignup, onLogin }: WelcomeUIProps) {
         <button
           type="button"
           onClick={onSignup}
-          className="group flex h-11 items-center justify-center gap-2 rounded-xl border-none text-[13px] font-bold text-[#04101F] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#16306E] sm:text-sm"
+          className="group flex h-11 items-center justify-center gap-2 rounded-xl border-none text-[13px] font-bold text-[#04101F] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#38BDF8] sm:text-sm"
           style={{
             background: "linear-gradient(180deg,#38BDF8,#7C3AED)",
             boxShadow: "0 5px 0 #0B1226",
@@ -149,7 +158,7 @@ export default function WelcomeUI({ onSignup, onLogin }: WelcomeUIProps) {
         <button
           type="button"
           onClick={onLogin}
-          className="h-11 rounded-xl border border-white/15 bg-[#0D1226]/95 text-[13px] font-bold text-[#EEF2FF] transition-colors hover:bg-[#141B33] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#16306E] sm:text-sm"
+          className="h-11 rounded-xl border border-white/15 bg-[#0D1226]/95 text-[13px] font-bold text-[#EEF2FF] transition-colors hover:bg-[#141B33] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#38BDF8] sm:text-sm"
           style={{
             opacity: live ? 0 : 1,
             transform: live ? "translateY(14px)" : "translateY(0)",
