@@ -1,12 +1,13 @@
 import Link from "next/link";
 
 import { cn } from "@/lib/utils";
+import { HOME_PATH } from "@/lib/home";
 import { Mascot } from "@/components/mascot";
 import { Logo } from "@/components/layout/logo";
 
 export function Brand({
   size = "md",
-  href = "/dashboard",
+  href = HOME_PATH,
   markClassName,
 }: {
   size?: "sm" | "md";

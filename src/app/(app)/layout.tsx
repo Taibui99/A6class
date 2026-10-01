@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 
 import { getCurrentUser } from "@/lib/auth/current";
 import { Brand } from "@/components/layout/brand";
+import { HomeTaskLink } from "@/components/layout/home-task-link";
 import { UserMenu } from "@/components/layout/user-menu";
 import { MobilePageTitle } from "@/components/layout/mobile-page-title";
 import { AnimatedPage } from "@/components/layout/animated-page";
@@ -17,10 +18,13 @@ export default async function AppLayout({
   return (
     <div className="bg-hello min-h-dvh">
       {/* Top bar duy nhất — không có danh sách tab điều hướng */}
-      <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-surface/95 px-4 backdrop-blur-md">
+      <header className="sticky top-0 z-40 flex h-14 items-center justify-between gap-2 border-b border-border bg-surface/95 px-4 backdrop-blur-md">
         <Brand size="sm" markClassName="vt-mascot-topbar" />
         <MobilePageTitle />
-        <UserMenu user={user} variant="mobile" />
+        <div className="flex shrink-0 items-center gap-1.5">
+          <HomeTaskLink />
+          <UserMenu user={user} variant="mobile" />
+        </div>
       </header>
 
       <main className="min-h-dvh">

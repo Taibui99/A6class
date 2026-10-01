@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback, useSyncExternalStore } from "react";
+import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 
@@ -11,24 +11,11 @@ import { navigateWithTransition } from "@/lib/transition-nav";
 // nên khách không đợi JS mới thấy khung cảnh.
 const WelcomeScene = dynamic(() => import("@/components/welcome/WelcomeScene"));
 
-/** Người đã đăng nhập: tự vào dashboard sau khi xem xong cảnh.
- *  Khách: ở lại để chọn Đăng ký / Đăng nhập — không bị cướp màn hình. */
-const AUTO_ENTER_MS = 7000;
-
-const noopSubscribe = () => () => {};
-
-/** true sau khi hydrate — dùng để chỉ chạy timer phía client. */
-function useMounted() {
-  return useSyncExternalStore(
-    noopSubscribe,
-    () => true,
-    () => false,
-  );
-}
-
-export function WelcomeScreen({ signedIn }: { signedIn: boolean }) {
+/** Chỉ khách mới chưa đăng nhập thấy màn này. Người đã đăng nhập được
+ *  `/` chuyển thẳng sang nhiệm vụ trọng tâm (thi đua) nên không cần tự
+ *  động vào — tránh bắt người dùng đợi 7 giây rồi mới tới nơi họ cần tới. */
+export function WelcomeScreen() {
   const router = useRouter();
-  const mounted = useMounted();
 
   const go = useCallback(
     (path: string) => {
@@ -36,12 +23,6 @@ export function WelcomeScreen({ signedIn }: { signedIn: boolean }) {
     },
     [router],
   );
-
-  useEffect(() => {
-    if (!mounted || !signedIn) return;
-    const t = window.setTimeout(() => go("/dashboard"), AUTO_ENTER_MS);
-    return () => window.clearTimeout(t);
-  }, [mounted, signedIn, go]);
 
   return (
     <main

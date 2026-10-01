@@ -4,6 +4,7 @@ import { Newspaper, UserRoundPlus } from "lucide-react";
 
 import { getCurrentUser } from "@/lib/auth/current";
 import { getClassName, getFeed, getUserClassId } from "@/lib/feed";
+import { HOME_PATH } from "@/lib/home";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import { PostComposer } from "@/components/feed/post-composer";
 import { PostCard } from "@/components/feed/post-card";
@@ -42,10 +43,10 @@ export default async function FeedPage() {
               đọc và đăng bài nhé.
             </p>
             <Link
-              href="/dashboard"
+              href={HOME_PATH}
               className="mt-3 inline-flex items-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover"
             >
-              Về trang chủ
+              Về trang thi đua
             </Link>
           </div>
         </section>

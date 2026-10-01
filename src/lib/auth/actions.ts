@@ -5,10 +5,12 @@ import { headers } from "next/headers";
 
 import { auth } from "@/lib/auth/server";
 import { prisma } from "@/lib/prisma";
+import { HOME_PATH } from "@/lib/home";
 
 export type AuthState = { error?: string; ok?: boolean; redirectTo?: string };
 
 const INTERNAL_PREFIXES = [
+  HOME_PATH,
   "/dashboard",
   "/feed",
   "/messages",
@@ -18,12 +20,12 @@ const INTERNAL_PREFIXES = [
 ];
 
 function safeRedirect(raw: string | null): string {
-  if (!raw || !raw.startsWith("/")) return "/dashboard";
-  if (raw.startsWith("//")) return "/dashboard";
+  if (!raw || !raw.startsWith("/")) return HOME_PATH;
+  if (raw.startsWith("//")) return HOME_PATH;
   const sameOriginOk = INTERNAL_PREFIXES.some(
     (p) => raw === "/" || raw.startsWith(p)
   );
-  if (!sameOriginOk) return "/dashboard";
+  if (!sameOriginOk) return HOME_PATH;
   return raw;
 }
 
@@ -97,7 +99,7 @@ export async function signUp(
     // Hồ sơ DB chưa được tạo — auth vẫn hoạt động; sẽ đồng bộ ở lần sau.
   }
 
-  return { ok: true, redirectTo: "/dashboard" };
+  return { ok: true, redirectTo: HOME_PATH };
 }
 
 export async function signOut(): Promise<void> {

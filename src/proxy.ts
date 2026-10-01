@@ -1,10 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import { auth } from "@/lib/auth/server";
+import { HOME_PATH } from "@/lib/home";
 
 const PROTECTED_PATHS = [
+  HOME_PATH,
   "/dashboard",
-  "/competition",
   "/feed",
   "/messages",
   "/help",
@@ -38,7 +39,7 @@ export async function proxy(request: NextRequest) {
 
   if (isAuthPage && user) {
     const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
+    url.pathname = HOME_PATH;
     return NextResponse.redirect(url);
   }
 
