@@ -26,9 +26,11 @@
   --surface-elevated: #233064;
   --border: #364580;
   --border-strong: #4A5B98;
-  --text: #F4F7FF;
-  --text-secondary: #C3CCE8;
-  --text-muted: #9AA7D0;
+  /* Toàn bộ chữ trên nền tối đều TRẮNG theo yêu cầu. Cả 3 token cùng
+     bằng trắng nên không còn chữ chìm nào đọc được trên nền navy. */
+  --text: #FFFFFF;
+  --text-secondary: #FFFFFF;
+  --text-muted: #FFFFFF;
   --focus-ring: rgba(56, 189, 248, 0.6);
   --shadow-sm: 0 1px 2px rgba(9, 14, 35, 0.4);
   --shadow-md: 0 4px 14px rgba(9, 14, 35, 0.45);
