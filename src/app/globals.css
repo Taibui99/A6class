@@ -61,7 +61,12 @@
      như không đọc được. Dùng navy đậm: 6.6:1. */
   --color-secondary-foreground: #1A0B3D;
   --color-secondary-light: var(--secondary-light);
-  --color-muted: var(--surface-hover);
+  /* LƯU Ý: `text-muted` được dùng 76 chỗ trong code (tiêu đề bảng, nhãn,
+     mô tả) và trước đây trỏ tới `--surface-hover` — tức CHỮ lại có màu
+     nền, tương phản ~1.3:1 nên gần như biến mất. `text-muted` phải là màu
+     chữ. Các nền muted đã đổi sang `bg-surface-hover` (cùng giá trị cũ nên
+     giao diện nền không đổi). */
+  --color-muted: var(--text-muted);
   --color-muted-foreground: var(--text-secondary);
   --color-accent: var(--surface-hover);
   --color-accent-foreground: var(--text);
