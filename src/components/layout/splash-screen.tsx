@@ -97,7 +97,7 @@ export function SplashScreen() {
       aria-live="polite"
       aria-label="Đang tải A6Class"
       className={cn(
-        "splash-portal fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-[#070B1A]",
+        "splash-portal fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-[var(--bg)]",
         stage === "fade" && "splash-hide",
       )}
     >

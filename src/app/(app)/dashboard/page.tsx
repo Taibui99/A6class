@@ -236,7 +236,7 @@ export default async function DashboardPage() {
               ))}
             </ol>
           ) : (
-            <p className="relative mt-3 text-sm text-slate-400">
+            <p className="relative mt-3 text-sm text-text-muted">
               Lớp chưa có tổ nào — điểm thi đua sẽ hiện tại đây.
             </p>
           )}

@@ -1,36 +1,38 @@
 @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
-/* Theme tối "đấu trường" — đồng bộ với splash + trang thi đua.
-   Nền #070B1A, nhấn sky → violet, nhấn phụ amber. */
+/* Theme "đấu trường" — navy xanh đã nâng sáng để đọc dễ chịu hơn
+   (nền cũ #070B1A quá đen, chữ phụ #6E7A9E chỉ đạt 3.4:1).
+   Giữ nền tối nhưng đủ sáng để text-muted vẫn ≥ 5.6:1 trên cả
+   --bg lẫn --surface. Nhấn sky → violet, nhấn phụ amber. */
 :root {
   --primary: #38BDF8;
   --primary-hover: #7DD3FC;
-  --primary-light: rgba(56, 189, 248, 0.14);
-  --primary-muted: rgba(56, 189, 248, 0.28);
+  --primary-light: rgba(56, 189, 248, 0.18);
+  --primary-muted: rgba(56, 189, 248, 0.34);
   --secondary: #A78BFA;
-  --secondary-light: rgba(167, 139, 250, 0.16);
+  --secondary-light: rgba(167, 139, 250, 0.2);
   --accent: #FBBF24;
-  --accent-light: rgba(251, 191, 36, 0.16);
+  --accent-light: rgba(251, 191, 36, 0.2);
   --success: #34D399;
-  --success-light: rgba(52, 211, 153, 0.16);
+  --success-light: rgba(52, 211, 153, 0.2);
   --warning: #FBBF24;
-  --warning-light: rgba(251, 191, 36, 0.16);
+  --warning-light: rgba(251, 191, 36, 0.2);
   --danger: #FB7185;
-  --danger-light: rgba(251, 113, 133, 0.16);
-  --bg: #070B1A;
-  --surface: #0D1226;
-  --surface-hover: #141B33;
-  --surface-elevated: #111835;
-  --border: #1C2440;
-  --border-strong: #2A3352;
-  --text: #EEF2FF;
-  --text-secondary: #A9B4D0;
-  --text-muted: #6E7A9E;
-  --focus-ring: rgba(56, 189, 248, 0.5);
-  --shadow-sm: 0 1px 2px rgba(2, 6, 23, 0.4);
-  --shadow-md: 0 4px 14px rgba(2, 6, 23, 0.5);
-  --shadow-lg: 0 14px 34px rgba(2, 6, 23, 0.6);
+  --danger-light: rgba(251, 113, 133, 0.2);
+  --bg: #16203F;
+  --surface: #1E2A52;
+  --surface-hover: #27356A;
+  --surface-elevated: #233064;
+  --border: #364580;
+  --border-strong: #4A5B98;
+  --text: #F4F7FF;
+  --text-secondary: #C3CCE8;
+  --text-muted: #9AA7D0;
+  --focus-ring: rgba(56, 189, 248, 0.6);
+  --shadow-sm: 0 1px 2px rgba(9, 14, 35, 0.4);
+  --shadow-md: 0 4px 14px rgba(9, 14, 35, 0.45);
+  --shadow-lg: 0 14px 34px rgba(9, 14, 35, 0.5);
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
@@ -55,14 +57,17 @@
   --color-primary-hover: var(--primary-hover);
   --color-primary-light: var(--primary-light);
   --color-secondary: var(--secondary);
-  --color-secondary-foreground: #ffffff;
+  /* Trước đây foreground là #ffffff trên nền #A78BFA -> chỉ 2.7:1, gần
+     như không đọc được. Dùng navy đậm: 6.6:1. */
+  --color-secondary-foreground: #1A0B3D;
   --color-secondary-light: var(--secondary-light);
   --color-muted: var(--surface-hover);
   --color-muted-foreground: var(--text-secondary);
   --color-accent: var(--surface-hover);
   --color-accent-foreground: var(--text);
   --color-destructive: var(--danger);
-  --color-destructive-foreground: #ffffff;
+  /* Tương tự: #ffffff trên #FB7185 chỉ 2.7:1 -> đổi sang đỏ rất đậm. */
+  --color-destructive-foreground: #3F0512;
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
   --color-input: var(--border);
@@ -78,6 +83,15 @@
   --color-text: var(--text);
   --color-text-secondary: var(--text-secondary);
   --color-text-muted: var(--text-muted);
+  /* ── Bảng màu nâng cao cho code dùng tên màu quen thuộc ──
+     Trước đây các class `text-sky` / `text-amber` / `text-violet` /
+     `bg-canvas` được viết trong component nhưng KHÔNG có biến tương ứng
+     nên Tailwind không sinh ra class nào -> chữ rơi về màu kế thừa,
+     nhìn như mất màu. Khai báo chúng ở đây để đồng bộ với token. */
+  --color-sky: var(--primary);
+  --color-violet: var(--secondary);
+  --color-amber: var(--accent);
+  --color-canvas: var(--bg);
   --font-sans: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
@@ -640,9 +654,9 @@ select {
 
 .bg-hello {
   background:
-    radial-gradient(58% 42% at 50% -6%, rgba(56, 189, 248, 0.16) 0%, transparent 70%),
-    radial-gradient(46% 38% at 92% 8%, rgba(167, 139, 250, 0.14) 0%, transparent 72%),
-    radial-gradient(40% 34% at 4% 26%, rgba(6, 182, 212, 0.1) 0%, transparent 70%),
+    radial-gradient(58% 42% at 50% -6%, rgba(56, 189, 248, 0.22) 0%, transparent 70%),
+    radial-gradient(46% 38% at 92% 8%, rgba(167, 139, 250, 0.18) 0%, transparent 72%),
+    radial-gradient(40% 34% at 4% 26%, rgba(34, 211, 238, 0.13) 0%, transparent 70%),
     var(--bg);
 }
 

@@ -107,7 +107,7 @@ export default function WelcomeScene({ children }: { children?: React.ReactNode 
   const stars = useStars();
 
   return (
-    <div className="ws-scene relative isolate w-full overflow-hidden rounded-[26px] bg-[#070B1A] shadow-[0_30px_80px_-30px_rgba(2,6,23,.9)] ring-1 ring-white/10 sm:rounded-[32px]">
+      <div className="ws-scene relative isolate w-full overflow-hidden rounded-[26px] bg-[var(--bg)] shadow-[0_30px_80px_-30px_rgba(2,6,23,.9)] ring-1 ring-white/10 sm:rounded-[32px]">
       {/* ── Nền trời: 3 lớp aurora trôi chậm ───────────────── */}
       <div aria-hidden className="absolute inset-0">
         <span

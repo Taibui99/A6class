@@ -293,11 +293,11 @@ export type GradeTier = {
 };
 
 export const GRADE_TIERS: GradeTier[] = [
-  { min: 20, label: "Xuất sắc", tone: "text-amber-300" },
-  { min: 12, label: "Tốt", tone: "text-emerald-300" },
-  { min: 6, label: "Khá", tone: "text-sky-300" },
-  { min: 1, label: "Trung bình", tone: "text-slate-300" },
-  { min: Number.NEGATIVE_INFINITY, label: "Yếu", tone: "text-rose-300" },
+  { min: 20, label: "Xuất sắc", tone: "text-amber" },
+  { min: 12, label: "Tốt", tone: "text-success" },
+  { min: 6, label: "Khá", tone: "text-primary" },
+  { min: 1, label: "Trung bình", tone: "text-text-secondary" },
+  { min: Number.NEGATIVE_INFINITY, label: "Yếu", tone: "text-danger" },
 ];
 
 export function gradeTier(net: number): GradeTier {
