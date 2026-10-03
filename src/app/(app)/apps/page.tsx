@@ -2,8 +2,10 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
   ArrowUpRight,
+  ChevronRight,
   ClipboardList,
   Trophy,
+  UsersRound,
   type LucideIcon,
 } from "lucide-react";
 
@@ -83,6 +85,28 @@ export default async function HubPage() {
       </header>
 
       {/* ── Lưới công cụ ───────────────────────────────────── */}
+      {user.role === "TEACHER" ? (
+        <Link
+          href="/class"
+          className="flex items-center justify-between gap-3 rounded-2xl bg-surface p-4 ring-1 ring-border transition hover:bg-surface-hover"
+        >
+          <span className="flex min-w-0 items-center gap-3">
+            <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-emerald-500/12 ring-1 ring-emerald-500/30">
+              <UsersRound aria-hidden className="size-4.5 text-success" />
+            </span>
+            <span className="min-w-0">
+              <span className="block truncate text-sm font-bold text-text">
+                Dữ liệu lớp
+              </span>
+              <span className="block truncate text-xs text-text-secondary">
+                Nhập danh sách học sinh, chia tổ
+              </span>
+            </span>
+          </span>
+          <ChevronRight aria-hidden className="size-4 shrink-0 text-text" />
+        </Link>
+      ) : null}
+
       <section aria-label="Kho công cụ" className="grid gap-3 sm:grid-cols-2">
         {tools.map((tool) => {
           const Icon = ICONS[tool.icon];

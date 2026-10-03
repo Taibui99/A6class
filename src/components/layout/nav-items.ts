@@ -6,6 +6,7 @@ import {
   LayoutGrid,
   Trophy,
   LayoutDashboard,
+  UsersRound,
   type LucideIcon,
 } from "lucide-react";
 
@@ -16,6 +17,8 @@ export type NavItem = {
   label: string;
   shortLabel: string;
   icon: LucideIcon;
+  /** Chỉ hiện với giáo viên (được lọc ở nơi render). */
+  teacherOnly?: boolean;
 };
 
 /** Kho công cụ đứng đầu: đây là trang chính, chọn công cụ rồi chuyển tới. */
@@ -31,6 +34,13 @@ export const navItems: NavItem[] = [
     label: "Thi đua",
     shortLabel: "Thi đua",
     icon: Trophy,
+  },
+  {
+    href: "/class",
+    label: "Dữ liệu lớp",
+    shortLabel: "Lớp",
+    icon: UsersRound,
+    teacherOnly: true,
   },
   {
     href: "/dashboard",
