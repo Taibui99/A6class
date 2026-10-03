@@ -10,6 +10,7 @@ import { navigateWithTransition } from "@/lib/transition-nav";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { GoogleButton } from "@/components/auth/google-button";
 
 const initialState: AuthState = {};
 
@@ -27,8 +28,19 @@ export function LoginForm({ redirect }: { redirect: string | null }) {
   }, [state, router]);
 
   return (
-    <form action={formAction} className="space-y-4">
-      <input type="hidden" name="redirect" value={redirect ?? ""} />
+    <div className="space-y-4">
+      <GoogleButton redirect={redirect} />
+
+      <div className="flex items-center gap-3" aria-hidden="true">
+        <span className="h-px flex-1 bg-border" />
+        <span className="text-xs font-medium uppercase tracking-wide text-text-muted">
+          Hoặc
+        </span>
+        <span className="h-px flex-1 bg-border" />
+      </div>
+
+      <form action={formAction} className="space-y-4">
+        <input type="hidden" name="redirect" value={redirect ?? ""} />
 
       {state.error && (
         <div
@@ -90,7 +102,8 @@ export function LoginForm({ redirect }: { redirect: string | null }) {
         )}
         {pending ? "Đang đăng nhập…" : "Đăng nhập"}
       </Button>
-    </form>
+      </form>
+    </div>
   );
 }
 

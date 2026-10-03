@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { GoogleButton } from "@/components/auth/google-button";
 
 const initialState: AuthState = {};
 
@@ -35,7 +36,18 @@ export function RegisterForm() {
   }, [state, router]);
 
   return (
-    <form action={formAction} className="space-y-4">
+    <div className="space-y-4">
+      <GoogleButton label="Đăng ký bằng Google" />
+
+      <div className="flex items-center gap-3" aria-hidden="true">
+        <span className="h-px flex-1 bg-border" />
+        <span className="text-xs font-medium uppercase tracking-wide text-text-muted">
+          Hoặc
+        </span>
+        <span className="h-px flex-1 bg-border" />
+      </div>
+
+      <form action={formAction} className="space-y-4">
       {state.error && (
         <div
           role="alert"
@@ -133,7 +145,8 @@ export function RegisterForm() {
         Bằng cách đăng ký, bạn đồng ý trở thành thành viên của lớp 12A6. Việc
         phân công vai trò sẽ do giáo viên xác nhận.
       </p>
-    </form>
+      </form>
+    </div>
   );
 }
 

@@ -52,6 +52,32 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
       base.role = profile.role;
       base.defaultClassName = profile.memberships[0]?.class?.name ?? null;
       base.className = profile.memberships[0]?.class?.name ?? null;
+    } else {
+      // Đăng nhập bằng Google: tài khoản mới chưa có hồ sơ trong DB vì
+      // không đi qua form đăng ký. Tự tạo hồ sơ (mặc định là học sinh,
+      // chưa thuộc lớp nào) để giáo viên có thể đưa vào lớp.
+      const fullName = authUser.name?.trim() || authUser.email.split("@")[0];
+      const avatarUrl =
+        typeof authUser.image === "string" ? authUser.image : null;
+
+      const created = await prisma.user
+        .create({
+          data: { email: authUser.email, fullName, avatarUrl },
+          select: {
+            id: true,
+            fullName: true,
+            avatarUrl: true,
+            role: true,
+          },
+        })
+        .catch(() => null);
+
+      if (created) {
+        base.id = created.id;
+        base.fullName = created.fullName;
+        base.avatarUrl = created.avatarUrl;
+        base.role = created.role;
+      }
     }
   } catch {
     // DB chưa migrate — trả về thông tin từ session.
