@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import {
   ArrowUpRight,
   ClipboardList,
-  FolderOpen,
   Trophy,
   Wrench,
   type LucideIcon,
@@ -17,8 +16,7 @@ import { formatNumber } from "@/lib/utils";
 const ICONS: Record<ToolIcon, LucideIcon> = {
   trophy: Trophy,
   clipboard: ClipboardList,
-  folder: FolderOpen,
-  docs: FolderOpen,
+  docs: ClipboardList,
 };
 
 const ACCENTS = {

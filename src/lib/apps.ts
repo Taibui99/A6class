@@ -16,7 +16,7 @@
  */
 
 export type ToolAccent = "sky" | "violet" | "amber" | "emerald" | "rose";
-export type ToolIcon = "trophy" | "clipboard" | "folder" | "docs";
+export type ToolIcon = "trophy" | "clipboard" | "docs";
 
 /** Công cụ nội bộ — nằm trong web lớp, mở bằng đường dẫn nội bộ. */
 export type InternalTool = {
@@ -61,7 +61,7 @@ function safeUrl(raw: string): string {
   }
 }
 
-/** Điền 2 URL dưới đây (hoặc trong `.env.local`). */
+/** Điền 1 URL dưới đây (hoặc trong `.env.local`). */
 export const EXTERNAL_APPS: readonly Omit<ExternalTool, "href">[] = [
   {
     id: "exam",
@@ -72,16 +72,6 @@ export const EXTERNAL_APPS: readonly Omit<ExternalTool, "href">[] = [
     accent: "violet",
     external: true,
     envVar: "NEXT_PUBLIC_EXAM_APP_URL",
-  },
-  {
-    id: "docs",
-    name: "Lưu trữ tài liệu",
-    summary: "Tài liệu, đề cũ, hình ảnh của lớp",
-    detail: "Nơi gom tài liệu học tập để mọi thành viên cùng tra cứu.",
-    icon: "folder",
-    accent: "amber",
-    external: true,
-    envVar: "NEXT_PUBLIC_DOCS_APP_URL",
   },
 ];
 
@@ -96,7 +86,6 @@ function readUrl(envVar: string): string {
 /** Điền URL tại đây nếu không muốn dùng file `.env.local`. */
 const HARDCODED_URLS: Record<string, string> = {
   NEXT_PUBLIC_EXAM_APP_URL: "",
-  NEXT_PUBLIC_DOCS_APP_URL: "",
 };
 
 /** Trang chính của web lớp: kho công cụ. */
