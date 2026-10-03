@@ -4,14 +4,12 @@ import {
   ArrowUpRight,
   ClipboardList,
   Trophy,
-  Wrench,
   type LucideIcon,
 } from "lucide-react";
 
 import { getCurrentUser } from "@/lib/auth/current";
 import { getHubStats } from "@/lib/hub";
 import { allTools, type ToolIcon } from "@/lib/apps";
-import { formatNumber } from "@/lib/utils";
 
 const ICONS: Record<ToolIcon, LucideIcon> = {
   trophy: Trophy,
@@ -81,10 +79,6 @@ export default async function HubPage() {
           <h1 className="mt-1 text-2xl font-black tracking-tight text-text sm:text-3xl">
             Xin chào, {user.fullName ?? "bạn"}
           </h1>
-          <p className="mt-1.5 max-w-prose text-sm text-text">
-            Chọn công cụ bạn cần dùng. Thi đua nằm trong lớp, các web app
-            khác mở ở tab mới.
-          </p>
         </div>
       </header>
 
@@ -121,9 +115,6 @@ export default async function HubPage() {
                     ) : null}
                   </h2>
                   <p className="mt-0.5 text-sm text-text">{tool.summary}</p>
-                  <p className="mt-1.5 text-xs leading-relaxed text-text">
-                    {tool.detail}
-                  </p>
                 </div>
               </div>
 
@@ -202,25 +193,6 @@ export default async function HubPage() {
           );
         })}
       </section>
-
-      <p className="flex items-start gap-2 rounded-xl bg-surface px-4 py-3 text-xs leading-relaxed text-text ring-1 ring-border">
-        <Wrench aria-hidden className="mt-0.5 size-3.5 shrink-0" />
-        Thêm web app mới: khai báo URL trong{" "}
-        <code className="rounded bg-surface-hover px-1 py-0.5 font-mono text-[11px]">
-          .env.local
-        </code>{" "}
-        rồi khai một mục trong{" "}
-        <code className="rounded bg-surface-hover px-1 py-0.5 font-mono text-[11px]">
-          src/lib/apps.ts
-        </code>
-        .
-        {stats ? (
-          <span className="sr-only">
-            {" "}
-            Cặp nhật gần nhất: {formatNumber(stats.length)} nhóm số liệu.
-          </span>
-        ) : null}
-      </p>
     </div>
   );
 }

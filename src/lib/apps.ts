@@ -23,7 +23,6 @@ export type InternalTool = {
   id: string;
   name: string;
   summary: string;
-  detail: string;
   href: string;
   icon: ToolIcon;
   accent: ToolAccent;
@@ -35,7 +34,6 @@ export type ExternalTool = {
   id: string;
   name: string;
   summary: string;
-  detail: string;
   /** Rỗng nghĩa là chưa cấu hình URL. */
   href: string;
   icon: ToolIcon;
@@ -67,7 +65,6 @@ export const EXTERNAL_APPS: readonly Omit<ExternalTool, "href">[] = [
     id: "exam",
     name: "Tạo đề & làm bài thi",
     summary: "Soạn đề, trộn câu hỏi, chấm bài tự động",
-    detail: "Dùng cho giáo viên tạo đề và cho học sinh làm bài thi.",
     icon: "clipboard",
     accent: "violet",
     external: true,
@@ -83,9 +80,18 @@ function readUrl(envVar: string): string {
   return fromCode;
 }
 
-/** Điền URL tại đây nếu không muốn dùng file `.env.local`. */
+/**
+ * URL mặc định đặt thẳng trong code.
+ *
+ * Biến `NEXT_PUBLIC_*` được Next.js **nội tuyến lúc build**, nên URL chỉ
+ * tồn tại trong bản build nếu biến đó có trong môi trường build (Vercel).
+ * `.env.local` bị gitignore nên không bao giờ lên production — dẫn tới
+ * thẻ hiện "Chưa cấu hình" và không bấm được. Đặt sẵn ở đây để bản
+ * deploy luôn chạy được; biến môi trường vẫn ghi đè được nếu bạn muốn
+ * trỏ sang địa chỉ khác (ví dụ khi phát triển).
+ */
 const HARDCODED_URLS: Record<string, string> = {
-  NEXT_PUBLIC_EXAM_APP_URL: "",
+  NEXT_PUBLIC_EXAM_APP_URL: "https://edutest-vn.vercel.app/",
 };
 
 /** Trang chính của web lớp: kho công cụ. */
@@ -98,8 +104,6 @@ export function internalTools(): InternalTool[] {
       id: "competition",
       name: "Thi đua lớp",
       summary: "Chấm điểm hằng tuần, xếp hạng tổ",
-      detail:
-        "Nhiệm vụ trọng tâm của lớp: nhập điểm theo 19 nhóm tiêu chí, xếp hạng 4 tổ theo trung bình và công bố kỳ.",
       href: "/competition",
       icon: "trophy",
       accent: "sky",
