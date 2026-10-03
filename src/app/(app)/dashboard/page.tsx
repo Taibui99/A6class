@@ -9,6 +9,7 @@ import {
   Megaphone,
   Pin,
   Trophy,
+  LayoutGrid,
   UserRoundPlus,
   Newspaper,
   MessagesSquare,
@@ -24,7 +25,7 @@ import {
   getScoreboard,
 } from "@/lib/dashboard";
 import { formatNumber, formatRelativeTime, getInitials } from "@/lib/utils";
-import { HOME_PATH } from "@/lib/home";
+import { COMPETITION_PATH, HOME_PATH } from "@/lib/home";
 import {
   TeacherActivityDialog,
   type ActivityItem,
@@ -71,7 +72,14 @@ const quickLinks: {
   tone: Tone;
 }[] = [
   {
-          href: HOME_PATH,
+    href: HOME_PATH,
+    icon: LayoutGrid,
+    label: "Kho công cụ",
+    desc: "Tạo đề thi, tài liệu",
+    tone: "secondary",
+  },
+  {
+    href: COMPETITION_PATH,
     icon: Trophy,
     label: "Thi đua",
     desc: "Xếp hạng tuần & nhập điểm",
@@ -204,10 +212,10 @@ export default async function DashboardPage() {
           <div className="relative flex flex-wrap items-center justify-between gap-3">
             <h2 className="flex items-center gap-2 text-sm font-bold text-text">
               <Trophy aria-hidden className="size-4 text-amber" />
-              Nhiệm vụ chính · Thi đua lớp
+              Công cụ · Thi đua lớp
             </h2>
             <Link
-              href={HOME_PATH}
+              href={COMPETITION_PATH}
               className="inline-flex items-center gap-1 rounded-xl bg-sky-500/15 px-3 py-1.5 text-xs font-bold text-sky-300 ring-1 ring-sky-500/30 transition hover:bg-sky-500/25 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky"
             >
               Vào đấu trường

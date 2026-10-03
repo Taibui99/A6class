@@ -3,6 +3,7 @@ import {
   MessagesSquare,
   CircleHelp,
   UserRound,
+  LayoutGrid,
   Trophy,
   LayoutDashboard,
   type LucideIcon,
@@ -17,10 +18,16 @@ export type NavItem = {
   icon: LucideIcon;
 };
 
-/** Thi đua đứng đầu: đây là nhiệm vụ trọng tâm của web, mọi thứ khác là phụ. */
+/** Kho công cụ đứng đầu: đây là trang chính, chọn công cụ rồi chuyển tới. */
 export const navItems: NavItem[] = [
   {
     href: HOME_PATH,
+    label: "Công cụ",
+    shortLabel: "Công cụ",
+    icon: LayoutGrid,
+  },
+  {
+    href: "/competition",
     label: "Thi đua",
     shortLabel: "Thi đua",
     icon: Trophy,

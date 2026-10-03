@@ -5,6 +5,7 @@ import { HOME_PATH } from "@/lib/home";
 
 const PROTECTED_PATHS = [
   HOME_PATH,
+  "/competition",
   "/dashboard",
   "/feed",
   "/messages",
