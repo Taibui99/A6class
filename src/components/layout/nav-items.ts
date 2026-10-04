@@ -7,6 +7,7 @@ import {
   Trophy,
   LayoutDashboard,
   UsersRound,
+  ListTodo,
   type LucideIcon,
 } from "lucide-react";
 
@@ -24,16 +25,34 @@ export type NavItem = {
 /** Kho công cụ đứng đầu: đây là trang chính, chọn công cụ rồi chuyển tới. */
 export const navItems: NavItem[] = [
   {
-    href: HOME_PATH,
-    label: "Công cụ",
-    shortLabel: "Công cụ",
-    icon: LayoutGrid,
-  },
-  {
     href: "/competition",
     label: "Thi đua",
     shortLabel: "Thi đua",
     icon: Trophy,
+  },
+  {
+    href: "/tasks",
+    label: "Hoạt động",
+    shortLabel: "Việc lớp",
+    icon: ListTodo,
+  },
+  {
+    href: "/members",
+    label: "Thành viên",
+    shortLabel: "Thành viên",
+    icon: UsersRound,
+  },
+  {
+    href: "/dashboard",
+    label: "Tổng quan",
+    shortLabel: "Tổng quan",
+    icon: LayoutDashboard,
+  },
+  {
+    href: HOME_PATH,
+    label: "Kho công cụ",
+    shortLabel: "Công cụ",
+    icon: LayoutGrid,
   },
   {
     href: "/class",
@@ -41,12 +60,6 @@ export const navItems: NavItem[] = [
     shortLabel: "Lớp",
     icon: UsersRound,
     teacherOnly: true,
-  },
-  {
-    href: "/dashboard",
-    label: "Bảng điều khiển",
-    shortLabel: "Tổng quan",
-    icon: LayoutDashboard,
   },
   {
     href: "/feed",

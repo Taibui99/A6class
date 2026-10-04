@@ -10,8 +10,10 @@ import {
 } from "lucide-react";
 
 import { getCurrentUser } from "@/lib/auth/current";
-import { getHubStats } from "@/lib/hub";
+import { getHubOverview, getHubStats } from "@/lib/hub";
+import { getUserClassId } from "@/lib/feed";
 import { allTools, type ToolIcon } from "@/lib/apps";
+import { BentoWelcome } from "@/components/welcome/BentoWelcome";
 
 const ICONS: Record<ToolIcon, LucideIcon> = {
   trophy: Trophy,
@@ -57,32 +59,78 @@ export default async function HubPage() {
   if (!user) redirect("/login");
 
   const tools = allTools();
-  const stats = await getHubStats(user.id);
+  const classId = await getUserClassId(user.id);
 
+  const [stats, overview] = await Promise.all([
+    getHubStats(user.id),
+    classId ? getHubOverview(classId) : null,
+  ]);
+
+  const now = new Date();
   const greeting = new Intl.DateTimeFormat("vi-VN", {
+    hour: "numeric",
+    hour12: true,
+  })
+    .format(now)
+    .replace(/^(\d+)\s*(AM|PM)$/i, (_m, h: string, p: string) => {
+      const hour = Number(h) % 12;
+      return `${hour === 0 ? 12 : hour} giờ ${p.toLowerCase() === "am" ? "sáng" : "chiều tối"}`;
+    });
+  const dateText = new Intl.DateTimeFormat("vi-VN", {
     weekday: "long",
     day: "2-digit",
     month: "2-digit",
-  }).format(new Date());
+  }).format(now);
 
   return (
     <div className="space-y-6">
-      {/* ── Mở đầu ─────────────────────────────────────────── */}
-      <header className="relative overflow-hidden rounded-2xl bg-surface p-5 shadow-sm ring-1 ring-border">
-        <div aria-hidden className="pointer-events-none absolute inset-0">
-          <span className="absolute -left-20 -top-24 h-56 w-56 rounded-full bg-sky-500/20 blur-[70px]" />
-          <span className="absolute -right-16 top-4 h-48 w-48 rounded-full bg-violet-500/20 blur-[70px]" />
-        </div>
+      {overview ? (
+        <BentoWelcome
+          overview={overview}
+          greeting={`${dateText} · ${greeting}`}
+          userName={user.fullName ?? "bạn"}
+        />
+      ) : (
+        <header className="relative overflow-hidden rounded-2xl bg-surface p-5 shadow-sm ring-1 ring-border">
+          <div aria-hidden className="pointer-events-none absolute inset-0">
+            <span className="absolute -left-20 -top-24 size-56 rounded-full bg-sky/20 blur-[70px]" />
+            <span className="absolute -right-16 top-4 size-48 rounded-full bg-violet/20 blur-[70px]" />
+          </div>
+          <div className="relative">
+            <p className="text-xs font-semibold uppercase tracking-wider text-text">
+              {dateText} · {greeting}
+            </p>
+            <h1 className="mt-1 text-2xl font-black tracking-tight text-text sm:text-3xl">
+              Xin chào, {user.fullName ?? "bạn"}
+            </h1>
+            {user.role === "TEACHER" ? (
+              <p className="mt-2 max-w-prose text-sm leading-relaxed text-text">
+                Bạn chưa có lớp nào. Mở{" "}
+                <Link
+                  href="/class"
+                  className="font-bold text-success hover:underline"
+                >
+                  Dữ liệu lớp
+                </Link>{" "}
+                để tạo lớp, nhập danh sách học sinh và chia tổ.
+              </p>
+            ) : (
+              <p className="mt-2 max-w-prose text-sm leading-relaxed text-text">
+                Bạn chưa được thêm vào lớp nào. Hãy nhờ giáo viên thêm bạn vào
+                lớp để xem điểm thi đua và nhiệm vụ.
+              </p>
+            )}
+          </div>
+        </header>
+      )}
 
-        <div className="relative">
-          <p className="text-xs font-semibold uppercase tracking-wider text-text">
-            {greeting}
-          </p>
-          <h1 className="mt-1 text-2xl font-black tracking-tight text-text sm:text-3xl">
-            Xin chào, {user.fullName ?? "bạn"}
-          </h1>
-        </div>
-      </header>
+      <section
+        aria-labelledby="kho-cong-cu"
+        className="space-y-3 border-t border-border pt-6"
+      >
+        <h2 id="kho-cong-cu" className="text-sm font-bold text-text">
+          Kho công cụ
+        </h2>
 
       {/* ── Lưới công cụ ───────────────────────────────────── */}
       {user.role === "TEACHER" ? (
@@ -143,7 +191,7 @@ export default async function HubPage() {
               </div>
 
               {/* Số liệu sống cho công cụ nội bộ */}
-              {!tool.external && stats ? (
+              {!tool.external && tool.id === "competition" && stats ? (
                 <dl className="relative mt-4 grid grid-cols-3 gap-2 border-t border-border pt-3">
                   {stats.map((s) => (
                     <div key={s.label} className="min-w-0">
@@ -216,6 +264,7 @@ export default async function HubPage() {
             </Link>
           );
         })}
+        </section>
       </section>
     </div>
   );

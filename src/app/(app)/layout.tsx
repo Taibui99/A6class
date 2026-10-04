@@ -2,10 +2,11 @@ import { redirect } from "next/navigation";
 
 import { getCurrentUser } from "@/lib/auth/current";
 import { Brand } from "@/components/layout/brand";
-import { HomeTaskLink } from "@/components/layout/home-task-link";
 import { UserMenu } from "@/components/layout/user-menu";
 import { MobilePageTitle } from "@/components/layout/mobile-page-title";
 import { AnimatedPage } from "@/components/layout/animated-page";
+import { NavTabs } from "@/components/layout/nav-tabs";
+import { BottomNav } from "@/components/layout/bottom-nav";
 
 export default async function AppLayout({
   children,
@@ -15,23 +16,35 @@ export default async function AppLayout({
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
+  const isTeacher = user.role === "TEACHER";
+
   return (
-    <div className="bg-hello min-h-dvh">
-      {/* Top bar duy nhất — không có danh sách tab điều hướng */}
-      <header className="sticky top-0 z-40 flex h-14 items-center justify-between gap-2 border-b border-border bg-surface/95 px-4 backdrop-blur-md">
-        <Brand size="sm" markClassName="vt-mascot-topbar" />
-        <MobilePageTitle />
-        <div className="flex shrink-0 items-center gap-1.5">
-          <HomeTaskLink />
+    <div className="bg-hello min-h-dvh flex flex-col">
+      {/* Top bar với logo + desktop nav tabs + user menu */}
+      <header className="sticky top-0 z-40 flex h-14 items-center justify-between gap-3 border-b border-border bg-surface/95 px-4 backdrop-blur-md">
+        <div className="flex items-center gap-6">
+          <Brand size="sm" />
+          <NavTabs isTeacher={isTeacher} />
+        </div>
+
+        <div className="md:hidden">
+          <MobilePageTitle />
+        </div>
+
+        <div className="flex shrink-0 items-center gap-2">
           <UserMenu user={user} variant="mobile" />
         </div>
       </header>
 
-      <main className="min-h-dvh">
-        <div className="mx-auto w-full max-w-4xl px-4 py-5 sm:px-6 lg:px-8 lg:py-8">
+      {/* Main content với padding đáy cho mobile bottom bar */}
+      <main className="flex-1 pb-20 md:pb-8">
+        <div className="mx-auto w-full max-w-6xl px-3 py-5 sm:px-6 lg:px-8">
           <AnimatedPage>{children}</AnimatedPage>
         </div>
       </main>
+
+      {/* Bottom navigation bar cho điện thoại */}
+      <BottomNav isTeacher={isTeacher} />
     </div>
   );
 }

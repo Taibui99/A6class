@@ -23,33 +23,33 @@
 - [x] App shell layout ((app) group: header, sidebar, animated pages)
 - [x] Loading / error states (loading.tsx, error.tsx)
 - [x] Basic animations (fade in, slide in, scale in, reduced-motion support)
-- [ ] Dashboard page (stat cards, tasks, team, announcements — placeholder data)
+- [x] Dashboard page (stat cards, tasks, team, announcements — live scoreboard & task integration)
 - [ ] Placeholder pages (feed, nhan-tin, cau-hoi, ho-so with designed empty states) — done as pages
 - [ ] Verify visual QA in browser
 
 ## Phase 3: Class Management
 - [ ] Class CRUD
-- [ ] Student management
-- [ ] Team management
-- [ ] Role system
+- [x] Student management (MembersDirectory with 36 students & roles)
+- [x] Team management (Team overview & 4-team roster)
+- [x] Role system (Ban cán sự & Tổ trưởng spotlight)
 - [ ] Permission model
-- [ ] Class overview page
+- [x] Class overview page (/members & /class)
 
 ## Phase 4: Competition System
-- [ ] Competition periods
-- [ ] Point transactions
-- [ ] Personal leaderboard
-- [ ] Team leaderboard
+- [x] Competition periods
+- [x] Point transactions
+- [x] Personal leaderboard
+- [x] Team leaderboard (Enhanced Podium Top 1, medals, progress bars)
 - [ ] Achievement system
-- [ ] Real-time score updates
+- [x] Real-time score updates
 
 ## Phase 5: Tasks
-- [ ] Task CRUD
-- [ ] Task assignment
-- [ ] Task submission
-- [ ] Task review
-- [ ] Task status tracking
-- [ ] Deadline management
+- [x] Task CRUD (Create task modal with title, team, priority, deadline, points)
+- [x] Task assignment (Assign to teams, whole class, or roles)
+- [x] Task submission (Submission counters & review)
+- [x] Task review
+- [x] Task status tracking (Interactive toggle TODO -> IN_PROGRESS -> COMPLETED)
+- [x] Deadline management (Relative time countdown & urgent badges)
 
 ## Phase 6: Social Features
 - [ ] Class feed

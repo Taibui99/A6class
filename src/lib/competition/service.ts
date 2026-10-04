@@ -5,17 +5,40 @@ import { resolveCompetitionAccess } from "@/lib/competition/access";
 import { COMPETITION_CLASS } from "@/lib/competition/config";
 import { periodLabel, startOfWeek } from "@/lib/competition/scoring";
 import { auth } from "@/lib/auth/server";
+import { getCurrentUser } from "@/lib/auth/current";
 import { prisma } from "@/lib/prisma";
 
 const MAX_COUNT = 50;
 
 export class CompetitionError extends Error {}
 
-/** Lớp 12A6 — chỉ có một lớp trong hệ thống. */
+/**
+ * Lớp đang được xem: ưu tiên lớp mà người đăng nhập thực sự thuộc về.
+ *
+ * Trước đây hàm này chỉ tìm theo tên "12A6" + năm học ghi cứng trong
+ * config, nên khi giáo viên đặt tên lớp khác (12A7, 10B2...) thì mọi
+ * trang thi đua đều ném lỗi "Chưa có lớp 12A6" dù lớp đã tồn tại.
+ * Nay ưu tiên membership của chính người đang đăng nhập.
+ *
+ * Vẫn giữ nhánh rơi về lớp mẫu để dữ liệu seed sẵn có tiếp tục chạy được
+ * cho tài khoản chưa thuộc lớp nào.
+ */
 export async function getClass() {
+  const select = { id: true, name: true, schoolYear: true } as const;
+
+  const user = await getCurrentUser();
+  if (user) {
+    const membership = await prisma.classMembership.findFirst({
+      where: { userId: user.id },
+      orderBy: { joinedAt: "asc" },
+      select: { class: { select } },
+    });
+    if (membership) return membership.class;
+  }
+
   return prisma.class.findFirst({
     where: { name: COMPETITION_CLASS.name, schoolYear: COMPETITION_CLASS.schoolYear },
-    select: { id: true, name: true, schoolYear: true },
+    select,
   });
 }
 
@@ -55,7 +78,7 @@ export async function getAccessForPeriod(
 
   const membership = user.memberships[0];
   if (!membership && user.role !== "TEACHER") {
-    throw new CompetitionError("Bạn chưa là thành viên của lớp 12A6.");
+    throw new CompetitionError("Bạn chưa thuộc lớp nào. Hãy nhờ giáo viên thêm bạn vào lớp.");
   }
 
   const period = periodId

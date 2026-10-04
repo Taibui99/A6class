@@ -1,6 +1,10 @@
 import "server-only";
 
-import { CRITERION_GROUPS, GRADE_TIERS } from "@/lib/competition/config";
+import {
+  COMPETITION_CLASS,
+  CRITERION_GROUPS,
+  GRADE_TIERS,
+} from "@/lib/competition/config";
 import type { CriterionRow } from "@/lib/competition/scoring";
 import { rankStudents, rankTeams, scoreStudents } from "@/lib/competition/scoring";
 import type { CompetitionAccess } from "@/lib/competition/access";
@@ -107,10 +111,10 @@ function buildGroups(criteria: CriterionRow[]): GroupView[] {
 }
 
 export async function loadCompetition(viewPeriodId?: string): Promise<CompetitionData> {
-  const klass = await service.getClass();
+const klass = await service.getClass();
   if (!klass) {
     throw new Error(
-      "Chưa có lớp 12A6 trong A6Class. Hãy chạy: npx tsx scripts/seed-competition.ts",
+      `Chưa có lớp "${COMPETITION_CLASS.name}" (${COMPETITION_CLASS.schoolYear}) trong A6Class. Nếu bạn đã tạo lớp riêng thì hãy đăng nhập bằng tài khoản giáo viên đó; còn không thì chạy: npx tsx scripts/seed-competition.ts`,
     );
   }
 

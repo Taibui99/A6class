@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&family=Orbitron:wght@700;900&display=swap');
 @import "tailwindcss";
 
 /* Theme "đấu trường" — navy xanh đã nâng sáng để đọc dễ chịu hơn
@@ -6,35 +6,38 @@
    Giữ nền tối nhưng đủ sáng để text-muted vẫn ≥ 5.6:1 trên cả
    --bg lẫn --surface. Nhấn sky → violet, nhấn phụ amber. */
 :root {
-  --primary: #38BDF8;
-  --primary-hover: #7DD3FC;
-  --primary-light: rgba(56, 189, 248, 0.18);
-  --primary-muted: rgba(56, 189, 248, 0.34);
-  --secondary: #A78BFA;
-  --secondary-light: rgba(167, 139, 250, 0.2);
-  --accent: #FBBF24;
-  --accent-light: rgba(251, 191, 36, 0.2);
+  --primary: #00F2FE;
+  --primary-hover: #7DF9FF;
+  --primary-light: rgba(0, 242, 254, 0.16);
+  --primary-muted: rgba(0, 242, 254, 0.34);
+  --secondary: #4FACFE;
+  --secondary-light: rgba(79, 172, 254, 0.18);
+  --accent: #FFB800;
+  --accent-light: rgba(255, 184, 0, 0.18);
+  --neon-pink: #FF2A85;
+  --neon-pink-light: rgba(255, 42, 133, 0.18);
   --success: #34D399;
   --success-light: rgba(52, 211, 153, 0.2);
-  --warning: #FBBF24;
-  --warning-light: rgba(251, 191, 36, 0.2);
-  --danger: #FB7185;
-  --danger-light: rgba(251, 113, 133, 0.2);
-  --bg: #16203F;
-  --surface: #1E2A52;
-  --surface-hover: #27356A;
-  --surface-elevated: #233064;
-  --border: #364580;
-  --border-strong: #4A5B98;
-  /* Toàn bộ chữ trên nền tối đều TRẮNG theo yêu cầu. Cả 3 token cùng
-     bằng trắng nên không còn chữ chìm nào đọc được trên nền navy. */
+  --warning: #FFB800;
+  --warning-light: rgba(255, 184, 0, 0.2);
+  --danger: #FF4D6D;
+  --danger-light: rgba(255, 77, 109, 0.2);
+  --bg: #0B0F19;
+  --surface: #151E31;
+  --surface-hover: #1E2A44;
+  --surface-elevated: #1A2440;
+  --border: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.22);
+  /* Chữ phụ trả về màu thật. Trên nền #0B0F19: #CBD5E1 đạt 11.6:1 và
+     #94A3B8 đạt 6.4:1 — cùng đạt AA cho chữ thường, nên phân cấp thị giác
+     dùng được mà không phải ép cả 3 token về trắng như bản navy trước. */
   --text: #FFFFFF;
-  --text-secondary: #FFFFFF;
-  --text-muted: #FFFFFF;
-  --focus-ring: rgba(56, 189, 248, 0.6);
-  --shadow-sm: 0 1px 2px rgba(9, 14, 35, 0.4);
-  --shadow-md: 0 4px 14px rgba(9, 14, 35, 0.45);
-  --shadow-lg: 0 14px 34px rgba(9, 14, 35, 0.5);
+  --text-secondary: #CBD5E1;
+  --text-muted: #94A3B8;
+  --focus-ring: rgba(0, 242, 254, 0.6);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 14px 34px rgba(0, 0, 0, 0.6);
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
@@ -70,8 +73,13 @@
      giao diện nền không đổi). */
   --color-muted: var(--text-muted);
   --color-muted-foreground: var(--text-secondary);
-  --color-accent: var(--surface-hover);
-  --color-accent-foreground: var(--text);
+  /* Trước đây `accent` trỏ tới `--surface-hover` — tức `text-accent` ra màu
+     nền, chữ biến mất. Nay trỏ đúng vàng neon của theme. */
+  --color-accent: var(--accent);
+  --color-accent-light: var(--accent-light);
+  --color-accent-foreground: #1A1200;
+  --color-neon-pink: var(--neon-pink);
+  --color-neon-pink-light: var(--neon-pink-light);
   --color-destructive: var(--danger);
   /* Tương tự: #ffffff trên #FB7185 chỉ 2.7:1 -> đổi sang đỏ rất đậm. */
   --color-destructive-foreground: #3F0512;
@@ -87,6 +95,9 @@
   --color-danger-light: var(--danger-light);
   --color-surface: var(--surface);
   --color-surface-hover: var(--surface-hover);
+  /* `bg-surface-2` được dùng nhiều trong bảng thi đua nhưng thiếu token nên
+     Tailwind không sinh class — các ô đó trong suốt. Bổ sung để có nền. */
+  --color-surface-2: var(--surface-elevated);
   --color-text: var(--text);
   --color-text-secondary: var(--text-secondary);
   --color-text-muted: var(--text-muted);
@@ -107,7 +118,10 @@
   --radius-md: 10px;
   --radius-lg: 14px;
   --radius-xl: 18px;
-  --radius-2xl: 24px;
+  --radius-2xl: 20px;
+  /* Font số/đồng hồ theo mẫu "A6 LEGENDS" (Orbitron). Chỉ dùng cho số
+     lớn, đâu đó chữ thường thì để Be Vietnam Pro cho dễ đọc tiếng Việt. */
+  --font-display: 'Orbitron', 'Be Vietnam Pro', sans-serif;
 }
 
 * {
@@ -136,7 +150,13 @@ textarea::placeholder {
 }
 
 body {
-  background: var(--bg);
+  background-color: var(--bg);
+  /* Hào quang neon cố định ở 2 góc — lấy từ mẫu. Dùng
+     background-attachment: fixed để không cuộn theo nội dung. */
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(0, 242, 254, 0.07) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(255, 42, 133, 0.07) 0%, transparent 40%);
+  background-attachment: fixed;
   color: var(--text);
   margin: 0;
   min-height: 100vh;
@@ -573,29 +593,6 @@ select {
   view-transition-name: mascot;
 }
 
-.vt-mascot-sidebar,
-.vt-mascot-topbar {
-  view-transition-name: none;
-}
-
-@media (min-width: 1024px) {
-  .vt-mascot-sidebar {
-    view-transition-name: mascot;
-  }
-  .vt-mascot-topbar {
-    view-transition-name: none;
-  }
-}
-
-@media (max-width: 1023px) {
-  .vt-mascot-sidebar {
-    view-transition-name: none;
-  }
-  .vt-mascot-topbar {
-    view-transition-name: mascot;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(*),
   ::view-transition-new(*),
@@ -764,4 +761,135 @@ select {
 
 .entry-progress {
   animation: entryProgress 1.25s ease-in-out infinite;
+}
+
+/* ==========================================================
+   Theme "A6 LEGENDS" — hiệu ứng đặc trưng lấy từ mẫu
+   ========================================================== */
+
+/* Thẻ kính: viền sáng + quệt phản quang khi rê chuột. Lớp ::before quét
+   từ trái sang phải, hover thì viền chuyển sang cyan và đổ bóng neon. */
+.vt-holo {
+  position: relative;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  transition:
+    transform 120ms ease,
+    border-color var(--motion-base) var(--ease-smooth),
+    box-shadow var(--motion-base) var(--ease-smooth);
+}
+
+.vt-holo::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.12) 45%,
+    rgba(0, 242, 254, 0.18) 50%,
+    transparent 60%
+  );
+  transition: left 700ms ease;
+  pointer-events: none;
+}
+
+.vt-holo:hover::before,
+.vt-holo:focus-within::before {
+  left: 100%;
+}
+
+.vt-holo:hover {
+  border-color: var(--primary);
+  box-shadow: 0 15px 35px var(--primary-muted);
+}
+
+/* Viền gradient cyan → hồng quanh avatar, dùng cho thẻ thành viên. */
+.vt-holo-ring {
+  background: linear-gradient(135deg, var(--primary), var(--neon-pink));
+}
+
+/* Chữ tiêu đề phát sáng: trắng → xanh nhạt → cyan. */
+.vt-neon-title {
+  background: linear-gradient(135deg, #ffffff 0%, #a5f3fc 50%, var(--primary) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Số lớn / đồng hồ đếm ngược dùng Orbitron kèm quầng cyan. */
+.vt-led {
+  font-family: var(--font-display);
+  color: var(--primary);
+  text-shadow: 0 0 15px var(--primary-muted);
+}
+
+/* Nút kim loại vàng (nút VIP trong mẫu). */
+.vt-btn-gold {
+  background: linear-gradient(135deg, var(--accent), #ff8800);
+  color: #000000;
+  box-shadow: 0 0 20px rgba(255, 184, 0, 0.4);
+  transition:
+    transform var(--motion-base) var(--ease-smooth),
+    box-shadow var(--motion-base) var(--ease-smooth);
+}
+
+.vt-btn-gold:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 30px rgba(255, 184, 0, 0.7);
+}
+
+.vt-btn-gold:active {
+  transform: translateY(0);
+}
+
+/* Vạch quét laser của modal. */
+@keyframes vtScan {
+  0% { top: 0; }
+  50% { top: 100%; }
+  100% { top: 0; }
+}
+
+.vt-scan-line {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--primary);
+  box-shadow: 0 0 15px var(--primary);
+  animation: vtScan 2s linear infinite;
+  pointer-events: none;
+}
+
+/* Người dùng bật "giảm chuyển động" thì tắt hết hiệu ứng bay lắc,
+   nhưng vẫn giữ màu neon — màu không gây chóng mắt. */
+@media (prefers-reduced-motion: reduce) {
+  .vt-holo,
+  .vt-holo::before,
+  .vt-btn-gold {
+    transition: none;
+  }
+
+  .vt-holo::before,
+  .vt-scan-line {
+    animation: none;
+    display: none;
+  }
+
+  .vt-holo:hover {
+    transform: none;
+  }
+
+  .vt-btn-gold:hover {
+    transform: none;
+  }
+
+  .entry-glow,
+  .entry-bob,
+  .entry-progress {
+    animation: none;
+  }
 }

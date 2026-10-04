@@ -97,16 +97,42 @@ const HARDCODED_URLS: Record<string, string> = {
 /** Trang chính của web lớp: kho công cụ. */
 export const HUB_PATH = "/apps";
 
-/** Công cụ nội bộ mở đầu danh sách. */
 export function internalTools(): InternalTool[] {
   return [
     {
       id: "competition",
       name: "Thi đua lớp",
-      summary: "Chấm điểm hằng tuần, xếp hạng tổ",
+      summary: "Chấm điểm hằng tuần, xếp hạng tổ, vinh danh Top 1",
       href: "/competition",
       icon: "trophy",
       accent: "sky",
+      external: false,
+    },
+    {
+      id: "tasks",
+      name: "Hoạt động & Việc lớp",
+      summary: "Giao việc theo tổ, theo dõi hạn chót và tiến độ nộp bài",
+      href: "/tasks",
+      icon: "clipboard",
+      accent: "violet",
+      external: false,
+    },
+    {
+      id: "members",
+      name: "Thành viên & 4 Tổ",
+      summary: "Danh bạ 36 thành viên, ban cán sự và sơ đồ tổ",
+      href: "/members",
+      icon: "docs",
+      accent: "emerald",
+      external: false,
+    },
+    {
+      id: "dashboard",
+      name: "Bảng điều khiển",
+      summary: "Tổng quan nhịp sống lớp, thông báo và lịch trình",
+      href: "/dashboard",
+      icon: "clipboard",
+      accent: "amber",
       external: false,
     },
   ];

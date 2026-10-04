@@ -307,46 +307,86 @@ function RankPanel({
           cho công bằng, không tính tổng.
         </p>
 
-        <ol className="mt-3 space-y-2">
-          {teams.map((t) => (
-            <li
-              key={t.teamId}
-              className={cn(
-                "rounded-xl bg-canvas p-3 ring-1",
-                meTeam?.teamId === t.teamId ? "ring-sky-500/40" : "ring-border",
-              )}
-            >
-              <div className="flex items-center gap-2">
-                <span
-                  className="grid size-7 shrink-0 place-items-center rounded-lg text-xs font-extrabold"
-                  style={{
-                    background: `${t.color ?? "#64748B"}22`,
-                    color: t.color ?? "#94A3B8",
-                  }}
-                >
-                  {t.rank}
+        {teams.length > 0 && teams[0] && (
+          <div className="mt-3 relative overflow-hidden rounded-2xl bg-gradient-to-r from-amber-500/20 via-yellow-500/10 to-transparent p-4 ring-1 ring-amber-500/30">
+            <div className="flex items-center gap-3">
+              <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-400 text-slate-950 font-black text-xl shadow-md">
+                🏆
+              </span>
+              <div className="min-w-0">
+                <span className="inline-block rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-300 ring-1 ring-amber-500/40">
+                  TOP 1 XUẤT SẮC TUẦN NÀY
                 </span>
-                <span className="flex-1 truncate text-sm font-bold text-text">{t.teamName}</span>
-                <span className="shrink-0 text-sm font-extrabold tabular-nums" style={{ color: t.color ?? "#94A3B8" }}>
-                  {t.average.toFixed(1)}
-                </span>
+                <p className="mt-0.5 truncate text-base font-black text-text">
+                  {teams[0].teamName}
+                </p>
+                <p className="text-xs text-amber-300/90 font-medium">
+                  Điểm trung bình: <strong className="font-extrabold">{teams[0].average.toFixed(1)}</strong> đ/bạn
+                </p>
               </div>
-              <dl className="mt-2 grid grid-cols-3 gap-1 text-[10px] text-muted">
-                <div>
-                  <dt>Thành viên</dt>
-                  <dd className="tabular-nums">{t.memberIds.length}</dd>
+            </div>
+          </div>
+        )}
+
+        <ol className="mt-3 space-y-2.5">
+          {teams.map((t, idx) => {
+            const medals = ["🥇", "🥈", "🥉", "🏅"];
+            const maxAvg = Math.max(...teams.map((x) => x.average), 1);
+            const pct = Math.max(10, Math.min(100, Math.round((t.average / maxAvg) * 100)));
+
+            return (
+              <li
+                key={t.teamId}
+                className={cn(
+                  "rounded-2xl bg-canvas p-3.5 ring-1 transition-all",
+                  meTeam?.teamId === t.teamId
+                    ? "ring-sky-500/50 bg-sky-950/20"
+                    : "ring-border hover:ring-border-strong",
+                )}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <span className="text-base shrink-0">{medals[idx] ?? "🏅"}</span>
+                    <span className="truncate text-sm font-bold text-text">{t.teamName}</span>
+                    {meTeam?.teamId === t.teamId && (
+                      <span className="rounded-full bg-sky-500/20 px-2 py-0.5 text-[10px] font-bold text-sky-300 ring-1 ring-sky-500/30">
+                        Tổ của bạn
+                      </span>
+                    )}
+                  </div>
+                  <span className="shrink-0 text-base font-black tabular-nums" style={{ color: t.color ?? "#94A3B8" }}>
+                    {t.average.toFixed(1)} <span className="text-xs font-normal text-muted">đ/bạn</span>
+                  </span>
                 </div>
-                <div>
-                  <dt>Từ thành viên</dt>
-                  <dd className="tabular-nums">{t.fromMembers}</dd>
+
+                {/* Progress bar */}
+                <div className="mt-2.5 h-1.5 w-full overflow-hidden rounded-full bg-surface">
+                  <div
+                    className="h-full rounded-full transition-all duration-500"
+                    style={{
+                      width: `${pct}%`,
+                      backgroundColor: t.color ?? "#38BDF8",
+                    }}
+                  />
                 </div>
-                <div>
-                  <dt>Ghi thẳng tổ</dt>
-                  <dd className="tabular-nums">{t.direct}</dd>
-                </div>
-              </dl>
-            </li>
-          ))}
+
+                <dl className="mt-2.5 grid grid-cols-3 gap-1 text-[10px] text-muted border-t border-border/50 pt-2">
+                  <div>
+                    <dt>Sĩ số</dt>
+                    <dd className="font-semibold text-text tabular-nums">{t.memberIds.length} bạn</dd>
+                  </div>
+                  <div>
+                    <dt>Từ cá nhân</dt>
+                    <dd className="font-semibold text-text tabular-nums">{t.fromMembers}</dd>
+                  </div>
+                  <div>
+                    <dt>Cộng tổ</dt>
+                    <dd className="font-semibold text-text tabular-nums">{t.direct}</dd>
+                  </div>
+                </dl>
+              </li>
+            );
+          })}
         </ol>
       </section>
 
