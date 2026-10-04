@@ -88,12 +88,21 @@ export function GoogleButton({
   );
 }
 
-/** Đường dẫn trả về sau khi Google chuyển người dùng về lại. */
+/**
+ * Đường dẫn trả về sau khi Google chuyển người dùng về lại.
+ *
+ * Phải là URL TUYỆT ĐỐI. Nếu truyền đường dẫn tương đối, Neon Auth phân
+ * giải nó theo domain của chính nó — người dùng sẽ bị đưa tới trang Neon
+ * thay vì web của mình, rồi quay lại trang đăng nhập.
+ */
 function buildCallback(redirect: string | null | undefined): string {
-  if (redirect && redirect.startsWith("/")) {
-    return redirect;
-  }
-  return HOME_PATH;
+  const path =
+    redirect && redirect.startsWith("/") && !redirect.startsWith("//")
+      ? redirect
+      : HOME_PATH;
+
+  if (typeof window === "undefined") return path;
+  return new URL(path, window.location.origin).toString();
 }
 
 /** Dịch lỗi kỹ thuật sang thông báo ngắn gọn cho học sinh. */
