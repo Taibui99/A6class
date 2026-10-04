@@ -113,7 +113,7 @@ export default async function DashboardPage() {
       )}
 
       {/* ── Banner chào mừng sinh động ───────────────────────── */}
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-950 via-surface to-slate-900 p-6 sm:p-8 ring-1 ring-border shadow-lg">
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 via-surface to-neon-pink/5 p-6 sm:p-8 ring-1 ring-border shadow-lg">
         <div aria-hidden className="pointer-events-none absolute -right-10 -top-10 h-72 w-72 rounded-full bg-sky-500/15 blur-3xl" />
         <div aria-hidden className="pointer-events-none absolute right-40 bottom-0 h-60 w-60 rounded-full bg-violet-500/15 blur-3xl" />
 

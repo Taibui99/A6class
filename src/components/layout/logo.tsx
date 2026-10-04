@@ -31,16 +31,16 @@ export function Logo({
     >
       <defs>
         <linearGradient id="a6apexGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#00F2FE" />
-          <stop offset="50%" stopColor="#4FACFE" />
-          <stop offset="100%" stopColor="#6B11FF" />
+          <stop offset="0%" stopColor="#06B6D4" />
+          <stop offset="50%" stopColor="#3B82F6" />
+          <stop offset="100%" stopColor="#7C3AED" />
         </linearGradient>
         <filter id="a6apexGlow" x="-20%" y="-20%" width="140%" height="140%">
           <feDropShadow
             dx="0"
             dy="4"
             stdDeviation="6"
-            floodColor="#00F2FE"
+            floodColor="#06B6D4"
             floodOpacity="0.3"
           />
         </filter>
@@ -74,11 +74,11 @@ export function Logo({
         fontFamily="'Be Vietnam Pro', 'Inter', sans-serif"
         fontWeight="900"
         fontSize="30"
-        fill="#FFFFFF"
+        fill="#0B1220"
         letterSpacing="-1"
       >
         A6
-        <tspan fill="#00F2FE">CLASS</tspan>
+        <tspan fill="#0E7490">CLASS</tspan>
       </text>
       <circle cx="242" cy="42" r="4" fill="#FFB800" />
     </svg>

@@ -100,7 +100,7 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
       )}
 
       {/* Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-900/60 via-surface to-slate-900 p-6 sm:p-8 ring-1 ring-border shadow-md">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 via-surface to-accent/5 p-6 sm:p-8 ring-1 ring-border shadow-md">
         <div aria-hidden className="pointer-events-none absolute -right-10 -top-10 h-64 w-64 rounded-full bg-sky-500/10 blur-3xl" />
         <div aria-hidden className="pointer-events-none absolute right-40 bottom-0 h-48 w-48 rounded-full bg-violet-500/10 blur-3xl" />
 
