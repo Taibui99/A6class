@@ -17,6 +17,33 @@ export type ParsedRosterRow = {
   role: RosterRole;
 };
 
+/**
+ * Bỏ dấu + hạ chữ thường + bỏ ký tự lạ, để so khớp tên không vướng lỗi gõ
+ * dấu khi giáo viên nhập lại danh sách.
+ */
+export function looseName(raw: string): string {
+  return raw
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
+    .replace(/[^a-zA-Z0-9]/g, "")
+    .toLowerCase();
+}
+
+/**
+ * Email sinh ra từ seed hoặc từ dòng nhập không có email — tức là chưa phải
+ * email thật của học sinh, nên có thể đổi thoải mái.
+ */
+export function isPlaceholderEmail(email: string): boolean {
+  const e = email.toLowerCase();
+  return (
+    e.endsWith("@a6class.test") ||
+    e.endsWith("@a6class.local") ||
+    e.endsWith("@example.com")
+  );
+}
+
 /** Chuẩn hoá: bỏ khoảng trắng thừa, giữ dấu tiếng Việt. */
 function tidy(raw: string): string {
   return raw.replace(/\s+/g, " ").trim();

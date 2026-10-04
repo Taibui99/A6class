@@ -1,6 +1,8 @@
 ﻿import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth/current";
 import { parseRoster } from "@/lib/classes/roster";
+import { isPlaceholderEmail } from "@/lib/classes/roster";
+import { findUniqueMemberByName } from "@/lib/classes/roster-match";
 
 /** Chuẩn hoá: bỏ khoảng trắng thừa, giữ dấu tiếng Việt. */
 function tidy(raw: string): string {
@@ -176,13 +178,17 @@ export type ImportSummary = {
   added: number;
   updated: number;
   teamsCreated: number;
+  /** Học sinh cũ được đổi từ email giả sang email thật. */
+  adopted: number;
 };
+
 
 /**
  * Nhập danh sách học sinh vào lớp.
  *
  * - Tổ ghi trong danh sách mà chưa có sẽ được tạo tự động.
- * - Học sinh có email khớp sẽ được cập nhật tên/tổ/chức vụ.
+ * - Dòng khớp tên với học sinh đang có email giả sẽ được nâng cấp: đổi sang
+ *   email thật, giữ nguyên tổ và chức vụ. Không tạo bản ghi trùng.
  * - Học sinh đã đăng nhập Google với đúng email sẽ tự gắn vào lớp ngay.
  */
 export async function importRoster(classId: string, raw: string): Promise<ImportSummary> {
@@ -194,7 +200,7 @@ export async function importRoster(classId: string, raw: string): Promise<Import
     throw new ClassError("Chưa đọc được học sinh nào. Mỗi dòng cần ít nhất có Họ tên.");
   }
 
-  const summary: ImportSummary = { added: 0, updated: 0, teamsCreated: 0 };
+  const summary: ImportSummary = { added: 0, updated: 0, teamsCreated: 0, adopted: 0 };
 
   for (const row of rows) {
     // Tìm/tạo tổ
@@ -214,6 +220,40 @@ export async function importRoster(classId: string, raw: string): Promise<Import
         teamId = created.id;
         summary.teamsCreated += 1;
       }
+    }
+
+    // Tên là khoá nhận diện: nếu lớp đã có đúng người này thì cập nhật tại
+    // chỗ chứ không tạo bản ghi thứ hai. Áp dụng cả khi dòng không có email —
+    // nếu không, dán danh sách cũ sẽ nhân đôi số học sinh.
+    const existingMember = await findUniqueMemberByName(classId, row.fullName);
+    if (existingMember) {
+      const keepEmail = row.email ?? existingMember.user.email;
+      const upgradesEmail =
+        row.email !== null &&
+        row.email !== existingMember.user.email &&
+        isPlaceholderEmail(existingMember.user.email);
+
+      // Email đã có người khác dùng thì để nguyên email cũ.
+      const emailTaken =
+        row.email !== null &&
+        row.email !== existingMember.user.email &&
+        (await prisma.user.count({ where: { email: row.email } })) > 0;
+
+      await prisma.user.update({
+        where: { id: existingMember.user.id },
+        data: {
+          fullName: row.fullName,
+          ...(upgradesEmail && !emailTaken ? { email: keepEmail } : {}),
+        },
+      });
+      await prisma.classMembership.update({
+        where: { id: existingMember.id },
+        data: { teamId: teamId ?? existingMember.teamId, role: row.role },
+      });
+
+      if (upgradesEmail && !emailTaken) summary.adopted += 1;
+      else summary.updated += 1;
+      continue;
     }
 
     // Học sinh có email → dùng email làm khoá; không email → tạo bản ghi riêng

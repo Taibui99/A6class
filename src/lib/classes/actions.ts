@@ -116,7 +116,8 @@ export async function importRosterAction(
     const r = await service.importRoster(classId, raw);
     refresh(classId);
 
-    const bits = [`Thêm ${r.added}`, `cập nhật ${r.updated}`];
+    const bits = [`thêm ${r.added}`, `cập nhật ${r.updated}`];
+    if (r.adopted > 0) bits.push(`nâng cấp email thật cho ${r.adopted}`);
     if (r.teamsCreated > 0) bits.push(`tạo ${r.teamsCreated} tổ mới`);
 
     return { ok: true, message: `Đã nhập: ${bits.join(", ")}.` };
