@@ -251,7 +251,7 @@ export function SplashScreen() {
               className="h-full rounded-full"
               style={{
                 width: `${shownProgress}%`,
-                background: "linear-gradient(90deg,#38BDF8,#A78BFA)",
+                background: "linear-gradient(90deg,#00F2FE,#4FACFE)",
                 boxShadow: "0 0 14px rgba(167,139,250,.7)",
                 transition: "width 90ms linear",
               }}

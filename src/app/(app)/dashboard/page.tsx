@@ -39,10 +39,10 @@ const roleLabels: Record<string, string> = {
 };
 
 const DEFAULT_TEAMS = [
-  { id: "team-1", name: "Tổ 1 · Tiên Phong", color: "#38BDF8", totalScore: 320, rank: 1 },
-  { id: "team-2", name: "Tổ 2 · Vươn Xa", color: "#A78BFA", totalScore: 310, rank: 2 },
+  { id: "team-1", name: "Tổ 1 · Tiên Phong", color: "#00F2FE", totalScore: 320, rank: 1 },
+  { id: "team-2", name: "Tổ 2 · Vươn Xa", color: "#4FACFE", totalScore: 310, rank: 2 },
   { id: "team-3", name: "Tổ 3 · Bứt Phá", color: "#34D399", totalScore: 295, rank: 3 },
-  { id: "team-4", name: "Tổ 4 · Vững Vàng", color: "#FBBF24", totalScore: 285, rank: 4 },
+  { id: "team-4", name: "Tổ 4 · Vững Vàng", color: "#FFB800", totalScore: 285, rank: 4 },
 ];
 
 export default async function DashboardPage() {
@@ -256,7 +256,7 @@ export default async function DashboardPage() {
                         className="h-full rounded-full transition-all duration-500"
                         style={{
                           width: `${pct}%`,
-                          backgroundColor: team.color ?? "#38BDF8",
+                          backgroundColor: team.color ?? "#00F2FE",
                         }}
                       />
                     </div>
