@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
   ArrowUpRight,
@@ -86,8 +86,7 @@ export default async function HubPage() {
       {/* ── Hero ──────────────────────────────────────────────── */}
       <section className="relative overflow-hidden rounded-3xl border border-border bg-surface p-6 shadow-sm sm:p-8">
         <div aria-hidden className="pointer-events-none absolute inset-0">
-          <span className="absolute -left-24 -top-28 size-72 rounded-full bg-sky/12 blur-3xl" />
-          <span className="absolute -right-20 top-10 size-64 rounded-full bg-neon-pink/10 blur-3xl" />
+          
         </div>
 
         <div className="relative space-y-5">
@@ -140,10 +139,6 @@ export default async function HubPage() {
           href="/dashboard"
           className="group relative block overflow-hidden rounded-2xl border border-border bg-surface p-5 shadow-sm transition hover:-translate-y-0.5 hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
-          <span
-            aria-hidden
-            className="pointer-events-none absolute -right-10 -top-12 size-40 rounded-full bg-sky/20 blur-3xl"
-          />
           <div className="relative flex items-start gap-3">
             <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-sky/10 ring-1 ring-sky/25">
               <Rocket aria-hidden className="size-6 text-sky" />
@@ -263,11 +258,6 @@ export default async function HubPage() {
                 href={tool.href}
                 className={`group relative block overflow-hidden rounded-2xl border border-border bg-surface p-5 shadow-sm transition hover:-translate-y-0.5 hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${accent.ring}`}
               >
-                <span
-                  aria-hidden
-                  className={`pointer-events-none absolute -right-10 -top-12 size-40 rounded-full ${accent.glow} blur-3xl`}
-                />
-
                 <div className="relative flex items-start gap-3">
                   <span
                     className={`grid size-11 shrink-0 place-items-center rounded-xl ${accent.bg} ring-1 ${accent.ring}`}

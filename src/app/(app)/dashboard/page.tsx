@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
   Activity,
@@ -109,9 +109,6 @@ const announcements = data?.announcements ?? [];
 
       {/* ── Banner chào mừng sinh động ───────────────────────── */}
       <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 via-surface to-neon-pink/5 p-6 sm:p-8 ring-1 ring-border shadow-lg">
-        <div aria-hidden className="pointer-events-none absolute -right-10 -top-10 h-72 w-72 rounded-full bg-sky-500/15 blur-3xl" />
-        <div aria-hidden className="pointer-events-none absolute right-40 bottom-0 h-60 w-60 rounded-full bg-violet-500/15 blur-3xl" />
-
         <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2">
@@ -147,7 +144,7 @@ const announcements = data?.announcements ?? [];
         <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
           <Link
             href="/competition"
-            className="group rounded-2xl bg-surface/80 backdrop-blur-sm p-4 ring-1 ring-border/80 transition hover:ring-amber-500/40 hover:-translate-y-0.5"
+            className="group rounded-2xl bg-surface p-4 ring-1 ring-border/80 transition hover:ring-amber-500/40 hover:-translate-y-0.5"
           >
             <div className="flex items-center justify-between text-text-muted">
               <span className="text-xs font-semibold">Tổ dẫn đầu 🏆</span>
@@ -163,7 +160,7 @@ const announcements = data?.announcements ?? [];
 
           <Link
             href="/tasks"
-            className="group rounded-2xl bg-surface/80 backdrop-blur-sm p-4 ring-1 ring-border/80 transition hover:ring-sky-500/40 hover:-translate-y-0.5"
+            className="group rounded-2xl bg-surface p-4 ring-1 ring-border/80 transition hover:ring-sky-500/40 hover:-translate-y-0.5"
           >
             <div className="flex items-center justify-between text-text-muted">
               <span className="text-xs font-semibold">Việc lớp tuần này</span>
@@ -177,7 +174,7 @@ const announcements = data?.announcements ?? [];
 
           <Link
             href="/members"
-            className="group rounded-2xl bg-surface/80 backdrop-blur-sm p-4 ring-1 ring-border/80 transition hover:ring-emerald-500/40 hover:-translate-y-0.5"
+            className="group rounded-2xl bg-surface p-4 ring-1 ring-border/80 transition hover:ring-emerald-500/40 hover:-translate-y-0.5"
           >
             <div className="flex items-center justify-between text-text-muted">
               <span className="text-xs font-semibold">Sĩ số lớp</span>
@@ -189,7 +186,7 @@ const announcements = data?.announcements ?? [];
 
           <Link
             href={HOME_PATH}
-            className="group rounded-2xl bg-surface/80 backdrop-blur-sm p-4 ring-1 ring-border/80 transition hover:ring-violet-500/40 hover:-translate-y-0.5"
+            className="group rounded-2xl bg-surface p-4 ring-1 ring-border/80 transition hover:ring-violet-500/40 hover:-translate-y-0.5"
           >
             <div className="flex items-center justify-between text-text-muted">
               <span className="text-xs font-semibold">Kho công cụ</span>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useTransition } from "react";
 import {
@@ -101,8 +101,7 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
 
       {/* Header Banner */}
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 via-surface to-accent/5 p-6 sm:p-8 ring-1 ring-border shadow-md">
-        <div aria-hidden className="pointer-events-none absolute -right-10 -top-10 h-64 w-64 rounded-full bg-sky-500/10 blur-3xl" />
-        <div aria-hidden className="pointer-events-none absolute right-40 bottom-0 h-48 w-48 rounded-full bg-violet-500/10 blur-3xl" />
+        
 
         <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
@@ -129,7 +128,7 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
 
         {/* 4 Thẻ thống kê */}
         <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-          <div className="rounded-2xl bg-surface/80 backdrop-blur-sm p-4 ring-1 ring-border/80">
+          <div className="rounded-2xl bg-surface p-4 ring-1 ring-border/80">
             <div className="flex items-center justify-between text-text-muted">
               <span className="text-xs font-semibold">Tổng việc</span>
               <ListTodo className="size-4 text-sky" />
@@ -137,7 +136,7 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
             <p className="mt-2 text-2xl font-black text-text">{totalCount}</p>
           </div>
 
-          <div className="rounded-2xl bg-surface/80 backdrop-blur-sm p-4 ring-1 ring-border/80">
+          <div className="rounded-2xl bg-surface p-4 ring-1 ring-border/80">
             <div className="flex items-center justify-between text-text-muted">
               <span className="text-xs font-semibold">Đang triển khai</span>
               <Clock className="size-4 text-amber" />
@@ -145,7 +144,7 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
             <p className="mt-2 text-2xl font-black text-amber-300">{inProgressCount}</p>
           </div>
 
-          <div className="rounded-2xl bg-surface/80 backdrop-blur-sm p-4 ring-1 ring-border/80">
+          <div className="rounded-2xl bg-surface p-4 ring-1 ring-border/80">
             <div className="flex items-center justify-between text-text-muted">
               <span className="text-xs font-semibold">Gấp / Quan trọng</span>
               <Flame className="size-4 text-rose-400" />
@@ -153,7 +152,7 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
             <p className="mt-2 text-2xl font-black text-rose-300">{urgentCount}</p>
           </div>
 
-          <div className="rounded-2xl bg-surface/80 backdrop-blur-sm p-4 ring-1 ring-border/80">
+          <div className="rounded-2xl bg-surface p-4 ring-1 ring-border/80">
             <div className="flex items-center justify-between text-text-muted">
               <span className="text-xs font-semibold">Đã hoàn tất</span>
               <CheckCircle2 className="size-4 text-emerald-400" />
@@ -220,7 +219,7 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
           <p className="mt-1 text-xs text-text-secondary">Hãy thử đổi bộ lọc hoặc thêm việc mới cho lớp nhé!</p>
         </div>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="cv-auto grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filteredTasks.map((task) => {
             const priorityInfo = PRIORITY_CONFIG[task.priority] || PRIORITY_CONFIG.MEDIUM;
             const PriorityIcon = priorityInfo.icon;
@@ -359,7 +358,7 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
 
       {/* Modal Tạo Hoạt Động Mới */}
       {showCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 animate-in fade-in">
           <div className="w-full max-w-lg rounded-3xl bg-surface p-6 ring-1 ring-border shadow-2xl space-y-5">
             <div className="flex items-center justify-between border-b border-border pb-4">
               <div>

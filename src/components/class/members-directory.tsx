@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -240,15 +240,6 @@ export function MembersDirectory({
   return (
     <div className="space-y-8">
       <section className="relative overflow-hidden rounded-3xl border border-border bg-surface p-6 shadow-md sm:p-8">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -right-10 -top-10 size-64 rounded-full bg-primary/10 blur-3xl"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute bottom-0 left-40 size-48 rounded-full bg-neon-pink/10 blur-3xl"
-        />
-
         <div className="relative space-y-3">
           <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary ring-1 ring-primary/30">
             <Users className="size-3.5" />
@@ -301,7 +292,7 @@ export function MembersDirectory({
             <Crown className="size-4 text-accent" />
             Ban cán sự
           </h2>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="cv-auto grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {officers.map((m) => {
               return (
                 <TiltCard
@@ -341,7 +332,7 @@ export function MembersDirectory({
             <Flag className="size-4 text-secondary" />
             Các tổ
           </h2>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="cv-auto grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {data.teams.map((t, i) => {
               const tone = teamTone(i);
               const active = selectedTeam === t.id;
@@ -436,7 +427,7 @@ export function MembersDirectory({
           Không có thành viên nào khớp bộ lọc.
         </p>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="cv-auto grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filtered.map((m) => (
             <MemberCard3D
               key={m.id}
@@ -456,7 +447,7 @@ export function MembersDirectory({
             type="button"
             aria-label="Đóng"
             onClick={() => setScanning(false)}
-            className="absolute inset-0 bg-[#0B1220]/75 backdrop-blur-sm"
+            className="absolute inset-0 bg-[#0B1220]/90"
           />
 
           <div
@@ -506,7 +497,7 @@ export function MembersDirectory({
 
       {selected && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
           onClick={() => setSelected(null)}
         >
           <div

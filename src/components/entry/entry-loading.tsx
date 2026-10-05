@@ -62,7 +62,7 @@ export function EntryLoading({ to = "/login" }: { to?: string }) {
       <div className="relative flex flex-col items-center gap-7 text-center">
         <span
           aria-hidden
-          className="entry-bob motion-reduce:animate-none flex size-20 items-center justify-center rounded-3xl bg-surface/80 ring-1 ring-white/10 backdrop-blur-sm"
+          className="entry-bob motion-reduce:animate-none flex size-20 items-center justify-center rounded-3xl bg-surface ring-1 ring-white/10"
         >
           <Mascot size={54} />
         </span>

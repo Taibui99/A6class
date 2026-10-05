@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -30,7 +30,7 @@ export function ScanMemberButton() {
             type="button"
             aria-label="Đóng"
             onClick={() => setOpen(false)}
-            className="absolute inset-0 bg-[#0B1220]/70 backdrop-blur-sm"
+            className="absolute inset-0 bg-[#0B1220]/90"
           />
 
           <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-[#0B1220] p-6 text-white shadow-2xl">

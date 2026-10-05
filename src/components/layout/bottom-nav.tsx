@@ -22,7 +22,7 @@ export function BottomNav({ isTeacher }: Props) {
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 block md:hidden border-t border-border bg-surface/95 backdrop-blur-lg px-2 py-1.5 shadow-2xl">
+    <div className="fixed bottom-0 left-0 right-0 z-40 block md:hidden border-t border-border bg-surface px-2 py-1.5 shadow-[0_-4px_16px_rgba(0,0,0,0.08)]">
       <nav className="flex items-center justify-around">
         {items.map((item) => {
           const Icon = item.icon;

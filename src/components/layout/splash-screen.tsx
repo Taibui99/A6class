@@ -17,10 +17,21 @@ const FADE_MS = 520;
 
 const FACES: MascotFace[] = ["friendly", "happy", "wink", "love"];
 
+// Splash chỉ chạy ở lần tảo trang đầu tiên (hard reload). Điều hướng bằng
+// router của Next không tải lại JS nên không cần chạy lại splash — trước đây mỗi
+// lần bấm menu là một màn animation nặng, rất chậm trên điện thoại.
+let splashShown = false;
+
 export function SplashScreen() {
   const pathname = usePathname();
-  // Trang chủ tự chạy welcome riêng nên splash không cần ở lại.
-  const skip = pathname === "/";
+  const [skip] = useState(() => {
+    if (typeof window === "undefined") return true;
+    const isHome = pathname === "/";
+    if (isHome) return true;
+    if (splashShown) return true;
+    splashShown = true;
+    return false;
+  });
   const [reduced] = useState(() =>
     typeof window === "undefined"
       ? false
@@ -73,7 +84,7 @@ export function SplashScreen() {
 
   const stars = useMemo(
     () =>
-      Array.from({ length: 46 }, (_, i) => {
+      Array.from({ length: 18 }, (_, i) => {
         const s = Math.sin(i * 78.233) * 43758.5453;
         const a = s - Math.floor(s);
         const b = Math.sin(i * 12.9898) * 24634.6345;

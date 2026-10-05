@@ -22,7 +22,9 @@ export default async function AppLayout({
   return (
     <div className="bg-hello min-h-dvh flex flex-col">
       {/* Top bar với logo + desktop nav tabs + user menu */}
-      <header className="sticky top-0 z-40 flex h-14 items-center justify-between gap-3 border-b border-border bg-surface/95 px-4 backdrop-blur-md">
+      {/* Header dùng nền đục thay cho backdrop-blur: blur đằng đẵng trên một
+          phần tử fixed khiến mobile phải composite lại mỗi frame lúc cuộn. */}
+      <header className="sticky top-0 z-40 flex h-14 items-center justify-between gap-3 border-b border-border bg-surface px-4">
         <div className="flex items-center gap-6">
           <Brand size="sm" />
           <NavTabs isTeacher={isTeacher} />

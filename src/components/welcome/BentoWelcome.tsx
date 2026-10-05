@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -119,7 +119,7 @@ export function BentoWelcome({ overview, greeting, userName }: Props) {
           {/* ① Thi đua — 2 cột */}
           <section
             aria-labelledby="bento-thi-dua"
-            className="relative overflow-hidden rounded-2xl bg-surface/60 p-5 shadow-sm ring-1 ring-border backdrop-blur-md transition-colors hover:ring-amber/40 lg:col-span-2"
+            className="relative overflow-hidden rounded-2xl bg-surface p-5 shadow-sm ring-1 ring-border transition-colors hover:ring-amber/40 lg:col-span-2"
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex min-w-0 items-center gap-2.5">
@@ -229,7 +229,7 @@ export function BentoWelcome({ overview, greeting, userName }: Props) {
           {/* ② Thành viên — 1 cột */}
           <section
             aria-labelledby="bento-thanh-vien"
-            className="relative overflow-hidden rounded-2xl bg-surface/60 p-5 shadow-sm ring-1 ring-border backdrop-blur-md transition-colors hover:ring-violet/40"
+            className="relative overflow-hidden rounded-2xl bg-surface p-5 shadow-sm ring-1 ring-border transition-colors hover:ring-violet/40"
           >
             <div className="flex items-center gap-2.5">
               <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-violet/15 text-violet ring-1 ring-violet/30">
@@ -299,7 +299,7 @@ export function BentoWelcome({ overview, greeting, userName }: Props) {
           {/* ③ Nhiệm vụ — 2 cột */}
           <section
             aria-labelledby="bento-nhiem-vu"
-            className="relative overflow-hidden rounded-2xl bg-surface/60 p-5 shadow-sm ring-1 ring-border backdrop-blur-md transition-colors hover:ring-sky/40 lg:col-span-2"
+            className="relative overflow-hidden rounded-2xl bg-surface p-5 shadow-sm ring-1 ring-border transition-colors hover:ring-sky/40 lg:col-span-2"
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex min-w-0 items-center gap-2.5">
@@ -372,7 +372,7 @@ export function BentoWelcome({ overview, greeting, userName }: Props) {
           {/* ④ Thông tin lớp — 1 cột */}
           <section
             aria-labelledby="bento-lop"
-            className="relative overflow-hidden rounded-2xl bg-surface/60 p-5 shadow-sm ring-1 ring-border backdrop-blur-md transition-colors hover:ring-success/40"
+            className="relative overflow-hidden rounded-2xl bg-surface p-5 shadow-sm ring-1 ring-border transition-colors hover:ring-success/40"
           >
             <div className="flex items-center gap-2.5">
               <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-success/15 text-success ring-1 ring-success/30">

@@ -658,6 +658,26 @@ select {
   }
 }
 
+/* ============ Tối ưu hiển thị cho mobile ============ */
+
+/* Bỏ qua việc dựng (layout/paint) cho nội dung đang nằm ngoài màn hình.
+   Danh sách học sinh / bảng điểm dài sẽ nhẹ hẳn khi cuộn vì thẻ chưa
+   nhìn thấy không được vẽ. */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 180px;
+}
+
+/* Trên máy yếu, animation vô hạn liên tục làm CPU/GPU không rảnh được.
+   Chỉ tắt phần trang trí, giữ lại hiệu ứng khi người dùng tương tác. */
+@media (prefers-reduced-motion: reduce) {
+  .cv-still * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* ============ Nền app tối kiểu đấu trường ============ */
 
 .bg-hello {
