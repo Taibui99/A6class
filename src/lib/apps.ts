@@ -63,8 +63,8 @@ function safeUrl(raw: string): string {
 export const EXTERNAL_APPS: readonly Omit<ExternalTool, "href">[] = [
   {
     id: "exam",
-    name: "Tạo đề & làm bài thi",
-    summary: "Soạn đề, trộn câu hỏi, chấm bài tự động",
+name: "A6Class Edu",
+      summary: "Soạn đề, trộn câu hỏi, chấm bài tự động",
     icon: "clipboard",
     accent: "violet",
     external: true,
@@ -120,7 +120,7 @@ export function internalTools(): InternalTool[] {
     {
       id: "members",
       name: "Thành viên & 4 Tổ",
-      summary: "Danh bạ 36 thành viên, ban cán sự và sơ đồ tổ",
+      summary: "Danh bạ thành viên, ban cán sự và sơ đồ tổ",
       href: "/members",
       icon: "docs",
       accent: "emerald",

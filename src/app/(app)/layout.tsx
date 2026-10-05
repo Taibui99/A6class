@@ -7,6 +7,7 @@ import { MobilePageTitle } from "@/components/layout/mobile-page-title";
 import { AnimatedPage } from "@/components/layout/animated-page";
 import { NavTabs } from "@/components/layout/nav-tabs";
 import { BottomNav } from "@/components/layout/bottom-nav";
+import { ScanMemberButton } from "@/components/layout/scan-member-button";
 
 export default async function AppLayout({
   children,
@@ -32,6 +33,7 @@ export default async function AppLayout({
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
+          <ScanMemberButton />
           <UserMenu user={user} variant="mobile" />
         </div>
       </header>

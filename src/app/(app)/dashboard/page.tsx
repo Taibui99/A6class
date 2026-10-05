@@ -89,22 +89,9 @@ export default async function DashboardPage() {
 
   const displayTasks = classTasks.slice(0, 4);
 
-  const announcements = data?.announcements ?? [
-    {
-      id: "ann-1",
-      title: "Lịch thi giữa học kỳ I chính thức",
-      content: "Các bạn chuẩn bị ôn tập kỹ các môn Toán, Văn, Anh. Chúc 12A6 đạt kết quả cao nhất khối!",
-      isPinned: true,
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 12),
-    },
-    {
-      id: "ann-2",
-      title: "Phát động phong trào Báo tường 20/11",
-      content: "Các tổ trưởng nộp bản phác thảo ý tưởng cho Lớp trưởng Phương Thảo trước thứ Sáu.",
-      isPinned: true,
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 36),
-    },
-  ];
+  // Không có thông báo thật thì hiện empty state, không dựng sẵn vài thông báo
+// giả — số giờ và nội dung bịa sẽ khiến thầy cô tưởng lớp đã đăng.
+const announcements = data?.announcements ?? [];
 
   return (
     <div className="space-y-7">
@@ -355,25 +342,31 @@ export default async function DashboardPage() {
           <span className="text-xs font-semibold text-text-muted">Ban cán sự ghim</span>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2">
-          {announcements.map((a) => (
-            <div
-              key={a.id}
-              className="rounded-2xl bg-canvas p-4 ring-1 ring-border space-y-1.5"
-            >
-              <div className="flex items-center gap-1.5 text-xs font-bold text-amber-300">
-                <Pin className="size-3.5" />
-                <span className="text-text">{a.title}</span>
+        {announcements.length === 0 ? (
+          <p className="rounded-2xl bg-canvas p-6 text-center text-xs text-text-muted ring-1 ring-border">
+            Lớp chưa có thông báo nào. Ban cán sự đăng thông báo ở trang Bảng tin.
+          </p>
+        ) : (
+          <div className="grid gap-3 sm:grid-cols-2">
+            {announcements.map((a) => (
+              <div
+                key={a.id}
+                className="rounded-2xl bg-canvas p-4 ring-1 ring-border space-y-1.5"
+              >
+                <div className="flex items-center gap-1.5 text-xs font-bold text-amber-300">
+                  <Pin className="size-3.5" />
+                  <span className="text-text">{a.title}</span>
+                </div>
+                <p className="text-xs text-text-secondary leading-relaxed line-clamp-2">
+                  {a.content}
+                </p>
+                <p className="text-[10px] text-text-muted pt-1">
+                  {formatRelativeTime(new Date(a.createdAt))}
+                </p>
               </div>
-              <p className="text-xs text-text-secondary leading-relaxed line-clamp-2">
-                {a.content}
-              </p>
-              <p className="text-[10px] text-text-muted pt-1">
-                {formatRelativeTime(new Date(a.createdAt))}
-              </p>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
     </div>
   );

@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 
 import CriterionSettings from "@/components/competition/criterion-settings";
+import { EventSettings } from "@/components/events/event-settings";
 import { CRITERION_GROUPS } from "@/lib/competition/config";
 import * as service from "@/lib/competition/service";
+import { getActiveEvent } from "@/lib/events";
 import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
@@ -57,11 +59,14 @@ export default async function CompetitionSettingsPage() {
     );
   }
 
-  const criteria = await prisma.criterion.findMany({
-    where: { classId: klass.id },
-    select: { id: true, key: true, label: true, kind: true, points: true, sortOrder: true },
-    orderBy: { sortOrder: "asc" },
-  });
+  const [criteria, event] = await Promise.all([
+    prisma.criterion.findMany({
+      where: { classId: klass.id },
+      select: { id: true, key: true, label: true, kind: true, points: true, sortOrder: true },
+      orderBy: { sortOrder: "asc" },
+    }),
+    getActiveEvent(klass.id),
+  ]);
 
   const byKey = new Map(criteria.map((c) => [c.key, c]));
   const groups = CRITERION_GROUPS.map((g) => ({
@@ -76,7 +81,10 @@ export default async function CompetitionSettingsPage() {
 
   return (
     <main id="main-content" className="mx-auto w-full max-w-[1000px] px-3 py-5 sm:px-5">
-      <CriterionSettings classId={klass.id} groups={groups} />
+      <div className="space-y-5">
+        <EventSettings event={event} canEdit={access.isTeacher} />
+        <CriterionSettings classId={klass.id} groups={groups} />
+      </div>
     </main>
   );
 }

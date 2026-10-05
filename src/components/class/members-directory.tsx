@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Crown,
   Search,
@@ -10,6 +10,8 @@ import {
   X,
   Medal,
   Flag,
+  QrCode,
+  ShieldCheck,
 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
@@ -63,15 +65,28 @@ function initials(fullName: string) {
   return (parts[parts.length - 2][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
+/**
+ * Số áo = thứ hạng theo điểm thi đua thật của lớp, không gán số thứ tự
+ * đại hạng. Học sinh chưa có điểm đứng cuối và không hiện số áo.
+ */
+function rankOf(members: MemberCard[]): Map<string, number> {
+  const scored = members
+    .filter((m) => m.score !== null)
+    .sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
+  return new Map(scored.map((m, i) => [m.id, i + 1]));
+}
+
 function MemberCard3D({
   member,
   teamIndex,
   maxScore,
+  rank,
   onOpen,
 }: {
   member: MemberCard;
   teamIndex: number;
   maxScore: number;
+  rank: number | null;
   onOpen: () => void;
 }) {
   const tone = teamTone(teamIndex);
@@ -82,11 +97,30 @@ function MemberCard3D({
       <button
         type="button"
         onClick={onOpen}
-        className="flex h-full w-full flex-col items-center gap-3 rounded-2xl p-5 text-center"
+        className="relative flex h-full w-full flex-col items-center gap-3 overflow-hidden rounded-2xl p-5 text-center"
       >
-        <HoloAvatar name={member.fullName} src={member.avatarUrl} />
+        {/* Số áo mờ ở góc phải, kiểu thẻ cầu thủ */}
+        <span
+          aria-hidden
+          className="vt-led pointer-events-none absolute -right-2 -top-3 text-7xl font-black opacity-[0.07]"
+        >
+          {rank ?? ""}
+        </span>
 
-        <div className="min-w-0">
+        <span className="relative">
+          <HoloAvatar name={member.fullName} src={member.avatarUrl} />
+
+          {rank === 1 ? (
+            <span
+              aria-hidden
+              className="absolute -right-1.5 -top-1.5 grid size-5 place-items-center rounded-full bg-[#FFB800] text-[#1A1200] ring-2 ring-surface"
+            >
+              <Crown className="size-3" />
+            </span>
+          ) : null}
+        </span>
+
+        <div className="relative min-w-0">
           <p className="truncate text-sm font-bold text-text">{member.fullName}</p>
           <p className="mt-0.5 truncate text-[11px] text-text-muted">
             {member.roleLabel}
@@ -95,16 +129,16 @@ function MemberCard3D({
 
         {member.teamName ? (
           <span
-            className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-bold ring-1 ${tone.bg} ${tone.text} ${tone.ring}`}
+            className={`relative inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-bold ring-1 ${tone.bg} ${tone.text} ${tone.ring}`}
           >
             <Flag className="size-2.5" />
             {member.teamName}
           </span>
         ) : (
-          <span className="text-[10px] text-text-muted">Chưa vào tổ</span>
+          <span className="relative text-[10px] text-text-muted">Chưa vào tổ</span>
         )}
 
-        <div className="mt-auto w-full space-y-1.5 pt-1">
+        <div className="relative mt-auto w-full space-y-1.5 pt-1">
           <div className="flex items-baseline justify-between">
             <span className="text-[10px] font-bold uppercase tracking-wide text-text-muted">
               Điểm
@@ -125,10 +159,32 @@ function MemberCard3D({
   );
 }
 
-export function MembersDirectory({ data }: { data: MembersPageData }) {
+export function MembersDirectory({
+  data,
+  scanOpen = false,
+}: {
+  data: MembersPageData;
+  scanOpen?: boolean;
+}) {
   const [search, setSearch] = useState("");
   const [selectedTeam, setSelectedTeam] = useState<string>("ALL");
   const [selected, setSelected] = useState<MemberCard | null>(null);
+  // Mở sẵn modal quét khi vào từ nút "Quét thành viên" ở thanh trên cùng
+  // (?scan=1). Khởi tạo từ prop thay vì setState trong effect — điều hướng
+  // sang URL khác sẽ mount lại component nên không cần đồng bộ lại.
+  const [scanning, setScanning] = useState(scanOpen);
+
+  useEffect(() => {
+    if (!selected && !scanning) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setSelected(null);
+        setScanning(false);
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [selected, scanning]);
 
   const officers = useMemo(
     () => data.members.filter((m) => m.role !== "STUDENT"),
@@ -144,6 +200,8 @@ export function MembersDirectory({ data }: { data: MembersPageData }) {
     () => data.members.reduce((max, m) => Math.max(max, m.score ?? 0), 0),
     [data.members],
   );
+
+  const ranks = useMemo(() => rankOf(data.members), [data.members]);
 
   const teamIndexOf = useMemo(() => {
     const map = new Map<string, number>();
@@ -352,17 +410,26 @@ export function MembersDirectory({ data }: { data: MembersPageData }) {
           ))}
         </div>
 
-        <div className="relative w-full sm:w-64">
-          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-text-muted" />
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Tìm tên, chức danh, tổ..."
-            aria-label="Tìm thành viên"
-            className="pl-9"
-          />
+<button
+            type="button"
+            onClick={() => setScanning(true)}
+            className="vt-btn-gold inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg px-3.5 text-xs font-bold"
+          >
+            <QrCode aria-hidden className="size-3.5" />
+            Quét thành viên
+          </button>
+
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-text-muted" />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Tìm tên, chức danh, tổ..."
+              aria-label="Tìm thành viên"
+              className="pl-9"
+            />
+          </div>
         </div>
-      </div>
 
       {filtered.length === 0 ? (
         <p className="rounded-2xl border border-border bg-surface p-10 text-center text-sm text-text-muted">
@@ -376,9 +443,64 @@ export function MembersDirectory({ data }: { data: MembersPageData }) {
               member={m}
               teamIndex={m.teamId ? (teamIndexOf.get(m.teamId) ?? 0) : 0}
               maxScore={maxScore}
+              rank={ranks.get(m.id) ?? null}
               onOpen={() => setSelected(m)}
             />
           ))}
+        </div>
+      )}
+
+      {scanning && (
+        <div className="fixed inset-0 z-50 grid place-items-center p-4">
+          <button
+            type="button"
+            aria-label="Đóng"
+            onClick={() => setScanning(false)}
+            className="absolute inset-0 bg-[#0B1220]/75 backdrop-blur-sm"
+          />
+
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="vip-scan-title"
+            className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-[#0B1220] p-6 text-white shadow-2xl"
+          >
+            <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+              <span className="vt-scan-line top-0" />
+            </div>
+
+            <div className="relative flex items-start justify-between gap-3">
+              <div>
+                <h2 id="vip-scan-title" className="vt-led vt-led-neon text-lg font-bold">
+                  Quét thẻ VIP
+                </h2>
+                <p className="mt-1 text-xs text-white/60">
+                  Đưa mã QR của học sinh vào khung bên dưới để mở hồ sơ.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setScanning(false)}
+                aria-label="Đóng"
+                className="grid size-7 shrink-0 place-items-center rounded-lg bg-white/10 text-white/80 transition hover:bg-white/20"
+              >
+                <X aria-hidden className="size-4" />
+              </button>
+            </div>
+
+            <div className="relative mt-5 grid aspect-square place-items-center rounded-xl border border-dashed border-white/20 bg-black/30">
+              <QrCode aria-hidden className="size-16 text-white/15" />
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setScanning(false)}
+              className="relative mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-white/5 text-xs font-bold text-white/70 ring-1 ring-white/15 transition hover:bg-white/10"
+            >
+              <ShieldCheck aria-hidden className="size-3.5" />
+              Chọn thủ công trong danh bạ
+            </button>
+          </div>
         </div>
       )}
 

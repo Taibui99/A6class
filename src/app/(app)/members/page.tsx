@@ -21,7 +21,11 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function MembersPage() {
+export default async function MembersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ scan?: string }>;
+}) {
   const klass = await getMyClass();
 
   if (!klass) {
@@ -34,11 +38,14 @@ export default async function MembersPage() {
     );
   }
 
-  const data = await getMembersPageData(klass.id);
+  const [{ scan }, data] = await Promise.all([
+    searchParams,
+    getMembersPageData(klass.id),
+  ]);
 
   return (
     <main id="main-content" className="mx-auto w-full max-w-[1300px] px-3 py-5 sm:px-5">
-      <MembersDirectory data={data} />
+      <MembersDirectory data={data} scanOpen={scan === "1"} />
     </main>
   );
 }
