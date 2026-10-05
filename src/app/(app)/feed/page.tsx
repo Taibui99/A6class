@@ -37,7 +37,7 @@ export default async function FeedPage() {
             <UserRoundPlus aria-hidden className="size-5" />
           </span>
           <div className="min-w-0">
-            <p className="font-bold text-text">Bạn chưa vào lớp 12A6</p>
+            <p className="font-bold text-text">Bạn chưa vào lớp nào</p>
             <p className="mt-1 text-sm leading-relaxed text-text-secondary">
               Nhờ giáo viên hoặc lớp trưởng thêm bạn vào lớp rồi quay lại để
               đọc và đăng bài nhé.

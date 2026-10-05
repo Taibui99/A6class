@@ -189,7 +189,7 @@ export async function saveEntry(input: {
     }),
   ]);
   if (!criterion) throw new CompetitionError("Tiêu chí không thuộc lớp này.");
-  if (!target) throw new CompetitionError("Học sinh không thuộc lớp 12A6.");
+  if (!target) throw new CompetitionError("Học sinh không thuộc lớp này.");
 
   // Quyền sửa: GV + lớp trưởng sửa hết; cán sự khác chỉ sửa tổ mình.
   const canEdit =

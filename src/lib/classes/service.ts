@@ -79,17 +79,23 @@ export async function getClassRoster(classId: string) {
 }
 
 export async function createClass(form: ClassForm) {
-  await requireTeacher();
+  const user = await requireTeacher();
   const name = form.name.trim();
   const schoolYear = form.schoolYear.trim();
   if (!name) throw new ClassError("Cần nhập tên lớp.");
   if (!schoolYear) throw new ClassError("Cần nhập năm học.");
 
+  // Phải tạo kèm membership: getMyClass() chỉ tìm lớp qua membership, nếu
+  // không có thì sau khi tạo lớp giáo viên vẫn không vào được trang /class để
+  // nhập danh sách học sinh.
   return prisma.class.create({
     data: {
       name,
       schoolYear,
       school: form.school?.trim() || null,
+      memberships: {
+        create: { userId: user.id, role: "TEACHER" },
+      },
     },
     select: { id: true, name: true },
   });

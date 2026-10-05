@@ -1,6 +1,7 @@
 export type UserRole = "TEACHER" | "STUDENT";
 
 export type MemberRole =
+  | "TEACHER"
   | "CLASS_MONITOR"
   | "ACADEMIC_VICE_MONITOR"
   | "ACTIVITY_VICE_MONITOR"

@@ -26,6 +26,7 @@ import {
   getScoreboard,
 } from "@/lib/dashboard";
 import { getClassTasks } from "@/lib/tasks/service";
+import { prisma } from "@/lib/prisma";
 import { formatNumber, formatRelativeTime, getInitials } from "@/lib/utils";
 import { COMPETITION_PATH, HOME_PATH } from "@/lib/home";
 import {
@@ -33,17 +34,8 @@ import {
   type ActivityItem,
 } from "@/components/dashboard/teacher-activity-dialog";
 
-const roleLabels: Record<string, string> = {
-  TEACHER: "Giáo viên chủ nhiệm",
-  STUDENT: "Học sinh 12A6",
-};
-
-const DEFAULT_TEAMS = [
-  { id: "team-1", name: "Tổ 1 · Tiên Phong", color: "#00F2FE", totalScore: 320, rank: 1 },
-  { id: "team-2", name: "Tổ 2 · Vươn Xa", color: "#4FACFE", totalScore: 310, rank: 2 },
-  { id: "team-3", name: "Tổ 3 · Bứt Phá", color: "#34D399", totalScore: 295, rank: 3 },
-  { id: "team-4", name: "Tổ 4 · Vững Vàng", color: "#FFB800", totalScore: 285, rank: 4 },
-];
+// Không có dữ liệu thì hiện empty state, không dựng sẵn tổ và điểm giả —
+// bảng xếp hạng bịa sẽ khiến thầy cô tưởng lớp đã có điểm thi đua.
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
@@ -73,9 +65,13 @@ export default async function DashboardPage() {
   const isTeacher = user.role === "TEACHER";
   const classId = data?.classId ?? null;
 
-  const [scoreboard, activities] = classId
-    ? await Promise.all([getScoreboard(classId), getRecentActivities(classId)])
-    : [{ teams: [], students: [] }, []];
+  const [scoreboard, activities, criteriaCount] = classId
+    ? await Promise.all([
+        getScoreboard(classId),
+        getRecentActivities(classId),
+        prisma.criterion.count({ where: { classId } }),
+      ])
+    : [{ teams: [], students: [] }, [], 0];
 
   const activityItems: ActivityItem[] = activities.map((a) => ({
     id: a.id,
@@ -84,8 +80,20 @@ export default async function DashboardPage() {
     detail: `${a.detail} · ${formatRelativeTime(a.at)}`,
   }));
 
-  const displayTeams = scoreboard.teams.length > 0 ? scoreboard.teams : DEFAULT_TEAMS;
+  const displayTeams = scoreboard.teams;
   const topTeam = displayTeams[0];
+
+  // Tên lớp và số tổ lấy từ DB. Trước đây chỗ này hardcode "12A6" / "4 tổ" /
+  // "Tổ 1" / "320 điểm" khiến lớp trống vẫn hiện bảng xếp hạng bịa.
+  const className = data?.className ?? null;
+  const classLabel = className ?? "Lớp của bạn";
+  const teamCount = displayTeams.length;
+  const roleLabel =
+    user.role === "TEACHER"
+      ? "Giáo viên chủ nhiệm"
+      : className
+        ? `Học sinh ${className}`
+        : "Thành viên";
 
   const displayTasks = classTasks.slice(0, 4);
 
@@ -109,10 +117,10 @@ const announcements = data?.announcements ?? [];
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-sky-500/15 px-3 py-1 text-xs font-bold text-sky-300 ring-1 ring-sky-500/30">
                 <School className="size-3.5" />
-                Lớp 12A6 · 2026-2027
+                Lớp {classLabel}
               </span>
               <span className="inline-flex items-center gap-1.5 rounded-full bg-surface px-3 py-1 text-xs font-medium text-text-secondary ring-1 ring-border">
-                {roleLabels[user.role] ?? "Thành viên"}
+                {roleLabel}
               </span>
               <span className="text-xs font-medium text-text-muted">{today}</span>
             </div>
@@ -122,7 +130,9 @@ const announcements = data?.announcements ?? [];
             </h1>
 
             <p className="text-sm text-text-secondary max-w-xl">
-              Cùng theo dõi thi đua 4 tổ, hoàn thành nhiệm vụ tuần và giữ vững ngọn lửa đoàn kết của đại gia đình 12A6.
+              {teamCount > 0
+                ? `Cùng theo dõi thi đua ${teamCount} tổ, hoàn thành nhiệm vụ tuần và giữ vững ngọn lửa đoàn kết của đại gia đình ${classLabel}.`
+                : "Chưa có tổ nào. Vào Dữ liệu lớp để tạo tổ và nhập danh sách học sinh, rồi bắt đầu chuyến thi đua."}
             </p>
           </div>
 
@@ -144,10 +154,10 @@ const announcements = data?.announcements ?? [];
               <Trophy className="size-4 text-amber-400" />
             </div>
             <p className="mt-2 text-base sm:text-lg font-black text-amber-300 truncate">
-              {topTeam?.name ?? "Tổ 1"}
+              {topTeam?.name ?? "Chưa có tổ"}
             </p>
             <p className="mt-0.5 text-[11px] text-text-muted">
-              {topTeam?.totalScore ?? 320} điểm thi đua
+              {topTeam ? `${topTeam.totalScore} điểm thi đua` : "Tạo tổ để bắt đầu"}
             </p>
           </Link>
 
@@ -217,7 +227,12 @@ const announcements = data?.announcements ?? [];
 
             {/* Danh sách 4 tổ */}
             <div className="mt-5 space-y-3">
-              {displayTeams.slice(0, 4).map((team, idx) => {
+              {displayTeams.length === 0 ? (
+                <p className="rounded-2xl bg-canvas px-4 py-6 text-center text-sm text-text-muted ring-1 ring-border">
+                  Chưa có tổ nào. Vào <span className="font-semibold">Dữ liệu lớp</span> để tạo tổ và nhập danh sách học sinh.
+                </p>
+              ) : (
+                displayTeams.slice(0, 4).map((team, idx) => {
                 const medals = ["🥇", "🥈", "🥉", "🏅"];
                 const maxScore = Math.max(...displayTeams.map((t) => t.totalScore || 100), 100);
                 const pct = Math.round(((team.totalScore || 0) / maxScore) * 100);
@@ -249,12 +264,17 @@ const announcements = data?.announcements ?? [];
                     </div>
                   </div>
                 );
-              })}
+                })
+              )}
             </div>
           </div>
 
           <div className="mt-6 pt-4 border-t border-border flex items-center justify-between text-xs text-text-muted">
-            <span>Điểm dựa trên 22 tiêu chí học tập & nề nếp</span>
+            <span>
+              {criteriaCount > 0
+                ? `Điểm dựa trên ${criteriaCount} tiêu chí học tập & nề nếp`
+                : "Chưa thiết lập tiêu chí chấm điểm"}
+            </span>
             <Link
               href="/competition"
               className="rounded-xl bg-sky-500/15 px-3 py-1.5 font-bold text-sky-300 ring-1 ring-sky-500/30 hover:bg-sky-500/25 transition"
@@ -337,7 +357,7 @@ const announcements = data?.announcements ?? [];
             <span className="grid size-8 place-items-center rounded-xl bg-amber-500/15 text-amber-400 ring-1 ring-amber-500/30">
               <Megaphone className="size-4" />
             </span>
-            <h2 className="text-base font-bold text-text">Bảng tin & Thông báo lớp 12A6</h2>
+            <h2 className="text-base font-bold text-text">Bảng tin & Thông báo lớp {classLabel}</h2>
           </div>
           <span className="text-xs font-semibold text-text-muted">Ban cán sự ghim</span>
         </div>

@@ -64,6 +64,8 @@ const ROLE_WORDS: Record<string, RosterRole> = {
 
 export function roleLabel(role: string): string {
   switch (role) {
+    case "TEACHER":
+      return "Giáo viên";
     case "TEAM_LEADER":
       return "Tổ trưởng";
     case "TEAM_VICE_LEADER":

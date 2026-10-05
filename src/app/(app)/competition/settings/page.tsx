@@ -8,7 +8,7 @@ import { getActiveEvent } from "@/lib/events";
 import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
-  title: "Cấu hình điểm thi đua · Lớp 12A6",
+  title: "Cấu hình điểm thi đua",
   description: "Giáo viên chỉnh mức điểm cộng/trừ cho từng tiêu chí thi đua.",
 };
 
@@ -20,7 +20,11 @@ export default async function CompetitionSettingsPage() {
     return (
       <main id="main-content" className="mx-auto w-full max-w-3xl px-4 py-12">
         <p className="rounded-2xl bg-surface p-6 text-sm text-muted ring-1 ring-border">
-          Chưa có lớp 12A6. Chạy <code>npx tsx scripts/seed-competition.ts</code> trước.
+          Chưa có lớp nào. Vào{" "}
+          <a className="font-semibold text-primary underline" href="/class">
+            Dữ liệu lớp
+          </a>{" "}
+          để tạo lớp, nhập danh sách học sinh và tạo tổ.
         </p>
       </main>
     );

@@ -4,8 +4,8 @@ import CompetitionArena from "@/components/competition/competition-arena";
 import { loadCompetition } from "@/lib/competition/query";
 
 export const metadata: Metadata = {
-  title: "Thi đua hàng tuần · Lớp 12A6",
-  description: "Bảng theo dõi thi đua hàng tuần của lớp 12A6, nhập điểm theo tổ và xem xếp hạng.",
+  title: "Thi đua hàng tuần",
+  description: "Bảng theo dõi thi đua hàng tuần, nhập điểm theo tổ và xem xếp hạng.",
 };
 
 export default async function CompetitionPage({
@@ -28,16 +28,13 @@ export default async function CompetitionPage({
           <p className="mt-2 text-sm text-muted">{message}</p>
           <ol className="mt-4 list-decimal space-y-1.5 pl-5 text-sm text-muted">
             <li>
-              Tạo lớp <b className="text-text">12A6 · 2026-2027</b>, 4 tổ và 36 thành viên.
+              Vào <b className="text-text">Dữ liệu lớp</b> để nhập danh sách học sinh và tạo tổ.
             </li>
             <li>
-              Nạp 22 tiêu chí chấm điểm theo đúng file Excel.
+              Vào <b className="text-text">Cấu hình thi đua</b> để thêm tiêu chí chấm điểm và mở kỳ thi.
             </li>
             <li>Mở lại trang này.</li>
           </ol>
-          <pre className="mt-4 overflow-x-auto rounded-lg bg-canvas p-3 text-xs text-muted">
-            npx tsx scripts/seed-competition.ts
-          </pre>
         </div>
       </main>
     );
