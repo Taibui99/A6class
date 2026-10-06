@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
 
 import { Mascot, type MascotFace } from "@/components/mascot";
@@ -17,36 +17,52 @@ const FADE_MS = 400;
 
 const FACES: MascotFace[] = ["friendly", "happy", "wink", "love"];
 
-// Splash chỉ chạy ở lần tảo trang đầu tiên (hard reload). Điều hướng bằng
-// router của Next không tải lại JS nên không cần chạy lại splash — trước đây mỗi
-// lần bấm menu là một màn animation nặng, rất chậm trên điện thoại.
-let splashShown = false;
+// Theo dõi trạng thái "đã hydration xong" mà không cần setState trong effect.
+// Trả false khi SSR/hydration, true ngay sau khi client mount — đây là cách
+// chuẩn để JS chỉ chạy sau khi trình duyệt đã render (tránh hydration mismatch).
+const subscribeAlways = () => () => {};
+const getHydrated = () => true;
+const getServerSnapshot = () => false;
+
+// Đọc prefers-reduced-motion và cập nhật khi người dùng đổi lựa chọn.
+const subscribeReduced = (onChange: () => void) => {
+  if (typeof window === "undefined") return () => {};
+  const mq = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+  mq?.addEventListener?.("change", onChange);
+  return () => mq?.removeEventListener?.("change", onChange);
+};
+const getReduced = () =>
+  typeof window === "undefined"
+    ? false
+    : (window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false);
 
 export function SplashScreen() {
   const pathname = usePathname();
-  const [skip] = useState(() => {
-    if (typeof window === "undefined") return true;
-    const isHome = pathname === "/";
-    if (isHome) return true;
-    if (splashShown) return true;
-    splashShown = true;
-    return false;
-  });
-  const [reduced] = useState(() =>
-    typeof window === "undefined"
-      ? false
-      : (window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ??
-         false),
-  );
+  const hydrated = useSyncExternalStore(subscribeAlways, getHydrated, getServerSnapshot);
+  const reduced = useSyncExternalStore(subscribeReduced, getReduced, getServerSnapshot);
   const [stage, setStage] = useState<"run" | "fade" | "gone">("run");
   const [progress, setProgress] = useState(0);
   const [face, setFace] = useState<MascotFace>("friendly");
-  // Ở chế độ giảm chuyển động, thanh tiến trình nhảy thẳng về 100.
-  const shownProgress = reduced ? 100 : progress;
   const startedAt = useRef<number>(0);
 
+  // Splash hiện trên trang không phải trang chủ sau khi hydration xong.
+  // `show` chỉ lật true một lần và không tự thay đổi trong lúc animation chạy —
+  // nếu dùng biến toàn cục lật ngay thì render kế tiếp làm `skip` thành true và
+  // cleanup huỷ animation ngay, splash bị đóng băng.
+  const show = hydrated && pathname !== "/";
+  const skip = !show;
+
+  // Guard chạy animation đúng MỘT lần sau mỗi lần tải trang (hard reload sẽ nạp
+  // lại JS nên ref này reset). Sau khi đã chạy, điều hướng SPA qua lại không làm
+  // splash hiện lại.
+  const playedRef = useRef(false);
+
+  // Ở chế độ giảm chuyển động, thanh tiến trình nhảy thẳng về 100.
+  const shownProgress = reduced ? 100 : progress;
+
   useEffect(() => {
-    if (skip) return;
+    if (!show || playedRef.current) return;
+    playedRef.current = true;
 
     if (reduced) {
       const t = window.setTimeout(() => setStage("gone"), 420);
@@ -80,7 +96,7 @@ export function SplashScreen() {
       window.clearTimeout(t1);
       window.clearTimeout(t2);
     };
-  }, [skip, reduced]);
+  }, [show, reduced]);
 
   const stars = useMemo(
     () =>
@@ -115,7 +131,7 @@ export function SplashScreen() {
       {/* ── Nền aurora ─────────────────────────────────────── */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <span
-          className="splash-blob absolute h-[62vmin] w-[62vmin] rounded-full blur-[90px]"
+          className="splash-blob absolute h-[62vmin] w-[62vmin] rounded-full"
           style={{
             left: "8%",
             top: "-14%",
@@ -124,7 +140,7 @@ export function SplashScreen() {
           }}
         />
         <span
-          className="splash-blob absolute h-[54vmin] w-[54vmin] rounded-full blur-[90px]"
+          className="splash-blob absolute h-[54vmin] w-[54vmin] rounded-full"
           style={{
             right: "4%",
             top: "18%",
@@ -134,7 +150,7 @@ export function SplashScreen() {
           }}
         />
         <span
-          className="splash-blob absolute h-[58vmin] w-[58vmin] rounded-full blur-[100px]"
+          className="splash-blob absolute h-[58vmin] w-[58vmin] rounded-full"
           style={{
             left: "26%",
             bottom: "-22%",

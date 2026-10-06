@@ -671,6 +671,31 @@ select {
 
 /* ============ Tối ưu hiển thị cho mobile ============ */
 
+/* Quả cầu trang trí (blob): trước đây là một khối màu + `filter: blur(...)`.
+   Blur với bán kính 70-100px trên hình to ~300px khiến GPU phải vẽ lại mỗi
+   frame — chính là lý do /apps bị lag trên điện thoại. Thay bằng
+   radial-gradient tròn mờ sẵn: nhìn gần giống hệt mà tốn ~0 công vẽ. */
+.blob {
+  position: absolute;
+  border-radius: 9999px;
+  pointer-events: none;
+}
+.blob-sky {
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--primary) 20%, transparent) 0%, transparent 74%);
+}
+.blob-sky-15 {
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--primary) 15%, transparent) 0%, transparent 74%);
+}
+.blob-violet {
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--secondary) 20%, transparent) 0%, transparent 74%);
+}
+.blob-amber {
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 20%, transparent) 0%, transparent 74%);
+}
+.blob-pink {
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--neon-pink) 15%, transparent) 0%, transparent 74%);
+}
+
 /* Bỏ qua việc dựng (layout/paint) cho nội dung đang nằm ngoài màn hình.
    Danh sách học sinh / bảng điểm dài sẽ nhẹ hẳn khi cuộn vì thẻ chưa
    nhìn thấy không được vẽ. */

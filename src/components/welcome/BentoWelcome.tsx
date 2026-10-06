@@ -85,8 +85,8 @@ export function BentoWelcome({ overview, greeting, userName }: Props) {
   return (
     <div className="relative">
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-        <span className="absolute -left-24 -top-28 size-72 rounded-full bg-sky/20 blur-[80px]" />
-        <span className="absolute -right-20 top-10 size-64 rounded-full bg-violet/20 blur-[80px]" />
+<span className="blob blob-sky -left-24 -top-28 size-72" />
+          <span className="blob blob-violet -right-20 top-10 size-64" />
       </div>
 
       <div className="relative space-y-6">

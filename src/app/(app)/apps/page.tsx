@@ -165,7 +165,7 @@ export default async function HubPage() {
           >
             <span
               aria-hidden
-              className="pointer-events-none absolute -right-10 -top-12 size-40 rounded-full bg-amber/20 blur-3xl"
+              className="blob blob-amber -right-10 -top-12 size-40"
             />
             <div className="relative flex items-start gap-3">
               <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-amber/10 ring-1 ring-amber/25">
@@ -195,8 +195,8 @@ export default async function HubPage() {
       ) : (
         <header className="relative overflow-hidden rounded-2xl border border-border bg-surface p-5 shadow-sm">
           <div aria-hidden className="pointer-events-none absolute inset-0">
-            <span className="absolute -left-20 -top-24 size-56 rounded-full bg-sky/15 blur-[70px]" />
-            <span className="absolute -right-16 top-4 size-48 rounded-full bg-neon-pink/15 blur-[70px]" />
+            <span className="blob blob-sky-15 -left-20 -top-24 size-56" />
+            <span className="blob blob-pink -right-16 top-4 size-48" />
           </div>
           <div className="relative">
             <h2 className="text-xl font-black tracking-tight text-text sm:text-2xl">

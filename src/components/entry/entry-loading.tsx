@@ -46,7 +46,7 @@ export function EntryLoading({ to = "/login" }: { to?: string }) {
         {SKY_TONES.map((tone, index) => (
           <span
             key={tone}
-            className="entry-glow absolute size-[62vmin] rounded-full blur-[90px] motion-reduce:animate-none"
+            className="entry-glow absolute size-[62vmin] rounded-full motion-reduce:animate-none"
             style={{
               background: `radial-gradient(circle, ${tone}, transparent 68%)`,
               animationDelay: `${index * -5}s`,
