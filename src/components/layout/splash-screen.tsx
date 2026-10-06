@@ -12,8 +12,8 @@ import { cn } from "@/lib/utils";
  * bay vào rồi vẫy tay, logo ánh sáng quét, thanh tiến trình thật.
  */
 
-const RUN_MS = 2600;
-const FADE_MS = 520;
+const RUN_MS = 1500;
+const FADE_MS = 400;
 
 const FACES: MascotFace[] = ["friendly", "happy", "wink", "love"];
 

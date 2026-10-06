@@ -233,11 +233,21 @@ select {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+    }
 
-@keyframes slideIn {
+    /* Chuyển trang có cảm giác mượt: fade + trượt lên nhẹ. Chỉ dùng
+       opacity + transform nên GPU tự lo, không tốn main-thread như blur. */
+    @keyframes pageEnter {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-page-enter {
+    animation: pageEnter 360ms cubic-bezier(.2,.8,.2,1) both;
+    }
+    
+    @keyframes slideIn {
   from { opacity: 0; transform: translateX(-8px); }
   to { opacity: 1; transform: translateX(0); }
 }
@@ -443,6 +453,7 @@ select {
 
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-in,
+  .animate-page-enter,
   .animate-slide-in,
   .animate-scale-in,
   .splash-overlay,
