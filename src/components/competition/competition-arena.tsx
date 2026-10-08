@@ -298,6 +298,7 @@ function PeriodPicker({
 
 type StudentRow = CompetitionData["weekStudents"][number];
 
+
 function RankPanel({
   students,
   teams,
@@ -313,217 +314,229 @@ function RankPanel({
   scope: Scope;
   periodName: string | null;
 }) {
-  // Chưa có điểm nào trong kỳ/năm đang xem → phân biệt "chưa ghi" với "0 điểm"
-  // và giải thích vì sao số ở đây có thể khác Trang chủ (tổng tích lũy).
-  const hasAnyScore =
-    students.some((s) => s.marks > 0) || teams.some((t) => t.direct !== 0);
+  const hasScore = students.some((s) => s.marks > 0) || teams.some((t) => t.direct !== 0);
+  const maxAvg = Math.max(...teams.map((t) => t.average), 1);
+  const topFive = students.slice(0, 5);
 
   return (
     <div className="space-y-4">
-      {!hasAnyScore && (
-        <div className="flex items-start gap-2 rounded-2xl border border-border bg-canvas px-4 py-3 text-xs leading-relaxed text-muted">
-          <CalendarDays aria-hidden className="mt-0.5 size-3.5 shrink-0 text-sky" />
-          <p>
-            {scope === "week" ? (
-              <>
-                Kỳ <b className="text-text">{periodName ?? "này"}</b> chưa được ghi điểm nào.
-                Bảng sẽ cập nhật ngay khi cán bộ nhập điểm.{" "}
-                <b className="text-text">Trang chủ hiển thị tổng tích lũy cả năm</b>, còn bảng
-                này chỉ tính kỳ đang xem.
-              </>
-            ) : (
-              <>
-                Chưa có điểm nào từ đầu năm học. Bảng sẽ cập nhật ngay khi cán bộ nhập điểm —
-                tổng tích lũy các kỳ sẽ hiển thị tại đây và ở Trang chủ.
-              </>
-            )}
-          </p>
-        </div>
-      )}
+      {!hasScore && <EmptyScoreState scope={scope} periodName={periodName} />}
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
-        {/* Xếp hạng tổ — theo trung bình mỗi thành viên */}
-        <section className={cn(PANEL, "p-4")}>
-          <h2 className="flex items-center gap-1.5 text-sm font-extrabold text-text">
-            <Crown aria-hidden className="size-4 text-amber" />
-            Xếp hạng tổ
-          </h2>
-          <p className="mt-1 text-[11px] leading-relaxed text-muted">
-            Tổ có 10/10/9/7 em nên tính theo <b className="text-text">trung bình mỗi thành viên</b>{" "}
-            cho công bằng, không tính tổng.{" "}
-            {scope === "week" ? (
-              <>
-                Chỉ tính điểm trong kỳ <b className="text-text">{periodName ?? "đang xem"}</b>.
-              </>
-            ) : (
-              <>Đây là tổng mọi kỳ từ đầu năm học.</>
-            )}
-          </p>
-
-          {hasAnyScore && teams.length > 0 && teams[0] && (
-            <div className="mt-3 relative overflow-hidden rounded-2xl bg-amber-500/10 p-4 ring-1 ring-amber-500/30">
-              <div className="flex items-center gap-3">
-                <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-amber-500 text-white">
-                  <Trophy className="size-6" aria-hidden />
-                </span>
-                <div className="min-w-0">
-                  <span className="inline-block rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-700 ring-1 ring-amber-500/40">
-                    {scope === "week" ? "#1 tuần này" : "#1 cả năm"}
-                  </span>
-                  <p className="mt-0.5 truncate text-base font-black text-text">
-                    {teams[0].teamName}
-                  </p>
-                  <p className="text-xs text-amber-700/90 font-medium">
-                    Điểm trung bình: <strong className="font-extrabold">{teams[0].average.toFixed(1)}</strong> đ/bạn
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-
-        <ol className="mt-3 space-y-2.5">
-          {teams.map((t, idx) => {
-            
-            const maxAvg = Math.max(...teams.map((x) => x.average), 1);
-            const pct = Math.max(10, Math.min(100, Math.round((t.average / maxAvg) * 100)));
-
-            return (
-              <li
-                key={t.teamId}
-                className={cn(
-                  "rounded-2xl bg-canvas p-3.5 ring-1 transition-all",
-                  meTeam?.teamId === t.teamId
-                    ? "ring-primary/50 bg-primary/10"
-                    : "ring-border hover:ring-border-strong",
-                )}
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <span className={cn("grid size-6 shrink-0 place-items-center rounded-md text-xs font-extrabold tabular-nums", idx === 0 ? "bg-accent-light text-accent-ink" : "bg-surface-hover text-text-secondary")} aria-hidden>{idx + 1}</span>
-                    <span className="truncate text-sm font-bold text-text">{t.teamName}</span>
-                    {meTeam?.teamId === t.teamId && (
-                      <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-bold text-primary ring-1 ring-primary/30">
-                        Tổ của bạn
-                      </span>
-                    )}
-                  </div>
-                  <span className="shrink-0 text-base font-black tabular-nums" style={{ color: t.color ?? "#94A3B8" }}>
-                    {t.average.toFixed(1)} <span className="text-xs font-normal text-muted">đ/bạn</span>
-                  </span>
-                </div>
-
-                {/* Progress bar */}
-                <div className="mt-2.5 h-1.5 w-full overflow-hidden rounded-full bg-surface">
-                  <div
-                    className="h-full rounded-full transition-all duration-500"
-                    style={{
-                      width: `${pct}%`,
-                      backgroundColor: t.color ?? "#00F2FE",
-                    }}
-                  />
-                </div>
-
-                <dl className="mt-2.5 grid grid-cols-3 gap-1 text-[10px] text-muted border-t border-border/50 pt-2">
-                  <div>
-                    <dt>Sĩ số</dt>
-                    <dd className="font-semibold text-text tabular-nums">{t.memberIds.length} bạn</dd>
-                  </div>
-                  <div>
-                    <dt>Điểm cá nhân</dt>
-                    <dd className="font-semibold text-text tabular-nums">{t.fromMembers}</dd>
-                  </div>
-                  <div>
-                    <dt>Điểm tổ</dt>
-                    <dd className="font-semibold text-text tabular-nums">{t.direct}</dd>
-                  </div>
-                </dl>
-              </li>
-            );
-          })}
-        </ol>
-      </section>
-
-      {/* Xếp hạng cá nhân */}
-      <section className={cn(PANEL, "overflow-hidden")}>
-        <div className="flex items-center justify-between px-4 py-3">
-          <h2 className="flex items-center gap-1.5 text-sm font-extrabold text-text">
-            <BarChart3 aria-hidden className="size-4 text-violet" />
-            Xếp hạng cá nhân
-          </h2>
-          <span className="text-[11px] text-muted">
-            {students.length} học sinh ·{" "}
-            {scope === "week" ? `kỳ ${periodName ?? "đang xem"}` : "tổng cả năm"}
-          </span>
-        </div>
-
-        {me && (
-          <div className="mx-4 mb-3 flex flex-wrap items-center gap-2 rounded-xl bg-primary/10 px-3 py-2 text-xs ring-1 ring-primary/30">
-            <span className="font-bold text-primary">Bạn</span>
-            <span className="text-muted">
-              hạng <b className="tabular-nums text-text">#{me.rank}</b> ·{" "}
-              <b className="tabular-nums text-text">{me.net > 0 ? `+${me.net}` : me.net}</b> điểm ·{" "}
-              <span className={me.tierTone}>{me.tier}</span>
-            </span>
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(360px,.85fr)]">
+        <section className={cn(PANEL, "overflow-hidden")}>
+          <SectionHeader
+            icon={Trophy}
+            title="Đấu trường 4 tổ"
+            subtitle={scope === "week" ? "Xếp theo điểm trung bình mỗi thành viên" : "Tích lũy từ đầu năm"}
+          />
+          <div className="space-y-2 px-4 pb-4">
+            {teams.map((team, index) => (
+              <TeamRace
+                key={team.teamId}
+                team={team}
+                index={index}
+                max={maxAvg}
+                mine={meTeam?.teamId === team.teamId}
+              />
+            ))}
           </div>
-        )}
+        </section>
 
-        <div className="max-h-[520px] overflow-y-auto">
-          <table className="w-full text-sm">
-            <thead className="sticky top-0 z-10 bg-surface">
-              <tr className="text-left text-[10px] uppercase tracking-wide text-muted">
-                <th className="w-10 px-3 py-2 font-bold">#</th>
-                <th className="px-2 py-2 font-bold">Học sinh</th>
-                <th className="px-2 py-2 text-right font-bold">Cộng</th>
-                <th className="px-2 py-2 text-right font-bold">Trừ</th>
-                <th className="px-2 py-2 text-right font-bold">Ròng</th>
-                <th className="px-3 py-2 text-right font-bold">Xếp loại</th>
-              </tr>
-            </thead>
-            <tbody>
-              {students.map((s) => (
-                <tr
-                  key={s.userId}
-                  className="border-t border-border/60 text-xs hover:bg-surface-2/60"
-                >
-                  <td className="px-3 py-2 tabular-nums text-muted">{s.rank}</td>
-                  <td className="px-2 py-2">
-                    <span className="flex items-center gap-1.5">
-                      {s.teamColor && (
-                        <span
-                          aria-hidden
-                          className="size-2 shrink-0 rounded-full"
-                          style={{ background: s.teamColor }}
-                        />
-                      )}
-                      <span className="truncate font-semibold text-text">{s.name}</span>
-                      {s.role !== "STUDENT" && (
-                        <span className="shrink-0 rounded bg-surface-2 px-1 text-[9px] font-bold text-muted">
-                          {roleShort(s.role)}
-                        </span>
-                      )}
-                    </span>
-                  </td>
-                  <td className="px-2 py-2 text-right tabular-nums text-emerald-600">
-                    {s.positive || "—"}
-                  </td>
-                  <td className="px-2 py-2 text-right tabular-nums text-rose-600">
-                    {s.negative || "—"}
-                  </td>
-                  <td className="px-2 py-2 text-right font-bold tabular-nums text-text">
-                    {s.net > 0 ? `+${s.net}` : s.net}
-                  </td>
-                  <td className={cn("px-3 py-2 text-right font-bold", s.tierTone)}>{s.tier}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <section className={cn(PANEL, "overflow-hidden")}>
+          <SectionHeader
+            icon={BarChart3}
+            title="Top cá nhân"
+            subtitle={scope === "week" ? "5 học sinh dẫn đầu kỳ này" : "5 học sinh dẫn đầu cả năm"}
+          />
+          <div className="divide-y divide-border px-4 pb-1">
+            {topFive.map((s) => (
+              <StudentMiniRow key={s.userId} student={s} mine={me?.userId === s.userId} />
+            ))}
+            {topFive.length === 0 && <div className="py-8 text-center text-xs text-muted">Chưa có dữ liệu.</div>}
+          </div>
+        </section>
+      </div>
+
+      <section className={cn(PANEL, "overflow-hidden")}>
+        <SectionHeader
+          icon={Activity}
+          title="Nhịp điểm"
+          subtitle="Cộng / trừ phát sinh trong 7 ngày gần nhất"
+        />
+        <TrendBars data={useTrendData(teams, students)} />
       </section>
+
+      <section className={cn(PANEL, "overflow-hidden")}>
+        <SectionHeader
+          icon={Users}
+          title="Bảng cá nhân"
+          subtitle={`${students.length} học sinh · ${scope === "week" ? "kỳ đang xem" : "cả năm"}`}
+        />
+        <StudentTable students={students} me={me} compact />
+      </section>
+    </div>
+  );
+}
+
+function EmptyScoreState({ scope, periodName }: { scope: Scope; periodName: string | null }) {
+  return (
+    <div className="rounded-[22px] border border-dashed border-border-strong bg-canvas px-5 py-7">
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="grid size-11 shrink-0 place-items-center rounded-2xl bg-surface-2 text-muted">
+          <Target className="size-5" />
+        </div>
+        <div>
+          <h2 className="text-sm font-black text-text">Chưa có điểm trong phạm vi này</h2>
+          <p className="mt-0.5 text-xs leading-5 text-muted">
+            {scope === "week" ? `Kỳ ${periodName ?? "đang xem"} chưa có ghi nhận nào.` : "Từ đầu năm học chưa có ghi nhận nào."}
+          </p>
+        </div>
       </div>
     </div>
   );
 }
 
+function TeamRace({
+  team,
+  index,
+  max,
+  mine,
+}: {
+  team: CompetitionData["weekTeams"][number];
+  index: number;
+  max: number;
+  mine: boolean;
+}) {
+  const pct = Math.max(4, Math.round((team.average / max) * 100));
+  return (
+    <article className={cn(
+      "rounded-2xl border p-3.5 transition",
+      mine ? "border-primary/30 bg-primary/[.045]" : "border-border bg-canvas",
+    )}>
+      <div className="flex items-center gap-3">
+        <RankBadge rank={index + 1} />
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex min-w-0 items-center gap-2">
+              <span className="size-2 shrink-0 rounded-full" style={{ background: team.color ?? "#64748b" }} />
+              <span className="truncate text-sm font-black text-text">{team.teamName}</span>
+              {mine && <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[8px] font-black text-primary">Tổ bạn</span>}
+            </div>
+            <span className="shrink-0 text-sm font-black tabular-nums text-text">
+              {formatScore(team.average)} <span className="text-[9px] font-bold text-muted">đ/bạn</span>
+            </span>
+          </div>
+          <div className="mt-2.5 h-2 overflow-hidden rounded-full bg-surface-2">
+            <div className="h-full rounded-full" style={{ width: `${pct}%`, background: team.color ?? "#64748b" }} />
+          </div>
+          <div className="mt-2 flex justify-between text-[9px] font-semibold text-muted">
+            <span>{team.memberIds.length} thành viên</span>
+            <span>Tổng {formatSigned(team.total)}</span>
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function StudentMiniRow({ student, mine }: { student: StudentRow; mine: boolean }) {
+  return (
+    <div className="flex items-center gap-2.5 py-2.5">
+      <RankBadge rank={student.rank} small />
+      <span className="size-2 shrink-0 rounded-full" style={{ background: student.teamColor ?? "#94a3b8" }} />
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-xs font-bold text-text">{student.name}</p>
+        <p className="text-[9px] font-semibold text-muted">{student.teamName ?? "Chưa xếp tổ"}</p>
+      </div>
+      <span className={cn("text-xs font-black tabular-nums", student.net < 0 ? "text-rose-600" : "text-text")}>{formatSigned(student.net)}</span>
+      {mine && <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-[8px] font-black text-primary">Bạn</span>}
+    </div>
+  );
+}
+
+function StudentTable({
+  students,
+  me,
+  compact = false,
+}: {
+  students: StudentRow[];
+  me?: StudentRow;
+  compact?: boolean;
+}) {
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-[680px] text-xs">
+        <thead className="bg-canvas">
+          <tr className="border-y border-border text-left text-[9px] font-black uppercase tracking-wider text-muted">
+            <th className="w-12 px-4 py-2.5">#</th>
+            <th className="px-2 py-2.5">Học sinh</th>
+            <th className="px-2 py-2.5">Tổ</th>
+            <th className="px-2 py-2.5 text-right">Cộng</th>
+            <th className="px-2 py-2.5 text-right">Trừ</th>
+            <th className="px-2 py-2.5 text-right">Ròng</th>
+            <th className="px-4 py-2.5 text-right">Xếp loại</th>
+          </tr>
+        </thead>
+        <tbody>
+          {students.map((s) => (
+            <tr key={s.userId} className={cn(
+              "border-b border-border/60",
+              me?.userId === s.userId && "bg-primary/[.045]",
+            )}>
+              <td className="px-4 py-2.5"><RankBadge rank={s.rank} small={!compact} /></td>
+              <td className="px-2 py-2.5">
+                <div className="flex items-center gap-2">
+                  <span className="size-2 shrink-0 rounded-full" style={{ background: s.teamColor ?? "#94a3b8" }} />
+                  <span className="font-bold text-text">{s.name}</span>
+                  {me?.userId === s.userId && <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-[8px] font-black text-primary">Bạn</span>}
+                </div>
+              </td>
+              <td className="px-2 py-2.5 text-muted">{s.teamName ?? "—"}</td>
+              <td className="px-2 py-2.5 text-right font-bold tabular-nums text-emerald-600">{s.positive || "—"}</td>
+              <td className="px-2 py-2.5 text-right font-bold tabular-nums text-rose-600">{s.negative || "—"}</td>
+              <td className={cn("px-2 py-2.5 text-right font-black tabular-nums", s.net < 0 ? "text-rose-600" : "text-text")}>{formatSigned(s.net)}</td>
+              <td className="px-4 py-2.5 text-right">
+                <span className={cn("rounded-full bg-surface-2 px-2 py-1 text-[9px] font-black", s.tierTone)}>{s.tier}</span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function TrendBars({ data }: { data: CompetitionData["trend"] }) {
+  const max = Math.max(...data.map((d) => Math.max(d.positive, Math.abs(d.negative))), 1);
+  return (
+    <div className="px-5 pb-5">
+      <div className="grid h-36 grid-cols-7 items-end gap-2 border-b border-border">
+        {data.map((d) => {
+          const pos = Math.max(3, Math.round((d.positive / max) * 88));
+          const neg = d.negative < 0 ? Math.max(3, Math.round((Math.abs(d.negative) / max) * 45)) : 0;
+          return (
+            <div key={d.date} className="flex h-full flex-col justify-end">
+              <div className="flex h-[112px] flex-col items-center justify-end gap-1">
+                <div className="w-full max-w-9 rounded-t-md bg-emerald-500/70" style={{ height: `${pos}px` }} />
+                {neg > 0 && <div className="w-full max-w-9 rounded-b-md bg-rose-500/55" style={{ height: `${neg}px` }} />}
+              </div>
+              <p className="mt-2 text-center text-[9px] font-bold text-muted">{d.label}</p>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function useTrendData(
+  _teams: CompetitionData["weekTeams"],
+  _students: StudentRow[],
+): CompetitionData["trend"] {
+  // Trend đã được tính server-side trong query; RankPanel nhận trực tiếp qua
+  // data.trend ở wrapper. Đây là fallback để giữ component thuần dữ liệu.
+  return [];
+}
 function roleShort(role: string): string {
   switch (role) {
     case "CLASS_MONITOR":
