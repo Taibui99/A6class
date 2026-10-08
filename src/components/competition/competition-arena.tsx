@@ -37,6 +37,7 @@ const INITIAL: ActionState = { ok: true, message: "" };
 
 /* ══════════════════════════════════════════════════════════ */
 
+
 export default function CompetitionArena({ data, viewPeriodId }: Props) {
   const { access, period } = data;
   const [tab, setTab] = useState<Tab>("rank");
@@ -46,12 +47,11 @@ export default function CompetitionArena({ data, viewPeriodId }: Props) {
 
   const students = scope === "week" ? data.weekStudents : data.yearStudents;
   const teams = scope === "week" ? data.weekTeams : data.yearTeams;
-
   const me = data.weekStudents.find((s) => s.userId === data.meId);
   const meTeam = data.weekTeams.find((t) => t.teamId === access.teamId);
 
   const tabs: { key: Tab; label: string; icon: typeof Trophy; show: boolean }[] = [
-    { key: "rank", label: "Xếp hạng", icon: Trophy, show: true },
+    { key: "rank", label: "Bảng xếp hạng", icon: Trophy, show: true },
     { key: "entry", label: "Nhập điểm", icon: Pencil, show: access.canRecord },
     { key: "history", label: "Lịch sử", icon: History, show: true },
   ];
@@ -65,127 +65,136 @@ export default function CompetitionArena({ data, viewPeriodId }: Props) {
   async function publish(published: boolean) {
     const fd = new FormData();
     fd.set("classId", data.classId);
-    if (period) {
-      fd.set("periodId", period.id);
-      fd.set("published", published ? "1" : "0");
-      const res = await setPublishedAction(INITIAL, fd);
-      setToast(res);
-    }
+    if (!period) return;
+    fd.set("periodId", period.id);
+    fd.set("published", published ? "1" : "0");
+    setToast(await setPublishedAction(INITIAL, fd));
   }
 
   return (
-    <div className="space-y-4">
-      {/* ── Đầu trang ─────────────────────────────────────── */}
-      <header className={cn(PANEL, "px-4 py-4 sm:px-5")}>
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div className="min-w-0">
-            <h1 className="flex items-center gap-2 text-xl font-extrabold tracking-tight text-text sm:text-2xl">
-              <Trophy aria-hidden className="size-5 text-sky" />
-              Thi đua lớp {data.className}{" "}
-              <span className="text-sm font-medium text-muted" aria-hidden>· {data.schoolYear.replace(/(\d) - (\d)/, "$1 – $2")}</span>
-            </h1>
-            <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
-              {period ? (
-                <>
-                  <span className="inline-flex items-center gap-1">
-                    <CalendarDays aria-hidden className="size-3.5" />
-                    {period.name}
-                  </span>
-                  <span
-                    className={cn(
-                      "rounded-full px-2 py-0.5 font-semibold",
-                      period.daysLeft === 0
-                        ? "bg-amber-500/15 text-amber-700"
-                        : "bg-primary/10 text-primary",
-                    )}
-                  >
-                    {period.daysLeft === 0 ? "Hết tuần" : `Còn ${period.daysLeft} ngày`}
-                  </span>
-                </>
-              ) : (
-                <span>Chưa có kỳ thi</span>
-              )}
-            </p>
-          </div>
+    <div className="min-h-[70vh] space-y-5 pb-10">
+      <section className="relative overflow-hidden rounded-[28px] border border-white/10 bg-[#0B1020] text-white shadow-[0_24px_80px_rgba(15,23,42,.18)]">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -right-20 -top-28 h-72 w-72 rounded-full bg-violet-500/15 blur-3xl" />
+          <div className="absolute -bottom-32 left-1/3 h-64 w-64 rounded-full bg-cyan-400/10 blur-3xl" />
+          <div className="absolute inset-0 opacity-[.035]" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,.8) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.8) 1px, transparent 1px)", backgroundSize: "36px 36px" }} />
+        </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <PeriodPicker
-              periods={data.periods}
-              currentId={viewPeriodId ?? period?.id ?? null}
-            />
-            {(access.isTeacher || access.role === "CLASS_MONITOR") && period && (
-              <button
-                type="button"
-                disabled={isPending}
-                onClick={() => run(() => publish(!period.publishedAt))}
-                className={cn(
-                  "inline-flex h-9 items-center gap-1.5 rounded-xl px-3 text-xs font-bold transition",
-                  period.publishedAt
-                    ? "bg-emerald-500/15 text-emerald-600 ring-1 ring-emerald-500/30 hover:bg-emerald-500/25"
-                    : "bg-surface-2 text-muted border border-border hover:text-text",
-                )}
-              >
-                {period.publishedAt ? (
+        <div className="relative px-5 py-6 sm:px-7 sm:py-8">
+          <div className="flex flex-wrap items-start justify-between gap-5">
+            <div className="max-w-2xl">
+              <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[.22em] text-cyan-300">
+                <span className="h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_12px_rgba(103,232,249,.9)]" />
+                A6Class · Arena
+              </div>
+              <h1 className="mt-3 text-3xl font-black tracking-[-.04em] sm:text-5xl">
+                Thi đua lớp <span className="text-violet-300">{data.className}</span>
+              </h1>
+              <p className="mt-3 max-w-xl text-sm leading-6 text-slate-300 sm:text-[15px]">
+                Đấu trường thi đua của {data.schoolYear}. Theo dõi thứ hạng theo tuần,
+                điểm cá nhân và thành tích của từng tổ — rõ ràng, nhanh và không rối.
+              </p>
+
+              <div className="mt-5 flex flex-wrap items-center gap-2">
+                {period ? (
                   <>
-                    <Eye aria-hidden className="size-3.5" /> Đã công bố
+                    <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[.06] px-3 py-1.5 text-xs font-bold text-slate-200">
+                      <CalendarDays className="size-3.5 text-cyan-300" />
+                      {period.name}
+                    </span>
+                    <span className="rounded-full border border-emerald-300/15 bg-emerald-300/10 px-3 py-1.5 text-xs font-bold text-emerald-200">
+                      {period.daysLeft === 0 ? "Hết tuần" : "Còn " + period.daysLeft + " ngày"}
+                    </span>
                   </>
                 ) : (
-                  <>
-                    <EyeOff aria-hidden className="size-3.5" /> Chưa công bố
-                  </>
+                  <span className="rounded-full border border-white/10 bg-white/[.06] px-3 py-1.5 text-xs font-bold text-slate-300">
+                    Chưa có kỳ thi đua
+                  </span>
                 )}
-              </button>
-            )}
-            {access.isTeacher && (
-              <Link
-                href="/competition/settings"
-                className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-surface-2 px-3 text-xs font-bold text-muted border border-border transition hover:text-text"
-              >
-                <Settings2 aria-hidden className="size-3.5" /> Cấu hình điểm
-              </Link>
-            )}
+              </div>
+            </div>
+
+            <div className="flex w-full flex-col gap-2 sm:w-auto sm:min-w-[220px]">
+              <PeriodPicker periods={data.periods} currentId={viewPeriodId ?? period?.id ?? null} />
+              <div className="grid grid-cols-2 gap-2">
+                <div className="rounded-2xl border border-white/10 bg-white/[.05] p-3">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Học sinh</p>
+                  <p className="mt-1 text-2xl font-black tabular-nums">{students.length}</p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-white/[.05] p-3">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Tổ</p>
+                  <p className="mt-1 text-2xl font-black tabular-nums">{teams.length}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
+            <p className="flex items-center gap-2 text-[11px] leading-5 text-slate-400">
+              <Lock className="size-3.5 shrink-0 text-violet-300" />
+              {describeAccess(data)}
+            </p>
+
+            <div className="flex flex-wrap gap-2">
+              {(access.isTeacher || access.role === "CLASS_MONITOR") && period && (
+                <button
+                  type="button"
+                  disabled={isPending}
+                  onClick={() => run(() => publish(!period.publishedAt))}
+                  className={cn(
+                    "inline-flex h-9 items-center gap-1.5 rounded-xl border px-3 text-xs font-bold transition",
+                    period.publishedAt
+                      ? "border-emerald-300/20 bg-emerald-300/10 text-emerald-200"
+                      : "border-white/10 bg-white/[.06] text-slate-300 hover:bg-white/10",
+                  )}
+                >
+                  {period.publishedAt ? <><Eye className="size-3.5" /> Đã công bố</> : <><EyeOff className="size-3.5" /> Chưa công bố</>}
+                </button>
+              )}
+              {access.isTeacher && (
+                <Link
+                  href="/competition/settings"
+                  className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-white/10 bg-white/[.06] px-3 text-xs font-bold text-slate-300 transition hover:bg-white/10 hover:text-white"
+                >
+                  <Settings2 className="size-3.5" /> Cấu hình
+                </Link>
+              )}
+            </div>
           </div>
         </div>
+      </section>
 
-        {/* Quyền xem hiện tại — luôn nói rõ để không hiểu nhầm */}
-        <div className="mt-3 flex items-start gap-2 rounded-xl bg-canvas px-3 py-2 text-[11px] leading-relaxed text-muted">
-          <Lock aria-hidden className="mt-0.5 size-3.5 shrink-0 text-sky" />
-          <p>{describeAccess(data)}</p>
-        </div>
-      </header>
-
-      {/* ── Tabs ───────────────────────────────────────────── */}
-      <nav className="flex flex-wrap gap-1.5" aria-label="Mục thi đua">
-        {tabs
-          .filter((t) => t.show)
-          .map((t) => (
+      <nav className="flex flex-wrap items-center gap-2" aria-label="Mục thi đua">
+        <div className="flex flex-wrap rounded-2xl border border-border bg-surface p-1">
+          {tabs.filter((t) => t.show).map((t) => (
             <button
               key={t.key}
               type="button"
               onClick={() => setTab(t.key)}
               aria-current={tab === t.key}
               className={cn(
-                "inline-flex h-9 items-center gap-1.5 rounded-xl px-3.5 text-xs font-bold transition",
+                "inline-flex h-9 items-center gap-2 rounded-xl px-3.5 text-xs font-extrabold transition sm:px-4",
                 tab === t.key
-                  ? "bg-primary/10 text-primary ring-1 ring-primary/30"
-                  : "bg-surface text-muted border border-border hover:text-text",
+                  ? "bg-[#111827] text-white shadow-sm"
+                  : "text-muted hover:bg-surface-2 hover:text-text",
               )}
             >
-              <t.icon aria-hidden className="size-3.5" />
+              <t.icon className="size-3.5" />
               {t.label}
             </button>
           ))}
+        </div>
 
         {(tab === "rank" || tab === "history") && (
-          <div className="ml-auto flex gap-1 rounded-xl bg-surface p-0.5 border border-border">
+          <div className="ml-auto flex rounded-2xl border border-border bg-surface p-1">
             {(["week", "year"] as const).map((s) => (
               <button
                 key={s}
                 type="button"
                 onClick={() => setScope(s)}
                 className={cn(
-                  "h-8 rounded-lg px-3 text-xs font-bold transition",
-                  scope === s ? "bg-primary/10 text-primary" : "text-muted hover:text-text",
+                  "h-9 rounded-xl px-3.5 text-xs font-extrabold transition",
+                  scope === s ? "bg-violet-500/10 text-violet-700" : "text-muted hover:text-text",
                 )}
               >
                 {s === "week" ? "Tuần này" : "Cả năm"}
@@ -196,18 +205,19 @@ export default function CompetitionArena({ data, viewPeriodId }: Props) {
       </nav>
 
       {toast && (
-        <p
+        <div
           role="status"
           className={cn(
-            "rounded-xl px-3 py-2 text-xs font-semibold",
-            toast.ok ? "bg-emerald-500/15 text-emerald-600" : "bg-rose-500/15 text-rose-600",
+            "rounded-2xl border px-4 py-3 text-xs font-semibold",
+            toast.ok
+              ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-700"
+              : "border-rose-500/20 bg-rose-500/10 text-rose-700",
           )}
         >
           {toast.message}
-        </p>
+        </div>
       )}
 
-      {/* ── Nội dung ───────────────────────────────────────── */}
       {tab === "rank" && (
         <RankPanel
           students={students}
@@ -218,9 +228,7 @@ export default function CompetitionArena({ data, viewPeriodId }: Props) {
           periodName={scope === "week" ? (period?.name ?? null) : null}
         />
       )}
-      {tab === "entry" && access.canRecord && period && (
-        <EntryGrid data={data} onToast={setToast} />
-      )}
+      {tab === "entry" && access.canRecord && period && <EntryGrid data={data} onToast={setToast} />}
       {tab === "history" && <HistoryPanel data={data} />}
     </div>
   );
