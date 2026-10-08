@@ -3,6 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import {
+  Activity,
   BarChart3,
   CalendarDays,
   ChevronDown,
@@ -13,7 +14,9 @@ import {
   Lock,
   Pencil,
   Settings2,
+  Target,
   Trophy,
+  Users,
 } from "lucide-react";
 
 import {
@@ -226,6 +229,7 @@ export default function CompetitionArena({ data, viewPeriodId }: Props) {
           meTeam={meTeam}
           scope={scope}
           periodName={scope === "week" ? (period?.name ?? null) : null}
+          trend={data.trend}
         />
       )}
       {tab === "entry" && access.canRecord && period && <EntryGrid data={data} onToast={setToast} />}
@@ -306,6 +310,7 @@ function RankPanel({
   meTeam,
   scope,
   periodName,
+  trend,
 }: {
   students: StudentRow[];
   teams: CompetitionData["weekTeams"];
@@ -313,6 +318,7 @@ function RankPanel({
   meTeam?: CompetitionData["weekTeams"][number];
   scope: Scope;
   periodName: string | null;
+  trend: CompetitionData["trend"];
 }) {
   const hasScore = students.some((s) => s.marks > 0) || teams.some((t) => t.direct !== 0);
   const maxAvg = Math.max(...teams.map((t) => t.average), 1);
@@ -363,7 +369,7 @@ function RankPanel({
           title="Nhịp điểm"
           subtitle="Cộng / trừ phát sinh trong 7 ngày gần nhất"
         />
-        <TrendBars data={useTrendData(teams, students)} />
+        <TrendBars data={trend} />
       </section>
 
       <section className={cn(PANEL, "overflow-hidden")}>
@@ -529,14 +535,44 @@ function TrendBars({ data }: { data: CompetitionData["trend"] }) {
   );
 }
 
-function useTrendData(
-  _teams: CompetitionData["weekTeams"],
-  _students: StudentRow[],
-): CompetitionData["trend"] {
-  // Trend đã được tính server-side trong query; RankPanel nhận trực tiếp qua
-  // data.trend ở wrapper. Đây là fallback để giữ component thuần dữ liệu.
-  return [];
+function SectionHeader({ icon: Icon, title, subtitle }: { icon: typeof Trophy; title: string; subtitle: string }) {
+  return (
+    <div className="flex items-end justify-between gap-3 px-5 py-4">
+      <div>
+        <h2 className="flex items-center gap-2 text-sm font-black text-text">
+          <Icon className="size-4 text-primary" aria-hidden />
+          {title}
+        </h2>
+        <p className="mt-1 text-[10px] font-medium text-muted">{subtitle}</p>
+      </div>
+    </div>
+  );
 }
+
+function RankBadge({ rank, small = false }: { rank: number; small?: boolean }) {
+  return (
+    <span className={cn(
+      "grid shrink-0 place-items-center rounded-lg font-black tabular-nums",
+      small ? "size-6 text-[9px]" : "size-8 text-xs",
+      rank === 1 ? "bg-amber-400/15 text-amber-700" :
+      rank === 2 ? "bg-slate-300/40 text-slate-700" :
+      rank === 3 ? "bg-orange-300/20 text-orange-700" :
+      "bg-surface-2 text-muted",
+    )}>
+      {rank}
+    </span>
+  );
+}
+
+function formatScore(n: number): string {
+  return Number.isInteger(n) ? String(n) : n.toFixed(1);
+}
+
+function formatSigned(n: number): string {
+  if (n > 0) return `+${formatScore(n)}`;
+  return formatScore(n);
+}
+
 function roleShort(role: string): string {
   switch (role) {
     case "CLASS_MONITOR":
