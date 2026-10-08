@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
   ArrowUpRight,
@@ -84,7 +84,7 @@ export default async function HubPage() {
   return (
     <div className="space-y-6">
       {/* ── Hero ──────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden rounded-3xl border border-border bg-surface p-6 shadow-sm sm:p-8">
+      <section className="relative overflow-hidden rounded-2xl border border-border bg-surface p-6 shadow-sm sm:p-8">
         <div aria-hidden className="pointer-events-none absolute inset-0">
           
         </div>
@@ -96,7 +96,7 @@ export default async function HubPage() {
           </span>
 
           <div>
-            <h1 className="vt-neon-title text-3xl font-black leading-tight tracking-tight sm:text-4xl">
+            <h1 className="vt-neon-title text-xl font-extrabold leading-tight tracking-tight sm:text-2xl">
               Ngôi nhà số của {classLabel}
             </h1>
             <p className="mt-2 max-w-prose text-sm leading-relaxed text-text-secondary">
@@ -114,7 +114,7 @@ export default async function HubPage() {
             </Link>
             <Link
               href="/members"
-              className="inline-flex h-11 items-center gap-2 rounded-xl bg-surface-2 px-5 text-sm font-bold text-text ring-1 ring-border transition hover:bg-surface-hover"
+              className="inline-flex h-11 items-center gap-2 rounded-xl bg-surface-2 px-5 text-sm font-bold text-text border border-border transition hover:bg-surface-hover"
             >
               <UsersRound aria-hidden className="size-4" />
               Thành viên 3D
@@ -165,7 +165,7 @@ export default async function HubPage() {
           >
             <span
               aria-hidden
-              className="blob blob-amber -right-10 -top-12 size-40"
+              style={{ display: "none" }}
             />
             <div className="relative flex items-start gap-3">
               <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-amber/10 ring-1 ring-amber/25">
@@ -195,8 +195,8 @@ export default async function HubPage() {
       ) : (
         <header className="relative overflow-hidden rounded-2xl border border-border bg-surface p-5 shadow-sm">
           <div aria-hidden className="pointer-events-none absolute inset-0">
-            <span className="blob blob-sky-15 -left-20 -top-24 size-56" />
-            <span className="blob blob-pink -right-16 top-4 size-48" />
+            
+            
           </div>
           <div className="relative">
             <h2 className="text-xl font-black tracking-tight text-text sm:text-2xl">

@@ -22,7 +22,7 @@ export function HomeTaskLink() {
       className={cn(
         "inline-flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-sm font-bold transition",
         onHome
-          ? "bg-sky-500/15 text-sky ring-1 ring-sky-500/30"
+          ? "bg-primary/10 text-sky ring-1 ring-primary/30"
           : "text-text hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky"
       )}
     >

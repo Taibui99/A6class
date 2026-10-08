@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -21,8 +21,8 @@ import type { MemberCard, MembersPageData } from "@/lib/members";
 const TEAM_FALLBACK = [
   { bg: "bg-primary/15", text: "text-primary", ring: "ring-primary/40" },
   { bg: "bg-secondary/15", text: "text-secondary", ring: "ring-secondary/40" },
-  { bg: "bg-accent/15", text: "text-accent", ring: "ring-accent/40" },
-  { bg: "bg-neon-pink/15", text: "text-neon-pink", ring: "ring-neon-pink/40" },
+  { bg: "bg-accent/15", text: "text-accent-ink", ring: "ring-accent/40" },
+  { bg: "bg-rose-500/15", text: "text-rose-600", ring: "ring-rose-500/40" },
 ];
 
 function teamTone(index: number) {
@@ -149,7 +149,7 @@ function MemberCard3D({
           </div>
           <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-2">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-primary to-neon-pink"
+              className="h-full rounded-full bg-primary"
               style={{ width: `${ratio !== null ? Math.max(ratio * 100, 2) : 0}%` }}
             />
           </div>
@@ -229,7 +229,7 @@ export function MembersDirectory({
     return (
       <div className="rounded-2xl border border-border bg-surface p-10 text-center">
         <Users className="mx-auto size-10 text-text-muted" />
-        <h1 className="mt-4 text-lg font-bold text-text">Lớp chưa có thành viên</h1>
+        <h1 className="mt-4 text-xl font-extrabold tracking-tight text-text sm:text-2xl">Lớp chưa có thành viên</h1>
         <p className="mx-auto mt-2 max-w-md text-sm text-text-muted">
           Hãy thêm học sinh vào lớp ở mục Sĩ số để danh bạ hiển thị ở đây.
         </p>
@@ -239,7 +239,7 @@ export function MembersDirectory({
 
   return (
     <div className="space-y-8">
-      <section className="relative overflow-hidden rounded-3xl border border-border bg-surface p-6 shadow-md sm:p-8">
+      <section className="relative overflow-hidden rounded-2xl border border-border bg-surface p-6 shadow-md sm:p-8">
         <div className="relative space-y-3">
           <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary ring-1 ring-primary/30">
             <Users className="size-3.5" />
@@ -247,7 +247,7 @@ export function MembersDirectory({
             {data.schoolYear ? ` · Niên khóa ${data.schoolYear}` : ""}
           </span>
 
-          <h1 className="vt-neon-title text-2xl font-black tracking-tight sm:text-3xl">
+          <h1 className="vt-neon-title text-xl font-extrabold tracking-tight sm:text-2xl">
             Danh bạ Thành viên{data.teams.length > 0 ? ` & ${data.teams.length} Tổ` : ""}
           </h1>
 
@@ -289,7 +289,7 @@ export function MembersDirectory({
       {officers.length > 0 && (
         <section className="space-y-4">
           <h2 className="flex items-center gap-2 text-base font-bold text-text">
-            <Crown className="size-4 text-accent" />
+            <Crown className="size-4 text-accent-ink" />
             Ban cán sự
           </h2>
           <div className="cv-auto grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -309,7 +309,7 @@ export function MembersDirectory({
                       <p className="truncate text-sm font-bold text-text">
                         {m.fullName}
                       </p>
-                      <p className="mt-0.5 truncate text-[11px] text-accent">
+                      <p className="mt-0.5 truncate text-[11px] text-accent-ink">
                         {m.roleLabel}
                       </p>
                       {m.teamName ? (
@@ -454,7 +454,7 @@ export function MembersDirectory({
             role="dialog"
             aria-modal="true"
             aria-labelledby="vip-scan-title"
-            className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-[#0B1220] p-6 text-white shadow-2xl"
+            className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-[#0B1220] p-6 text-white shadow-lg"
           >
             <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
               <span className="vt-scan-line top-0" />
@@ -523,7 +523,7 @@ export function MembersDirectory({
                 <h2 className="truncate text-lg font-black text-text">
                   {selected.fullName}
                 </h2>
-                <p className="text-sm text-accent">{selected.roleLabel}</p>
+                <p className="text-sm text-accent-ink">{selected.roleLabel}</p>
               </div>
             </div>
 

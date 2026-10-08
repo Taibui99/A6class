@@ -141,7 +141,7 @@ export function EventSettings({
               type="submit"
               formAction={clearAction}
               disabled={clearing}
-              className="inline-flex h-9 items-center rounded-xl bg-surface-2 px-4 text-xs font-bold text-text-secondary ring-1 ring-border transition hover:bg-surface-hover disabled:opacity-50"
+              className="inline-flex h-9 items-center rounded-xl bg-surface-2 px-4 text-xs font-bold text-text-secondary border border-border transition hover:bg-surface-hover disabled:opacity-50"
             >
               {clearing ? "Đang tắt..." : "Tắt sự kiện"}
             </button>

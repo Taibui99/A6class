@@ -1,21 +1,11 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
-  Activity,
-  Flame,
-  Sparkles,
-  School,
+  ArrowRight,
   ListTodo,
   Megaphone,
   Pin,
   Trophy,
-  LayoutGrid,
-  UsersRound,
-  ArrowRight,
-  Calendar,
-  CheckCircle2,
-  Clock,
-  Award,
   type LucideIcon,
 } from "lucide-react";
 
@@ -24,11 +14,11 @@ import {
   getDashboardSummary,
   getRecentActivities,
   getScoreboard,
+  getTodayTeamDeltas,
 } from "@/lib/dashboard";
 import { getClassTasks } from "@/lib/tasks/service";
 import { prisma } from "@/lib/prisma";
-import { formatNumber, formatRelativeTime, getInitials } from "@/lib/utils";
-import { COMPETITION_PATH, HOME_PATH } from "@/lib/home";
+import { cn, formatNumber, formatRelativeTime } from "@/lib/utils";
 import {
   TeacherActivityDialog,
   type ActivityItem,
@@ -36,14 +26,107 @@ import {
 
 // Không có dữ liệu thì hiện empty state, không dựng sẵn tổ và điểm giả —
 // bảng xếp hạng bịa sẽ khiến thầy cô tưởng lớp đã có điểm thi đua.
+// Bố cục theo DESIGN-REDESIGN.md §5.2: hero trạng thái lớp (P0) →
+// leaderboard là hero content (P1) → việc cần chốt (P2) → bảng tin (P4).
+
+type ClassTask = Awaited<ReturnType<typeof getClassTasks>>[number];
+
+const DONE = "COMPLETED";
+
+// ── Nhóm vai trò cho dashboard (DESIGN-REDESIGN.md §G) ──────────────
+// teacher / monitor (lớp trưởng + PHT, TQ, LĐ) / leader (trưởng,
+// phó tổ) / student — mỗi nhóm có stats, lối tắt và việc khác nhau.
+const ROLE_LABEL: Record<string, string> = {
+  TEACHER: "Giáo viên",
+  CLASS_MONITOR: "Lớp trưởng",
+  ACADEMIC_VICE_MONITOR: "PHT",
+  ACTIVITY_VICE_MONITOR: "TQ",
+  LABOR_VICE_MONITOR: "LĐ",
+  TEAM_LEADER: "Trưởng tổ",
+  TEAM_VICE_LEADER: "Phó tổ",
+  STUDENT: "Học sinh",
+};
+
+const MONITOR_ROLES = new Set([
+  "CLASS_MONITOR",
+  "ACADEMIC_VICE_MONITOR",
+  "ACTIVITY_VICE_MONITOR",
+  "LABOR_VICE_MONITOR",
+]);
+const LEADER_ROLES = new Set(["TEAM_LEADER", "TEAM_VICE_LEADER"]);
+
+type RoleGroup = "teacher" | "monitor" | "leader" | "student";
+
+function taskUrgency(task: ClassTask, now: Date): 0 | 1 | 2 | 3 {
+  if (task.status === DONE) return 3;
+  if (!task.deadline) return 2;
+  const due = new Date(task.deadline);
+  if (due.getTime() < now.getTime()) return 0;
+  if (due.toDateString() === now.toDateString()) return 1;
+  return 2;
+}
+
+function taskState(task: ClassTask, now: Date) {
+  const urgency = taskUrgency(task, now);
+  if (urgency === 0) return { dot: "bg-red-500", label: "Quá hạn", labelColor: "text-red-600" };
+  if (urgency === 1) return { dot: "bg-amber-500", label: "Hôm nay", labelColor: "text-amber-700" };
+  if (urgency === 3) return { dot: "bg-emerald-500", label: "Đã xong", labelColor: "text-emerald-600" };
+  if (task.deadline) {
+    const days = Math.max(
+      1,
+      Math.ceil((new Date(task.deadline).getTime() - now.getTime()) / 86_400_000)
+    );
+    return { dot: "bg-border-strong", label: `Còn ${days} ngày`, labelColor: "text-text-muted" };
+  }
+  return { dot: "bg-border-strong", label: "Trong tuần", labelColor: "text-text-muted" };
+}
+
+function SectionHeader({
+  icon: Icon,
+  title,
+  subtitle,
+  linkLabel,
+  href,
+}: {
+  icon: LucideIcon;
+  title: string;
+  subtitle: string;
+  linkLabel?: string;
+  href?: string;
+}) {
+  return (
+    <header className="flex items-end justify-between gap-3">
+      <div className="min-w-0">
+        <h2 className="flex items-center gap-2 text-base font-bold text-text">
+          <Icon className="size-4 shrink-0 text-text-muted" aria-hidden />
+          {title}
+        </h2>
+        <p className="mt-0.5 text-xs text-text-muted">{subtitle}</p>
+      </div>
+      {linkLabel && href && (
+        <Link
+          href={href}
+          className="inline-flex shrink-0 items-center gap-1 text-xs font-bold text-primary transition-colors hover:underline"
+        >
+          {linkLabel} <ArrowRight className="size-3.5" aria-hidden />
+        </Link>
+      )}
+    </header>
+  );
+}
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
-  const [data, classTasks] = await Promise.all([
+  const [data, classTasks, membership] = await Promise.all([
     getDashboardSummary(user.id),
     getClassTasks(),
+    prisma.classMembership.findFirst({
+      where: { userId: user.id },
+      orderBy: { joinedAt: "asc" },
+      select: { role: true, teamId: true },
+    }),
   ]);
 
   const now = new Date();
@@ -53,25 +136,62 @@ export default async function DashboardPage() {
 
   const firstName = user.fullName.trim().split(/\s+/).at(-1) ?? "bạn";
 
-  const today = new Intl.DateTimeFormat("vi-VN", {
-    weekday: "long",
+  const weekday = new Intl.DateTimeFormat("vi-VN", { weekday: "long" }).format(now);
+  const dayMonth = new Intl.DateTimeFormat("vi-VN", {
     day: "2-digit",
     month: "2-digit",
-    year: "numeric",
-  })
-    .format(now)
-    .replace(/^./, (c) => c.toUpperCase());
+  }).format(now);
+  const dateLabel = `${weekday.charAt(0).toUpperCase()}${weekday.slice(1)} ${dayMonth}`;
 
   const isTeacher = user.role === "TEACHER";
+  const memberRole = membership?.role ?? null;
+  const myTeamId = membership?.teamId ?? null;
+
+  const roleGroup: RoleGroup = isTeacher
+    ? "teacher"
+    : memberRole && MONITOR_ROLES.has(memberRole)
+      ? "monitor"
+      : memberRole && LEADER_ROLES.has(memberRole)
+        ? "leader"
+        : "student";
+  const roleLabel = isTeacher
+    ? ROLE_LABEL.TEACHER
+    : memberRole
+      ? (ROLE_LABEL[memberRole] ?? null)
+      : null;
+  // Trưởng/phó tổ và học sinh chỉ thấy việc của mình/tổ mình trên dashboard.
+  const scopedToMyTeam = roleGroup === "leader" || roleGroup === "student";
+
   const classId = data?.classId ?? null;
 
-  const [scoreboard, activities, criteriaCount] = classId
-    ? await Promise.all([
-        getScoreboard(classId),
-        getRecentActivities(classId),
-        prisma.criterion.count({ where: { classId } }),
-      ])
-    : [{ teams: [], students: [] }, [], 0];
+  const [scoreboard, activities, criteriaCount, deltas, myTaskIds, pointRows] =
+    classId
+      ? await Promise.all([
+          getScoreboard(classId),
+          getRecentActivities(classId),
+          prisma.criterion.count({ where: { classId } }),
+          getTodayTeamDeltas(classId),
+          prisma.taskAssignment.findMany({
+            where: { userId: user.id },
+            select: { taskId: true },
+          }),
+          roleGroup === "teacher"
+            ? prisma.pointTransaction.groupBy({
+                by: ["targetUserId"],
+                where: { classId, targetUserId: { not: null } },
+                _sum: { amount: true },
+              })
+            : Promise.resolve([]),
+        ])
+      : [
+          { teams: [], students: [] },
+          [],
+          0,
+          {} as Record<string, number>,
+          [] as { taskId: string }[],
+          [] as unknown[],
+        ];
+  const myTaskIdSet = new Set(myTaskIds.map((a) => a.taskId));
 
   const activityItems: ActivityItem[] = activities.map((a) => ({
     id: a.id,
@@ -81,192 +201,278 @@ export default async function DashboardPage() {
   }));
 
   const displayTeams = scoreboard.teams;
-  const topTeam = displayTeams[0];
+  const topTeam = displayTeams[0] ?? null;
+  const studentCount = displayTeams.reduce((sum, t) => sum + t.memberCount, 0);
+  const openTaskCount = classTasks.filter((t) => t.status !== DONE).length;
 
-  // Tên lớp và số tổ lấy từ DB. Trước đây chỗ này hardcode "12A6" / "4 tổ" /
-  // "Tổ 1" / "320 điểm" khiến lớp trống vẫn hiện bảng xếp hạng bịa.
   const className = data?.className ?? null;
   const classLabel = className ?? "Lớp của bạn";
-  const teamCount = displayTeams.length;
-  const roleLabel =
-    user.role === "TEACHER"
-      ? "Giáo viên chủ nhiệm"
-      : className
-        ? `Học sinh ${className}`
-        : "Thành viên";
 
-  const displayTasks = classTasks.slice(0, 4);
+  // Headline P0: trả lời "lớp mình hôm nay thế nào" — không bịa số.
+  const headline = topTeam
+    ? `${topTeam.name} đang dẫn đầu thi đua`
+    : isTeacher
+      ? "Chưa có tổ nào — vào Dữ liệu lớp để tạo tổ"
+      : "Lớp chưa có tổ nào để thi đua";
 
-  // Không có thông báo thật thì hiện empty state, không dựng sẵn vài thông báo
-// giả — số giờ và nội dung bịa sẽ khiến thầy cô tưởng lớp đã đăng.
-const announcements = data?.announcements ?? [];
+  // P2: chỉ 3 việc, nặng nhất trước (quá hạn → hôm nay → còn lại → đã xong).
+  // Trưởng tổ / học sinh: chỉ việc áp cho mình hoặc tổ mình.
+  const scopedTasks = scopedToMyTeam
+    ? classTasks.filter(
+        (t) =>
+          t.assigneeType === "CLASS" ||
+          t.assigneeType === "ROLE" ||
+          (t.assigneeType === "TEAM" && t.teamId === myTeamId) ||
+          (t.assigneeType === "INDIVIDUAL" && myTaskIdSet.has(t.id))
+      )
+    : classTasks;
+  const sortedTasks = [...scopedTasks]
+    .sort((a, b) => taskUrgency(a, now) - taskUrgency(b, now))
+    .slice(0, 3);
+
+  // Lối tắt theo vai trò — mỗi nhóm một việc cần làm ngay.
+  const ctas =
+    roleGroup === "teacher"
+      ? [
+          { label: "Giao việc", href: "/tasks", primary: true },
+          { label: "Nhập / Xem điểm", href: "/competition" },
+          { label: "Bảng tin lớp", href: "/feed" },
+        ]
+      : roleGroup === "monitor"
+        ? [
+            { label: "Nhập / Xem điểm", href: "/competition", primary: true },
+            { label: "Việc của lớp", href: "/tasks" },
+            { label: "Thành viên", href: "/members" },
+          ]
+        : roleGroup === "leader"
+          ? [
+              { label: "Điểm tổ mình", href: "/competition", primary: true },
+              { label: "Việc của tổ", href: "/tasks" },
+              { label: "Bảng thành tích", href: "/achievements" },
+            ]
+          : [
+              { label: "Xem bảng điểm", href: "/competition", primary: true },
+              { label: "Việc của tôi", href: "/tasks" },
+              { label: "Bảng thành tích", href: "/achievements" },
+            ];
+
+  const announcements = data?.announcements ?? [];
 
   return (
-    <div className="space-y-7">
+    <div className="space-y-6">
       {isTeacher && activityItems.length > 0 && (
         <TeacherActivityDialog activities={activityItems} />
       )}
 
-      {/* ── Banner chào mừng sinh động ───────────────────────── */}
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 via-surface to-neon-pink/5 p-6 sm:p-8 ring-1 ring-border shadow-lg">
-        <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-sky-500/15 px-3 py-1 text-xs font-bold text-sky-300 ring-1 ring-sky-500/30">
-                <School className="size-3.5" />
-                Lớp {classLabel}
-              </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-surface px-3 py-1 text-xs font-medium text-text-secondary ring-1 ring-border">
-                {roleLabel}
-              </span>
-              <span className="text-xs font-medium text-text-muted">{today}</span>
-            </div>
+      {/* ── P0 · Hero trạng thái lớp (~300px, phẳng, không gradient) ── */}
+      <section className="rounded-2xl border border-border bg-surface px-5 py-7 sm:px-7 sm:py-8">
+        <p className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-text-muted">
+          <span>
+            {classLabel} · {dateLabel}
+          </span>
+          {roleLabel && (
+            <span className="rounded-md bg-surface-hover px-2 py-0.5 text-[10px] font-extrabold tracking-normal text-text-secondary">
+              {roleLabel}
+            </span>
+          )}
+        </p>
 
-            <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-text">
-              {greeting}, <span className="bg-gradient-to-r from-sky-400 to-indigo-300 bg-clip-text text-transparent">{firstName}</span>! 👋
+        <div className="mt-4 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+          <div className="min-w-0">
+            <p className="text-sm text-text-secondary">
+              {greeting}, {firstName}.
+            </p>
+            <h1 className="mt-1 text-xl font-extrabold tracking-tight text-text sm:text-2xl">
+              {headline}
             </h1>
-
-            <p className="text-sm text-text-secondary max-w-xl">
-              {teamCount > 0
-                ? `Cùng theo dõi thi đua ${teamCount} tổ, hoàn thành nhiệm vụ tuần và giữ vững ngọn lửa đoàn kết của đại gia đình ${classLabel}.`
-                : "Chưa có tổ nào. Vào Dữ liệu lớp để tạo tổ và nhập danh sách học sinh, rồi bắt đầu chuyến thi đua."}
+            <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-text-secondary">
+              {studentCount > 0 && (
+                <>
+                  <span className="font-semibold text-text">{studentCount} bạn</span>
+                  <span aria-hidden>·</span>
+                </>
+              )}
+              <span className="font-semibold text-text">{openTaskCount} việc</span>
+              <span aria-hidden>·</span>
+              {topTeam ? (
+                <span className="font-semibold text-text">
+                  #1 {topTeam.name}
+                </span>
+              ) : (
+                <span>chưa có tổ</span>
+              )}
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="grid size-14 place-items-center rounded-2xl bg-gradient-to-tr from-sky-500 to-indigo-600 text-white font-black text-xl shadow-lg ring-2 ring-white/10">
-              {getInitials(user.fullName)}
+          {/* Số của vai trò — text thuần, không card con */}
+          {roleGroup === "teacher" ? (
+            <div className="flex gap-7 md:shrink-0 md:text-right">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-text-muted">
+                  Việc đã chốt
+                </p>
+                <p className="mt-0.5 text-xl font-extrabold tabular-nums text-text">
+                  {classTasks.filter((t) => t.status === DONE).length}/{classTasks.length}
+                </p>
+              </div>
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-text-muted">
+                  Bạn đã có điểm
+                </p>
+                <p className="mt-0.5 text-xl font-extrabold tabular-nums text-text">
+                  {pointRows.length}/{studentCount}
+                </p>
+              </div>
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-text-muted">
+                  Tiêu chí
+                </p>
+                <p className="mt-0.5 text-xl font-extrabold tabular-nums text-text">
+                  {criteriaCount}
+                </p>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="flex gap-7 md:shrink-0 md:text-right">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-text-muted">
+                  Điểm của bạn
+                </p>
+                <p className="mt-0.5 text-xl font-extrabold tabular-nums text-text">
+                  {formatNumber(data?.totalPoints ?? 0)}
+                </p>
+              </div>
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-text-muted">
+                  Hạng cá nhân
+                </p>
+                <p className="mt-0.5 text-xl font-extrabold tabular-nums text-text">
+                  {data?.personalRank ? `#${data.personalRank}` : "—"}
+                </p>
+              </div>
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-text-muted">
+                  Tổ của bạn
+                </p>
+                <p className="mt-0.5 truncate text-xl font-extrabold text-text">
+                  {data?.team?.name ?? "Chưa vào tổ"}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* 4 Thẻ KPI học đường */}
-        <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-          <Link
-            href="/competition"
-            className="group rounded-2xl bg-surface p-4 ring-1 ring-border/80 transition hover:ring-amber-500/40 hover:-translate-y-0.5"
-          >
-            <div className="flex items-center justify-between text-text-muted">
-              <span className="text-xs font-semibold">Tổ dẫn đầu 🏆</span>
-              <Trophy className="size-4 text-amber-400" />
-            </div>
-            <p className="mt-2 text-base sm:text-lg font-black text-amber-300 truncate">
-              {topTeam?.name ?? "Chưa có tổ"}
-            </p>
-            <p className="mt-0.5 text-[11px] text-text-muted">
-              {topTeam ? `${topTeam.totalScore} điểm thi đua` : "Tạo tổ để bắt đầu"}
-            </p>
-          </Link>
-
-          <Link
-            href="/tasks"
-            className="group rounded-2xl bg-surface p-4 ring-1 ring-border/80 transition hover:ring-sky-500/40 hover:-translate-y-0.5"
-          >
-            <div className="flex items-center justify-between text-text-muted">
-              <span className="text-xs font-semibold">Việc lớp tuần này</span>
-              <ListTodo className="size-4 text-sky" />
-            </div>
-            <p className="mt-2 text-2xl font-black text-sky-300">
-              {classTasks.filter((t) => t.status !== "COMPLETED").length}
-            </p>
-            <p className="mt-0.5 text-[11px] text-text-muted">Đang cần thực hiện</p>
-          </Link>
-
-          <Link
-            href="/members"
-            className="group rounded-2xl bg-surface p-4 ring-1 ring-border/80 transition hover:ring-emerald-500/40 hover:-translate-y-0.5"
-          >
-            <div className="flex items-center justify-between text-text-muted">
-              <span className="text-xs font-semibold">Sĩ số lớp</span>
-              <UsersRound className="size-4 text-emerald-400" />
-            </div>
-            <p className="mt-2 text-2xl font-black text-emerald-300">36</p>
-            <p className="mt-0.5 text-[11px] text-text-muted">4 tổ thi đua</p>
-          </Link>
-
-          <Link
-            href={HOME_PATH}
-            className="group rounded-2xl bg-surface p-4 ring-1 ring-border/80 transition hover:ring-violet-500/40 hover:-translate-y-0.5"
-          >
-            <div className="flex items-center justify-between text-text-muted">
-              <span className="text-xs font-semibold">Kho công cụ</span>
-              <LayoutGrid className="size-4 text-violet-400" />
-            </div>
-            <p className="mt-2 text-2xl font-black text-violet-300">Sẵn sàng</p>
-            <p className="mt-0.5 text-[11px] text-text-muted">Thi & tài liệu</p>
-          </Link>
+        {/* Lối tắt — launchpad theo vai trò, không lặp lại nav bằng chữ */}
+        <div className="mt-5 flex flex-wrap gap-2 border-t border-border pt-4">
+          {ctas.map((cta) => (
+            <Link
+              key={cta.href + cta.label}
+              href={cta.href}
+              className={cn(
+                "inline-flex h-9 items-center rounded-lg px-4 text-sm font-bold transition-colors",
+                cta.primary
+                  ? "bg-primary text-primary-foreground hover:bg-primary-hover"
+                  : "border border-border bg-surface text-text hover:bg-surface-hover"
+              )}
+            >
+              {cta.label}
+            </Link>
+          ))}
         </div>
       </section>
 
-      {/* ── Grid 2 cột: Thi đua 4 Tổ & Hoạt động lớp cần làm ── */}
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* Cột 1: Thi đua 4 Tổ */}
-        <section className="flex flex-col justify-between rounded-3xl bg-surface p-6 ring-1 ring-border shadow-sm">
-          <div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="grid size-8 place-items-center rounded-xl bg-amber-500/15 text-amber-400 ring-1 ring-amber-500/30">
-                  <Trophy className="size-4" />
-                </span>
-                <div>
-                  <h2 className="text-base font-bold text-text">Bảng xếp hạng 4 Tổ</h2>
-                  <p className="text-xs text-text-muted">Cập nhật thi đua theo thời gian thực</p>
-                </div>
-              </div>
+        {/* ── P1 · Leaderboard là hero content ─────────────── */}
+        <section className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
+          <SectionHeader
+            icon={Trophy}
+            title="Tổ nào đang dẫn?"
+            subtitle="Bảng điểm vừa cập nhật"
+            linkLabel="Xem chi tiết"
+            href="/competition"
+          />
 
-              <Link
-                href="/competition"
-                className="inline-flex items-center gap-1 text-xs font-bold text-sky-400 hover:text-sky-300 transition-colors"
-              >
-                Đấu trường <ArrowRight className="size-3.5" />
-              </Link>
-            </div>
-
-            {/* Danh sách 4 tổ */}
-            <div className="mt-5 space-y-3">
-              {displayTeams.length === 0 ? (
-                <p className="rounded-2xl bg-canvas px-4 py-6 text-center text-sm text-text-muted ring-1 ring-border">
-                  Chưa có tổ nào. Vào <span className="font-semibold">Dữ liệu lớp</span> để tạo tổ và nhập danh sách học sinh.
-                </p>
-              ) : (
-                displayTeams.slice(0, 4).map((team, idx) => {
-                const medals = ["🥇", "🥈", "🥉", "🏅"];
-                const maxScore = Math.max(...displayTeams.map((t) => t.totalScore || 100), 100);
-                const pct = Math.round(((team.totalScore || 0) / maxScore) * 100);
+          <ol className="mt-4">
+            {displayTeams.length === 0 ? (
+              <li className="py-6 text-center text-sm text-text-muted">
+                Chưa có tổ nào. Vào{" "}
+                <span className="font-semibold text-text-secondary">
+                  {isTeacher ? "Dữ liệu lớp" : "Thành viên"}
+                </span>{" "}
+                {isTeacher ? "để tạo tổ và nhập danh sách học sinh." : "để vào tổ của bạn."}
+              </li>
+            ) : (
+              displayTeams.slice(0, 4).map((team, idx) => {
+                const isTop = idx === 0;
+                const delta = deltas[team.id] ?? 0;
 
                 return (
-                  <div
-                    key={team.id}
-                    className="rounded-2xl bg-canvas p-3.5 ring-1 ring-border transition-all hover:ring-sky-500/30"
-                  >
-                    <div className="flex items-center justify-between text-xs">
-                      <div className="flex items-center gap-2.5 font-bold text-text">
-                        <span className="text-base">{medals[idx] ?? "🏅"}</span>
-                        <span>{team.name}</span>
-                      </div>
-                      <span className="font-black tabular-nums text-sky-300 text-sm">
-                        {formatNumber(team.totalScore)} đ
+                  <li key={team.id}>
+                    <Link
+                      href="/competition"
+                      className="flex items-center gap-4 rounded-lg border-b border-border px-1 py-3.5 transition-colors last:border-b-0 hover:bg-surface-hover"
+                    >
+                      <span
+                        className={cn(
+                          "grid size-9 shrink-0 place-items-center rounded-lg font-extrabold tabular-nums",
+                          isTop
+                            ? "bg-accent-light text-lg text-accent-ink"
+                            : "bg-surface-hover text-sm text-text-secondary"
+                        )}
+                        aria-hidden
+                      >
+                        {idx + 1}
                       </span>
-                    </div>
 
-                    {/* Progress bar */}
-                    <div className="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-surface">
-                      <div
-                        className="h-full rounded-full transition-all duration-500"
-                        style={{
-                          width: `${pct}%`,
-                          backgroundColor: team.color ?? "#00F2FE",
-                        }}
-                      />
-                    </div>
-                  </div>
+                      <div className="min-w-0 flex-1">
+                        <p
+                          className={cn(
+                            "truncate font-bold text-text",
+                            isTop ? "text-xl" : "text-sm"
+                          )}
+                        >
+                          {team.name}
+                        </p>
+                        <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-text-muted">
+                          <span
+                            className={cn(
+                              "font-semibold",
+                              delta > 0 ? "text-primary" : "text-text-muted"
+                            )}
+                          >
+                            {delta > 0 ? "↑" : delta < 0 ? "↓" : "—"}{" "}
+                            {delta > 0 ? "+" : ""}
+                            {delta} hôm nay
+                          </span>
+                          <span aria-hidden>·</span>
+                          <span>{team.memberCount} thành viên</span>
+                        </p>
+                      </div>
+
+                      <p
+                        className={cn(
+                          "shrink-0 font-extrabold tabular-nums text-text",
+                          isTop ? "text-2xl" : "text-base"
+                        )}
+                      >
+                        {formatNumber(team.totalScore)}
+                        <span
+                          className={cn(
+                            "font-bold text-text-muted",
+                            isTop ? "text-sm" : "text-xs"
+                          )}
+                        >
+                          đ
+                        </span>
+                      </p>
+                    </Link>
+                  </li>
                 );
-                })
-              )}
-            </div>
-          </div>
+              })
+            )}
+          </ol>
 
-          <div className="mt-6 pt-4 border-t border-border flex items-center justify-between text-xs text-text-muted">
+          <div className="mt-4 flex items-center justify-between gap-3 border-t border-border pt-4 text-xs text-text-muted">
             <span>
               {criteriaCount > 0
                 ? `Điểm dựa trên ${criteriaCount} tiêu chí học tập & nề nếp`
@@ -274,116 +480,173 @@ const announcements = data?.announcements ?? [];
             </span>
             <Link
               href="/competition"
-              className="rounded-xl bg-sky-500/15 px-3 py-1.5 font-bold text-sky-300 ring-1 ring-sky-500/30 hover:bg-sky-500/25 transition"
+              className="shrink-0 font-bold text-primary transition-colors hover:underline"
             >
               Nhập / Xem điểm chi tiết
             </Link>
           </div>
         </section>
 
-        {/* Cột 2: Việc lớp & Hoạt động gấp */}
-        <section className="flex flex-col justify-between rounded-3xl bg-surface p-6 ring-1 ring-border shadow-sm">
-          <div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="grid size-8 place-items-center rounded-xl bg-sky-500/15 text-sky ring-1 ring-sky-500/30">
-                  <ListTodo className="size-4" />
-                </span>
-                <div>
-                  <h2 className="text-base font-bold text-text">Việc lớp cần làm gấp</h2>
-                  <p className="text-xs text-text-muted">Nhiệm vụ và hoạt động trọng tâm</p>
-                </div>
+        {/* ── P2 · Việc cần chốt — 3 việc, trạng thái thấy 0,5s ── */}
+        <section className="flex flex-col rounded-2xl border border-border bg-surface p-5 sm:p-6">
+          <SectionHeader
+            icon={ListTodo}
+            title={
+              roleGroup === "teacher" || roleGroup === "monitor"
+                ? "Việc cần chốt"
+                : roleGroup === "leader"
+                  ? "Việc của tổ"
+                  : "Việc của bạn"
+            }
+            subtitle={
+              roleGroup === "teacher"
+                ? "Chốt sớm — lấy điểm cho tổ"
+                : roleGroup === "monitor"
+                  ? "Toàn bộ việc của lớp"
+                  : "Việc áp cho bạn và tổ bạn"
+            }
+            linkLabel={roleGroup === "teacher" ? "Giao việc" : "Tất cả việc"}
+            href="/tasks"
+          />
+
+          {sortedTasks.length === 0 ? (
+            <div className="mt-4 flex flex-1 flex-col items-center justify-center rounded-xl border border-border bg-canvas px-4 py-5">
+              <p className="text-center text-sm leading-relaxed text-text-muted">
+                {scopedToMyTeam ? (
+                  classTasks.length > 0 ? (
+                    <>
+                      Lớp đang có{" "}
+                      <b className="text-text-secondary">{classTasks.length} việc</b> ({openTaskCount}{" "}
+                      còn mở) nhưng chưa việc nào áp cho bạn.
+                    </>
+                  ) : (
+                    <>Chưa có việc nào áp cho bạn lúc này.</>
+                  )
+                ) : (
+                  <>
+                    Lớp chưa có nhiệm vụ nào.{" "}
+                    {isTeacher
+                      ? "Bắt đầu giao việc cho tổ."
+                      : "Hết việc rồi — nghỉ ngơi đi."}
+                  </>
+                )}
+              </p>
+              <div className="mt-3.5 flex flex-wrap items-center justify-center gap-2">
+                {scopedToMyTeam && classTasks.length > 0 ? (
+                  <>
+                    <Link
+                      href="/tasks"
+                      className="inline-flex h-9 items-center rounded-lg bg-primary px-4 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-hover"
+                    >
+                      Tất cả việc của lớp
+                    </Link>
+                    <Link
+                      href="/feed"
+                      className="inline-flex h-9 items-center rounded-lg border border-border bg-surface px-4 text-sm font-bold text-text transition-colors hover:bg-surface-hover"
+                    >
+                      Bảng tin lớp
+                    </Link>
+                  </>
+                ) : isTeacher ? (
+                  <Link
+                    href="/tasks"
+                    className="inline-flex h-9 items-center rounded-lg bg-primary px-4 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-hover"
+                  >
+                    Giao việc cho tổ
+                  </Link>
+                ) : (
+                  <>
+                    <Link
+                      href="/competition"
+                      className="inline-flex h-9 items-center rounded-lg bg-primary px-4 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-hover"
+                    >
+                      Xem bảng điểm
+                    </Link>
+                    <Link
+                      href="/achievements"
+                      className="inline-flex h-9 items-center rounded-lg border border-border bg-surface px-4 text-sm font-bold text-text transition-colors hover:bg-surface-hover"
+                    >
+                      Bảng thành tích
+                    </Link>
+                  </>
+                )}
               </div>
-
-              <Link
-                href="/tasks"
-                className="inline-flex items-center gap-1 text-xs font-bold text-sky-400 hover:text-sky-300 transition-colors"
-              >
-                Tất cả việc <ArrowRight className="size-3.5" />
-              </Link>
             </div>
-
-            {/* List tasks */}
-            <div className="mt-5 space-y-2.5">
-              {displayTasks.slice(0, 4).map((task) => (
-                <div
-                  key={task.id}
-                  className="flex items-center justify-between gap-3 rounded-2xl bg-canvas p-3 ring-1 ring-border transition-all hover:ring-sky-500/30"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-bold text-text">
-                      {task.title}
-                    </p>
-                    <div className="mt-1 flex items-center gap-2 text-xs text-text-muted">
-                      <span className="text-sky-300 font-semibold">
-                        {task.teamName ?? "Cả lớp"}
-                      </span>
-                      <span>·</span>
-                      {task.deadline ? (
-                        <span>Hạn: {formatRelativeTime(new Date(task.deadline))}</span>
-                      ) : (
-                        <span>Trong tuần</span>
-                      )}
+          ) : (
+            <ul className="mt-4">
+              {sortedTasks.map((task) => {
+                const state = taskState(task, now);
+                return (
+                  <li
+                    key={task.id}
+                    className="flex items-center gap-3 border-b border-border py-3.5 last:border-b-0"
+                  >
+                    <span
+                      className={cn("size-2.5 shrink-0 rounded-full", state.dot)}
+                      aria-hidden
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold text-text">
+                        {task.title}
+                      </p>
+                      <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs">
+                        <span className={cn("font-semibold", state.labelColor)}>
+                          {state.label}
+                        </span>
+                        <span className="text-text-muted" aria-hidden>
+                          ·
+                        </span>
+                        <span className="text-text-muted">
+                          {task.teamName ?? "Cả lớp"}
+                        </span>
+                      </p>
                     </div>
-                  </div>
-
-                  <span className="shrink-0 rounded-xl bg-surface px-2.5 py-1 text-[11px] font-bold text-amber-300 ring-1 ring-border">
-                    +{task.points ?? 10}đ
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-6 pt-4 border-t border-border flex items-center justify-between text-xs text-text-muted">
-            <span>Hoàn thành đúng hạn để nhận điểm thưởng</span>
-            <Link
-              href="/tasks"
-              className="rounded-xl bg-sky-500/15 px-3 py-1.5 font-bold text-sky-300 ring-1 ring-sky-500/30 hover:bg-sky-500/25 transition"
-            >
-              + Giao việc mới
-            </Link>
-          </div>
+                    <span className="shrink-0 rounded-md bg-accent-light px-2 py-1 text-xs font-extrabold text-accent-ink">
+                      +{task.points ?? 10}đ
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </section>
       </div>
 
-      {/* ── Thông báo lớp & Lịch tuần ──────────────────────── */}
-      <section className="rounded-3xl bg-surface p-6 ring-1 ring-border shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <span className="grid size-8 place-items-center rounded-xl bg-amber-500/15 text-amber-400 ring-1 ring-amber-500/30">
-              <Megaphone className="size-4" />
-            </span>
-            <h2 className="text-base font-bold text-text">Bảng tin & Thông báo lớp {classLabel}</h2>
-          </div>
-          <span className="text-xs font-semibold text-text-muted">Ban cán sự ghim</span>
-        </div>
+      {/* ── P4 · Bảng tin — flatten, divider + timestamp ──────── */}
+      <section className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
+        <SectionHeader
+          icon={Megaphone}
+          title={`Bảng tin ${classLabel}`}
+          subtitle="Ban cán sự ghim"
+        />
 
-        {announcements.length === 0 ? (
-          <p className="rounded-2xl bg-canvas p-6 text-center text-xs text-text-muted ring-1 ring-border">
-            Lớp chưa có thông báo nào. Ban cán sự đăng thông báo ở trang Bảng tin.
-          </p>
-        ) : (
-          <div className="grid gap-3 sm:grid-cols-2">
-            {announcements.map((a) => (
-              <div
+        <ul className="mt-3">
+          {announcements.length === 0 ? (
+            <li className="py-5 text-sm text-text-muted">
+              Chưa có thông báo nào. Có gì cần cả lớp biết thì đăng ở Bảng lớp nhé.
+            </li>
+          ) : (
+            announcements.map((a) => (
+              <li
                 key={a.id}
-                className="rounded-2xl bg-canvas p-4 ring-1 ring-border space-y-1.5"
+                className="flex gap-3 border-b border-border py-3.5 last:border-b-0"
               >
-                <div className="flex items-center gap-1.5 text-xs font-bold text-amber-300">
-                  <Pin className="size-3.5" />
-                  <span className="text-text">{a.title}</span>
+                <Pin className="mt-0.5 size-4 shrink-0 text-text-muted" aria-hidden />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-text">{a.title}</p>
+                  {a.content && (
+                    <p className="mt-0.5 text-xs leading-relaxed text-text-secondary line-clamp-2">
+                      {a.content}
+                    </p>
+                  )}
+                  <p className="mt-1 text-[11px] text-text-muted">
+                    {formatRelativeTime(new Date(a.createdAt))}
+                  </p>
                 </div>
-                <p className="text-xs text-text-secondary leading-relaxed line-clamp-2">
-                  {a.content}
-                </p>
-                <p className="text-[10px] text-text-muted pt-1">
-                  {formatRelativeTime(new Date(a.createdAt))}
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
+              </li>
+            ))
+          )}
+        </ul>
       </section>
     </div>
   );

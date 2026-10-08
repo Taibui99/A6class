@@ -23,7 +23,7 @@ function Message({ state }: { state: ActionState }) {
   return (
     <p
       role="status"
-      className={`text-xs ${state.ok ? "text-emerald-300" : "text-danger"}`}
+      className={`text-xs ${state.ok ? "text-emerald-600" : "text-danger"}`}
     >
       {state.message}
     </p>
@@ -80,7 +80,7 @@ function TeamRow({ team }: { team: Team }) {
   const [confirming, setConfirming] = useState(false);
 
   return (
-    <li className="flex flex-wrap items-center gap-2 rounded-xl bg-surface p-3 ring-1 ring-border">
+    <li className="flex flex-wrap items-center gap-2 rounded-xl bg-surface p-3 border border-border">
       <form action={renameAction} className="flex min-w-48 flex-1 items-center gap-2">
         <input type="hidden" name="teamId" value={team.id} />
         <Input
@@ -157,7 +157,7 @@ export function TeamManager({ classId, teams }: { classId: string; teams: Team[]
       <AddTeamForm classId={classId} />
 
       {teams.length === 0 ? (
-        <p className="rounded-xl bg-surface p-4 text-sm text-text-muted ring-1 ring-border">
+        <p className="rounded-xl bg-surface p-4 text-sm text-text-muted border border-border">
           Chưa có tổ nào. Thêm tổ ở trên, hoặc đơn giản là dán danh sách có cột
           Tổ — hệ thống sẽ tự tạo.
         </p>

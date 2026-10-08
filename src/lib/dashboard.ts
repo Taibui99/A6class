@@ -115,6 +115,32 @@ export async function getScoreboard(classId: string): Promise<Scoreboard> {
   }
 }
 
+/**
+ * Điểm tổ nhận được HÔM NAY — dùng cho delta "↑ +8 hôm nay" trên dashboard.
+ * Trả về object { teamId: tổng điểm hôm nay }. Không bịa số: tổng thẳng
+ * từ PointTransaction của ngày hôm nay (mốc 00:00 máy chủ).
+ */
+export async function getTodayTeamDeltas(
+  classId: string
+): Promise<Record<string, number>> {
+  try {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    const rows = await prisma.pointTransaction.groupBy({
+      by: ["targetTeamId"],
+      where: { classId, targetTeamId: { not: null }, createdAt: { gte: start } },
+      _sum: { amount: true },
+    });
+    const out: Record<string, number> = {};
+    for (const r of rows) {
+      if (r.targetTeamId) out[r.targetTeamId] = r._sum.amount ?? 0;
+    }
+    return out;
+  } catch {
+    return {};
+  }
+}
+
 export async function getRecentActivities(classId: string): Promise<RecentActivity[]> {
   try {
     const since = new Date(Date.now() - 24 * 60 * 60 * 1000);

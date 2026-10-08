@@ -1,23 +1,25 @@
 @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&family=Orbitron:wght@700;900&display=swap');
 @import "tailwindcss";
 
-/* Theme "A6 LEGENDS" bản sáng — nền pastel #EEF2F9, thẻ trắng, chữ navy.
-   Neon sáng (cyan #00F2FE, hồng #FF2A85, vàng #FFB800) không đủ tương
-   phản trên nền trắng nên token *-accent dùng bản sâu hơn để chữ đạt AA,
-   còn bản neon gốc giữ ở --neon-* / --gold cho quầng sáng và panel tối
-   (đồng hồ LED, nút vàng) — chỗ nền tối thì neon vẫn nổi đúng ý mẫu. */
+/* Theme "BẢNG LỚP 12A6" — nền giấy ấm #F5F1E8, surface trắng ngà,
+   primary xanh điện #2563EB, accent lime #C7F000 CHỈ cho winner/streak/
+   marker (rất tiết chế). Radius ≤16px và shadow 2 mức để chống AI-look.
+   Toàn bộ lý do/token nằm trong DESIGN-REDESIGN.md §3. */
 :root {
-  --primary: #0E7490;
-  --primary-hover: #0C5F75;
-  --primary-light: rgba(14, 116, 144, 0.1);
-  --primary-muted: rgba(14, 116, 144, 0.28);
-  --secondary: #2563EB;
-  --secondary-light: rgba(37, 99, 235, 0.1);
-  --accent: #B45309;
-  --accent-light: rgba(180, 83, 9, 0.1);
+  --primary: #2563EB;
+  --primary-hover: #1D4ED8;
+  --primary-light: rgba(37, 99, 235, 0.1);
+  --primary-muted: rgba(37, 99, 235, 0.28);
+  /* Trung tính đậm cho variant secondary (nút ink, badge) — không phải màu mới. */
+  --secondary: #374151;
+  --secondary-light: rgba(55, 65, 81, 0.1);
+  /* Lime marker: dùng làm NỀN nhấn nhá. Muốn chữ thì dùng --accent-ink. */
+  --accent: #C7F000;
+  --accent-light: rgba(199, 240, 0, 0.18);
+  --accent-ink: #4D6B00;
   --neon-pink: #DB2777;
   --neon-pink-light: rgba(219, 39, 119, 0.1);
-  /* Bản neon gốc, chỉ dùng cho quầng sáng / panel nền tối. */
+  /* Bản neon gốc, chỉ dùng cho quầng sáng / panel nền tối (đồng hồ LED). */
   --neon: #00F2FE;
   --gold: #FFB800;
   --gold-deep: #FF8800;
@@ -27,26 +29,27 @@
   --warning-light: rgba(180, 83, 9, 0.12);
   --danger: #DC2626;
   --danger-light: rgba(220, 38, 38, 0.1);
-  --bg: #EEF2F9;
-  --surface: #FFFFFF;
-  --surface-hover: #F3F7FC;
-  --surface-elevated: #FFFFFF;
-  --border: #DCE3EF;
-  --border-strong: #BCC9DC;
-  /* Tương phản trên nền #EEF2F9: #33415C đạt 9.1:1, #5A6B85 đạt 4.8:1 —
-     cả hai qua AA cho chữ thường nên vẫn có phân cấp thị giác. */
-  --text: #0B1220;
-  --text-secondary: #33415C;
-  --text-muted: #5A6B85;
-  --focus-ring: rgba(14, 116, 144, 0.45);
-  --shadow-sm: 0 1px 2px rgba(15, 35, 70, 0.06);
-  --shadow-md: 0 4px 14px rgba(15, 35, 70, 0.08);
-  --shadow-lg: 0 14px 34px rgba(15, 35, 70, 0.12);
-  --radius-sm: 6px;
+  --bg: #F5F1E8;
+  --surface: #FFFCF7;
+  --surface-hover: #F3EEE3;
+  --surface-elevated: #FFFDF9;
+  --border: #DDD8CE;
+  --border-strong: #C7BFAF;
+  /* Tương phản trên nền ấm #F5F1E8: #111827 ≈ 15:1, #4B5563 ≈ 7.6:1,
+     #6B7280 ≈ 4.9:1 — đủ AA, vẫn phân cấp được. */
+  --text: #111827;
+  --text-secondary: #4B5563;
+  --text-muted: #4B5563;
+  --focus-ring: rgba(37, 99, 235, 0.45);
+  /* Chỉ 2 mức bóng: phân cấp bằng surface + border, không bằng shadow. */
+  --shadow-sm: 0 1px 2px rgba(17, 24, 39, 0.05);
+  --shadow-md: 0 8px 24px rgba(17, 24, 39, 0.08);
+  --shadow-lg: 0 8px 24px rgba(17, 24, 39, 0.08);
+  --radius-sm: 8px;
   --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 18px;
-  --radius-2xl: 24px;
+  --radius-lg: 12px;
+  --radius-xl: 14px;
+  --radius-2xl: 16px;
   --motion-fast: 140ms;
   --motion-base: 220ms;
   --motion-slow: 340ms;
@@ -77,11 +80,14 @@
      giao diện nền không đổi). */
   --color-muted: var(--text-muted);
   --color-muted-foreground: var(--text-secondary);
-  /* Trước đây `accent` trỏ tới `--surface-hover` — tức `text-accent` ra màu
-     nền, chữ biến mất. Nay trỏ đúng vàng neon của theme. */
+  /* `accent` = lime marker #C7F000: CHỈ làm nền nhấn nhá (dropdown focus,
+     badge winner). Muốn chữ màu lime thì dùng `text-accent-ink`. */
   --color-accent: var(--accent);
   --color-accent-light: var(--accent-light);
-  --color-accent-foreground: #FFFFFF;
+  /* Nền lime sáng nên foreground phải là mực đậm (≈13:1) — không dùng trắng. */
+  --color-accent-foreground: #16200A;
+  /* Chữ/ icon muốn "vàng-lime" thì dùng token này để đạt AA trên nền giấy. */
+  --color-accent-ink: var(--accent-ink);
   --color-neon-pink: var(--neon-pink);
   --color-neon-pink-light: var(--neon-pink-light);
   --color-destructive: var(--danger);
@@ -112,19 +118,23 @@
      nhìn như mất màu. Khai báo chúng ở đây để đồng bộ với token. */
   --color-sky: var(--primary);
   --color-violet: var(--secondary);
-  --color-amber: var(--accent);
+  /* `text-amber` = huy chương / "xuất sắc" — tách khỏi accent lime,
+     giữ amber đậm #B45309 để chữ đạt AA trên nền giấy. */
+  --color-amber: #B45309;
   --color-canvas: var(--bg);
   --font-sans: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 @theme {
-  --radius-sm: 6px;
+  --radius-sm: 8px;
   --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 18px;
-  --radius-2xl: 20px;
-  /* Font số/đồng hồ theo mẫu "A6 LEGENDS" (Orbitron). Chỉ dùng cho số
-     lớn, đâu đó chữ thường thì để Be Vietnam Pro cho dễ đọc tiếng Việt. */
+  --radius-lg: 12px;
+  --radius-xl: 14px;
+  --radius-2xl: 16px;
+  /* Trần trên cùng — 80% component phải ≤16px (DESIGN-REDESIGN.md §3). */
+  --radius-3xl: 20px;
+  /* Font số/đồng hồ LED (Orbitron). Chỉ cho số lớn / panel nền tối,
+     KHÔNG dùng cho chữ thường — chữ tiếng Việt đọc tốt hơn bằng Be Vietnam Pro. */
   --font-display: 'Orbitron', 'Be Vietnam Pro', sans-serif;
 }
 
@@ -154,13 +164,8 @@ textarea::placeholder {
 }
 
 body {
+  /* Nền giấy ấm phẳng — KHÔNG gradient trang trí (DESIGN-REDESIGN.md §3). */
   background-color: var(--bg);
-  /* Quầng màu nhạt ở 2 góc. Trên nền sáng phải tăng alpha lên và dùng bản
-     màu sâu hơn, nếu giữ alpha 0.07 của neon gốc thì gần như vô hình. */
-  background-image:
-    radial-gradient(circle at 10% 20%, rgba(14, 116, 144, 0.09) 0%, transparent 45%),
-    radial-gradient(circle at 90% 80%, rgba(219, 39, 119, 0.08) 0%, transparent 45%);
-  background-attachment: fixed;
   color: var(--text);
   margin: 0;
   min-height: 100vh;
@@ -716,12 +721,10 @@ select {
 
 /* ============ Nền app tối kiểu đấu trường ============ */
 
+/* Nền app: giấy ấm phẳng. Bỏ 3 quầng radial-gradient cũ (anti AI-slop —
+   DESIGN-REDESIGN.md §4: gradient chỉ khi có semantic, không "cho đẹp"). */
 .bg-hello {
-  background:
-    radial-gradient(58% 42% at 50% -6%, rgba(14, 116, 144, 0.1) 0%, transparent 70%),
-    radial-gradient(46% 38% at 92% 8%, rgba(37, 99, 235, 0.08) 0%, transparent 72%),
-    radial-gradient(40% 34% at 4% 26%, rgba(219, 39, 119, 0.07) 0%, transparent 70%),
-    var(--bg);
+  background: var(--bg);
 }
 
 /* ============ Welcome Scene: Robot idle animations ============ */
@@ -867,27 +870,18 @@ select {
   box-shadow: 0 15px 35px var(--primary-muted);
 }
 
-/* Viền gradient cyan → hồng quanh avatar, dùng cho thẻ thành viên. */
+/* Viền quanh avatar thành viên: solid một màu — bỏ gradient cyan→ hồng. */
 .vt-holo-ring {
-  background: linear-gradient(135deg, var(--primary), var(--neon-pink));
+  background: var(--primary);
 }
 
-/* Tiêu đề gradient. Trên nền sáng phải dùng dải màu sâu — trắng ở đầu dải
-   sẽ tan trên nền trắng. */
+/* Tiêu đề lớn: mực đậm, không gradient-text (gradient-text = dấu hiệu AI-look). */
 .vt-neon-title {
-  background: linear-gradient(
-    135deg,
-    var(--text) 0%,
-    var(--primary) 48%,
-    var(--neon-pink) 100%
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--text);
 }
 
 /* Số lớn / đồng hồ đếm ngược. Mặc định dùng primary sâu cho nền sáng;
-   trong panel nền tối thì dùng kèm .vt-led-neon để lấy cyan gốc. */
+   trong trang mới cũng chỉ dùng .vt-led (primary) — bỏ neon/glow (§3). */
 .vt-led {
   font-family: var(--font-display);
   color: var(--primary);
@@ -898,25 +892,15 @@ select {
   text-shadow: 0 0 15px rgba(0, 242, 254, 0.55);
 }
 
-/* Nút kim loại vàng (nút VIP trong mẫu). */
+/* Nút huy chương / #1: vàng phẳng, không gradient, không glow (§3). */
 .vt-btn-gold {
-  /* Dùng --gold chứ không phải --accent: accent giờ là nâu #B45309 để chữ
-     đạt AA trên nền sáng, trộn vào nền của nút sẽ thành màu bùn. */
-  background: linear-gradient(135deg, var(--gold), var(--gold-deep));
+  background: var(--gold);
   color: #1A1200;
-  box-shadow: 0 4px 14px rgba(255, 184, 0, 0.45);
-  transition:
-    transform var(--motion-base) var(--ease-smooth),
-    box-shadow var(--motion-base) var(--ease-smooth);
+  transition: background-color var(--motion-base) var(--ease-smooth);
 }
 
 .vt-btn-gold:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(255, 184, 0, 0.6);
-}
-
-.vt-btn-gold:active {
-  transform: translateY(0);
+  background: var(--gold-deep);
 }
 
 /* Vạch quét laser của modal. */

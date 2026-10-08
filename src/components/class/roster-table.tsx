@@ -45,7 +45,7 @@ function StudentRow({
   );
 
   return (
-    <li className="rounded-xl bg-surface p-3 ring-1 ring-border">
+    <li className="rounded-xl bg-surface p-3 border border-border">
       <form action={updateAction} className="flex flex-wrap items-end gap-2">
         <input type="hidden" name="membershipId" value={student.id} />
 
@@ -123,7 +123,7 @@ function StudentRow({
         {updateState.message && (
           <span
             role="status"
-            className={`text-xs ${updateState.ok ? "text-emerald-300" : "text-danger"}`}
+            className={`text-xs ${updateState.ok ? "text-emerald-600" : "text-danger"}`}
           >
             {updateState.message}
           </span>
@@ -131,7 +131,7 @@ function StudentRow({
         {removeState.message && (
           <span
             role="status"
-            className={`text-xs ${removeState.ok ? "text-emerald-300" : "text-danger"}`}
+            className={`text-xs ${removeState.ok ? "text-emerald-600" : "text-danger"}`}
           >
             {removeState.message}
           </span>
@@ -150,7 +150,7 @@ export function RosterTable({
 }) {
   if (students.length === 0) {
     return (
-      <p className="rounded-xl bg-surface p-4 text-sm text-text-muted ring-1 ring-border">
+      <p className="rounded-xl bg-surface p-4 text-sm text-text-muted border border-border">
         Lớp chưa có học sinh nào. Dán danh sách ở mục bên trên để bắt đầu.
       </p>
     );

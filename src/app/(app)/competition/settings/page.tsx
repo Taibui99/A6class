@@ -19,7 +19,7 @@ export default async function CompetitionSettingsPage() {
   if (!klass) {
     return (
       <main id="main-content" className="mx-auto w-full max-w-3xl px-4 py-12">
-        <p className="rounded-2xl bg-surface p-6 text-sm text-muted ring-1 ring-border">
+        <p className="rounded-2xl bg-surface p-6 text-sm text-muted border border-border">
           Chưa có lớp nào. Vào{" "}
           <a className="font-semibold text-primary underline" href="/class">
             Dữ liệu lớp
@@ -36,7 +36,7 @@ export default async function CompetitionSettingsPage() {
   } catch (e) {
     return (
       <main id="main-content" className="mx-auto w-full max-w-3xl px-4 py-12">
-        <p className="rounded-2xl bg-surface p-6 text-sm text-muted ring-1 ring-border">
+        <p className="rounded-2xl bg-surface p-6 text-sm text-muted border border-border">
           {e instanceof Error ? e.message : "Không tải được quyền."}
         </p>
       </main>
@@ -46,15 +46,15 @@ export default async function CompetitionSettingsPage() {
   if (!access.isTeacher) {
     return (
       <main id="main-content" className="mx-auto w-full max-w-3xl px-4 py-12">
-        <div className="rounded-2xl bg-surface p-6 ring-1 ring-border">
-          <h1 className="text-lg font-bold text-text">Chỉ giáo viên mới chỉnh được mức điểm</h1>
+        <div className="rounded-2xl bg-surface p-6 border border-border">
+          <h1 className="text-xl font-extrabold tracking-tight text-text sm:text-2xl">Chỉ giáo viên mới chỉnh được mức điểm</h1>
           <p className="mt-2 text-sm text-muted">
             Bạn có thể xem và nhập điểm ở trang thi đua, nhưng mức điểm của từng tiêu chí do giáo viên
             quyết định.
           </p>
           <a
             href="/competition"
-            className="mt-4 inline-flex h-9 items-center rounded-xl bg-sky-500/15 px-3.5 text-xs font-bold text-sky-300 ring-1 ring-sky-500/30"
+            className="mt-4 inline-flex h-9 items-center rounded-xl bg-primary/10 px-3.5 text-xs font-bold text-primary ring-1 ring-primary/30"
           >
             Về trang thi đua
           </a>

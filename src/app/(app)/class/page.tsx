@@ -27,7 +27,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-2xl bg-surface p-5 ring-1 ring-border sm:p-6">
+    <section className="rounded-2xl bg-surface p-5 border border-border sm:p-6">
       <h2 className="text-base font-bold text-text">{title}</h2>
       <p className="mt-1 text-sm text-text-secondary">{description}</p>
       <div className="mt-5">{children}</div>
@@ -41,7 +41,7 @@ export default async function ClassPage() {
   if (!user) {
     return (
       <main id="main-content" className="mx-auto w-full max-w-4xl px-4 py-12">
-        <p className="rounded-2xl bg-surface p-6 text-sm text-text ring-1 ring-border">
+        <p className="rounded-2xl bg-surface p-6 text-sm text-text border border-border">
           Chưa đăng nhập.
         </p>
       </main>
@@ -51,8 +51,8 @@ export default async function ClassPage() {
   if (user.role !== "TEACHER") {
     return (
       <main id="main-content" className="mx-auto w-full max-w-4xl px-4 py-12">
-        <div className="rounded-2xl bg-surface p-6 ring-1 ring-border">
-          <h1 className="text-lg font-bold text-text">
+        <div className="rounded-2xl bg-surface p-6 border border-border">
+          <h1 className="text-xl font-extrabold tracking-tight text-text sm:text-2xl">
             Trang này dành cho giáo viên
           </h1>
           <p className="mt-2 text-sm text-text-secondary">
@@ -61,7 +61,7 @@ export default async function ClassPage() {
           </p>
           <a
             href="/competition"
-            className="mt-4 inline-flex h-9 items-center rounded-xl bg-sky-500/15 px-3.5 text-xs font-bold text-sky-300 ring-1 ring-sky-500/30"
+            className="mt-4 inline-flex h-9 items-center rounded-xl bg-primary/10 px-3.5 text-xs font-bold text-primary ring-1 ring-primary/30"
           >
             Về trang thi đua
           </a>
@@ -76,12 +76,12 @@ export default async function ClassPage() {
     return (
       <main id="main-content" className="mx-auto w-full max-w-4xl px-4 py-12">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-text">Dữ liệu lớp</h1>
+          <h1 className="text-xl font-extrabold tracking-tight text-text sm:text-2xl">Dữ liệu lớp</h1>
           <p className="mt-1.5 text-sm text-text-secondary">
             Bạn chưa có lớp nào. Tạo lớp trước, rồi nhập danh sách học sinh.
           </p>
         </div>
-        <div className="rounded-2xl bg-surface p-5 ring-1 ring-border sm:p-6">
+        <div className="rounded-2xl bg-surface p-5 border border-border sm:p-6">
           <CreateClassForm />
         </div>
       </main>
@@ -93,7 +93,7 @@ export default async function ClassPage() {
   return (
     <main id="main-content" className="mx-auto w-full max-w-4xl px-4 py-8 sm:py-12">
       <header className="mb-6">
-        <h1 className="text-2xl font-bold text-text">Dữ liệu lớp</h1>
+        <h1 className="text-xl font-extrabold tracking-tight text-text sm:text-2xl">Dữ liệu lớp</h1>
         <p className="mt-1.5 text-sm text-text-secondary">
           {klass.name} · {klass.schoolYear} ·{" "}
           {roster?.memberships.length ?? 0} học sinh

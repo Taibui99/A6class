@@ -216,7 +216,12 @@ export async function loadCompetition(viewPeriodId?: string): Promise<Competitio
   const scoreStudent = (id: string, src: typeof weekScores) => {
     const s = src.get(id);
     const net = s?.net ?? 0;
-    const tier = GRADE_TIERS.find((t) => net >= t.min) ?? GRADE_TIERS[GRADE_TIERS.length - 1];
+    // Chưa từng được ghi điểm trong kỳ/năm → "Chưa có điểm", KHÔNG xếp "Yếu"
+    // (0 điểm vì chưa ai nhập ≠ điểm kém).
+    const tier =
+      !s || s.marks === 0
+        ? { label: "Chưa có điểm", tone: "text-muted" }
+        : GRADE_TIERS.find((t) => net >= t.min) ?? GRADE_TIERS[GRADE_TIERS.length - 1];
     return { positive: s?.positive ?? 0, negative: s?.negative ?? 0, net, marks: s?.marks ?? 0, tier: tier.label, tierTone: tier.tone };
   };
 

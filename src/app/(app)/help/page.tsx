@@ -6,7 +6,7 @@ export default function QuestionPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-xl font-bold tracking-tight text-text sm:text-2xl">
+        <h1 className="text-xl font-extrabold tracking-tight text-text sm:text-2xl">
           Hỏi đáp
         </h1>
         <p className="mt-0.5 text-sm text-text-secondary">

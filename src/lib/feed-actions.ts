@@ -93,3 +93,53 @@ export async function createComment(input: {
     return fail("Có lỗi xảy ra, thử lại nhé.");
   }
 }
+/** Xóa bài — chủ bài hoặc giáo viên. */
+export async function deletePost(postId: string): Promise<ActionResult> {
+  try {
+    const user = await getCurrentUser();
+    if (!user) return fail("Bạn cần đăng nhập.");
+    const classId = await getUserClassId(user.id);
+    if (!classId) return fail("Bạn chưa vào lớp nào.");
+
+    const post = await prisma.post.findFirst({
+      where: { id: postId, classId },
+      select: { id: true, authorId: true },
+    });
+    if (!post) return fail("Bài viết không tồn tại.");
+    if (post.authorId !== user.id && user.role !== "TEACHER")
+      return fail("Bạn không có quyền xóa bài này.");
+
+    await prisma.post.delete({ where: { id: post.id } });
+    revalidatePath("/feed");
+    revalidatePath("/dashboard");
+    return { ok: true };
+  } catch {
+    return fail("Có lỗi xảy ra, thử lại nhé.");
+  }
+}
+
+/** Ghim / bỏ ghim — chỉ giáo viên. */
+export async function togglePin(postId: string): Promise<ActionResult> {
+  try {
+    const user = await getCurrentUser();
+    if (!user) return fail("Bạn cần đăng nhập.");
+    if (user.role !== "TEACHER") return fail("Chỉ giáo viên mới ghim bài được.");
+    const classId = await getUserClassId(user.id);
+    if (!classId) return fail("Bạn chưa vào lớp nào.");
+
+    const post = await prisma.post.findFirst({
+      where: { id: postId, classId },
+      select: { id: true, isPinned: true },
+    });
+    if (!post) return fail("Bài viết không tồn tại.");
+
+    await prisma.post.update({
+      where: { id: post.id },
+      data: { isPinned: !post.isPinned },
+    });
+    revalidatePath("/feed");
+    return { ok: true };
+  } catch {
+    return fail("Có lỗi xảy ra, thử lại nhé.");
+  }
+}

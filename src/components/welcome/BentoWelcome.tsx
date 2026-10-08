@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -61,7 +61,7 @@ function Avatar({
       <img
         src={avatarUrl}
         alt=""
-        className={`${size} shrink-0 rounded-full object-cover ring-1 ring-border`}
+        className={`${size} shrink-0 rounded-full object-cover border border-border`}
       />
     );
   }
@@ -85,18 +85,18 @@ export function BentoWelcome({ overview, greeting, userName }: Props) {
   return (
     <div className="relative">
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-<span className="blob blob-sky -left-24 -top-28 size-72" />
-          <span className="blob blob-violet -right-20 top-10 size-64" />
+
+          
       </div>
 
       <div className="relative space-y-6">
-        <header className="relative overflow-hidden rounded-2xl bg-surface p-5 shadow-sm ring-1 ring-border sm:p-6">
+        <header className="relative overflow-hidden rounded-2xl bg-surface p-5 shadow-sm border border-border sm:p-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="min-w-0">
               <p className="text-xs font-semibold uppercase tracking-wider text-text/70">
                 {greeting}
               </p>
-              <h1 className="mt-1 text-2xl font-black tracking-tight text-text sm:text-3xl">
+              <h1 className="mt-1 text-xl font-extrabold tracking-tight text-text sm:text-2xl">
                 Xin chào, {userName}
               </h1>
               <p className="mt-1 text-sm text-text/70">
@@ -119,7 +119,7 @@ export function BentoWelcome({ overview, greeting, userName }: Props) {
           {/* ① Thi đua — 2 cột */}
           <section
             aria-labelledby="bento-thi-dua"
-            className="relative overflow-hidden rounded-2xl bg-surface p-5 shadow-sm ring-1 ring-border transition-colors hover:ring-amber/40 lg:col-span-2"
+            className="relative overflow-hidden rounded-2xl bg-surface p-5 shadow-sm border border-border transition-colors hover:ring-amber/40 lg:col-span-2"
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex min-w-0 items-center gap-2.5">
@@ -203,7 +203,7 @@ export function BentoWelcome({ overview, greeting, userName }: Props) {
                   })}
                 </div>
 
-                <div className="mt-4 flex items-center justify-between gap-3 rounded-xl bg-canvas/40 p-3 text-xs ring-1 ring-border">
+                <div className="mt-4 flex items-center justify-between gap-3 rounded-xl bg-canvas/40 p-3 text-xs border border-border">
                   <span className="min-w-0 truncate text-text/70">
                     {active ? (
                       <>
@@ -216,7 +216,7 @@ export function BentoWelcome({ overview, greeting, userName }: Props) {
                   </span>
                   <Link
                     href="/competition"
-                    className="inline-flex shrink-0 items-center gap-1 font-bold text-amber hover:underline"
+                    className="inline-flex min-h-6 shrink-0 items-center gap-1 font-bold text-amber hover:underline"
                   >
                     Chi tiết
                     <ChevronRight aria-hidden className="size-3.5" />
@@ -229,7 +229,7 @@ export function BentoWelcome({ overview, greeting, userName }: Props) {
           {/* ② Thành viên — 1 cột */}
           <section
             aria-labelledby="bento-thanh-vien"
-            className="relative overflow-hidden rounded-2xl bg-surface p-5 shadow-sm ring-1 ring-border transition-colors hover:ring-violet/40"
+            className="relative overflow-hidden rounded-2xl bg-surface p-5 shadow-sm border border-border transition-colors hover:ring-violet/40"
           >
             <div className="flex items-center gap-2.5">
               <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-violet/15 text-violet ring-1 ring-violet/30">
@@ -262,7 +262,7 @@ export function BentoWelcome({ overview, greeting, userName }: Props) {
                 ))}
               </ul>
             ) : (
-              <p className="mt-4 rounded-xl bg-canvas/40 p-3 text-xs text-text/70 ring-1 ring-border">
+              <p className="mt-4 rounded-xl bg-canvas/40 p-3 text-xs text-text/70 border border-border">
                 Chưa phân công ban cán sự.
               </p>
             )}
@@ -280,7 +280,7 @@ export function BentoWelcome({ overview, greeting, userName }: Props) {
                     />
                   ))}
                   {overview.students.length > 12 ? (
-                    <span className="grid size-8 place-items-center rounded-full bg-surface-hover text-[10px] font-black text-text ring-1 ring-border">
+                    <span className="grid size-8 place-items-center rounded-full bg-surface-hover text-[10px] font-black text-text border border-border">
                       +{overview.students.length - 12}
                     </span>
                   ) : null}
@@ -299,7 +299,7 @@ export function BentoWelcome({ overview, greeting, userName }: Props) {
           {/* ③ Nhiệm vụ — 2 cột */}
           <section
             aria-labelledby="bento-nhiem-vu"
-            className="relative overflow-hidden rounded-2xl bg-surface p-5 shadow-sm ring-1 ring-border transition-colors hover:ring-sky/40 lg:col-span-2"
+            className="relative overflow-hidden rounded-2xl bg-surface p-5 shadow-sm border border-border transition-colors hover:ring-sky/40 lg:col-span-2"
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex min-w-0 items-center gap-2.5">
@@ -324,7 +324,7 @@ export function BentoWelcome({ overview, greeting, userName }: Props) {
             </div>
 
             {overview.tasks.length === 0 ? (
-              <p className="mt-5 rounded-xl bg-canvas/40 p-4 text-xs text-text/70 ring-1 ring-border">
+              <p className="mt-5 rounded-xl bg-canvas/40 p-4 text-xs text-text/70 border border-border">
                 Lớp chưa có nhiệm vụ nào.
               </p>
             ) : (
@@ -332,7 +332,7 @@ export function BentoWelcome({ overview, greeting, userName }: Props) {
                 {overview.tasks.map((task) => (
                   <li
                     key={task.id}
-                    className="flex items-center justify-between gap-3 rounded-xl bg-canvas/30 p-2.5 ring-1 ring-border"
+                    className="flex items-center justify-between gap-3 rounded-xl bg-canvas/30 p-2.5 border border-border"
                   >
                     <span className="flex min-w-0 items-center gap-2">
                       <span
@@ -372,7 +372,7 @@ export function BentoWelcome({ overview, greeting, userName }: Props) {
           {/* ④ Thông tin lớp — 1 cột */}
           <section
             aria-labelledby="bento-lop"
-            className="relative overflow-hidden rounded-2xl bg-surface p-5 shadow-sm ring-1 ring-border transition-colors hover:ring-success/40"
+            className="relative overflow-hidden rounded-2xl bg-surface p-5 shadow-sm border border-border transition-colors hover:ring-success/40"
           >
             <div className="flex items-center gap-2.5">
               <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-success/15 text-success ring-1 ring-success/30">
@@ -387,13 +387,13 @@ export function BentoWelcome({ overview, greeting, userName }: Props) {
             </div>
 
             <dl className="mt-4 grid grid-cols-2 gap-2">
-              <div className="rounded-xl bg-canvas/40 p-2.5 ring-1 ring-border">
+              <div className="rounded-xl bg-canvas/40 p-2.5 border border-border">
                 <dt className="text-[10px] text-text/60">Số tổ</dt>
                 <dd className="text-lg font-black tabular-nums text-text">
                   {overview.teamCount}
                 </dd>
               </div>
-              <div className="rounded-xl bg-canvas/40 p-2.5 ring-1 ring-border">
+              <div className="rounded-xl bg-canvas/40 p-2.5 border border-border">
                 <dt className="text-[10px] text-text/60">Học sinh</dt>
                 <dd className="text-lg font-black tabular-nums text-text">
                   {overview.studentCount}

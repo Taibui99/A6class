@@ -23,8 +23,8 @@ export default async function CompetitionPage({
     const message = e instanceof Error ? e.message : "Không tải được dữ liệu thi đua.";
     return (
       <main id="main-content" className="mx-auto w-full max-w-3xl px-4 py-12">
-        <div className="rounded-2xl bg-surface p-6 ring-1 ring-border">
-          <h1 className="text-lg font-bold text-text">Chưa có dữ liệu thi đua</h1>
+        <div className="rounded-2xl bg-surface p-6 border border-border">
+          <h1 className="text-xl font-extrabold tracking-tight text-text sm:text-2xl">Chưa có dữ liệu thi đua</h1>
           <p className="mt-2 text-sm text-muted">{message}</p>
           <ol className="mt-4 list-decimal space-y-1.5 pl-5 text-sm text-muted">
             <li>

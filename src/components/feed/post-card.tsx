@@ -1,37 +1,100 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Heart, Loader2, MessageCircle, Pin, Send } from "lucide-react";
+import {
+  Heart,
+  Link2,
+  Loader2,
+  MessageCircle,
+  MoreHorizontal,
+  Pin,
+  Send,
+  Trash2,
+} from "lucide-react";
 
 import { cn, getInitials } from "@/lib/utils";
-import { createComment, toggleLike } from "@/lib/feed-actions";
+import {
+  createComment,
+  deletePost,
+  toggleLike,
+  togglePin,
+} from "@/lib/feed-actions";
 import type { FeedComment, FeedPost } from "@/lib/feed";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type SerializedPost = Omit<FeedPost, "comments"> & { comments: FeedComment[] };
+
+type Props = {
+  post: SerializedPost;
+  currentUserId: string;
+  canPin: boolean;
+};
 
 function CommentRow({ comment }: { comment: FeedComment }) {
   return (
     <div className="flex items-start gap-2.5 py-1.5">
-      <span className="grid size-7 shrink-0 select-none place-items-center rounded-full bg-surface-hover text-[10px] font-extrabold text-text-secondary">
+      <span className="grid size-6 shrink-0 select-none place-items-center rounded-full bg-surface-hover text-[10px] font-extrabold text-text-secondary">
         {getInitials(comment.authorName)}
       </span>
-      <div className="min-w-0 flex-1 rounded-xl bg-surface-hover/70 px-3 py-2">
-        <div className="flex items-baseline justify-between gap-2">
-          <p className="truncate text-xs font-semibold text-text">
-            {comment.authorName}
-          </p>
-          <p className="shrink-0 text-[10px] text-text-muted">
+      <div className="min-w-0 flex-1">
+        <p className="flex items-baseline gap-1.5 truncate text-xs font-semibold text-text">
+          {comment.authorName}
+          <span className="shrink-0 text-[10px] font-normal text-text-muted">
             {comment.createdAtLabel}
-          </p>
-        </div>
-        <p className="text-sm text-text-secondary">{comment.content}</p>
+          </span>
+        </p>
+        <p className="break-words text-sm text-text-secondary">{comment.content}</p>
       </div>
     </div>
   );
 }
 
-export function PostCard({ post }: { post: SerializedPost }) {
+/** Ảnh first-class (§5.3): 1 ảnh full · 2–3 grid · 4+ grid 3 cột · radius 8px. */
+function PostImages({
+  urls,
+  onOpen,
+}: {
+  urls: string[];
+  onOpen: (url: string) => void;
+}) {
+  if (urls.length === 0) return null;
+  const grid = urls.length > 1;
+
+  return (
+    <div
+      className={cn(
+        "mt-3 gap-1",
+        grid && (urls.length >= 4 ? "grid grid-cols-3" : "grid grid-cols-2")
+      )}
+    >
+      {urls.map((url) => (
+        // eslint-disable-next-line @next/next/no-img-element -- ảnh user-uploaded, domain không xác định trước nên không qua next/image
+        <img
+          key={url}
+          src={url}
+          alt=""
+          loading="lazy"
+          onClick={() => onOpen(url)}
+          className={cn(
+            "cursor-zoom-in rounded-lg object-cover transition-opacity hover:opacity-90",
+            grid
+              ? "aspect-square w-full"
+              : "max-h-[520px] w-full",
+            !grid && "object-center"
+          )}
+        />
+      ))}
+    </div>
+  );
+}
+
+export function PostCard({ post, currentUserId, canPin }: Props) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [liked, setLiked] = useState(post.likedByMe);
@@ -39,6 +102,19 @@ export function PostCard({ post }: { post: SerializedPost }) {
   const [showComments, setShowComments] = useState(false);
   const [comment, setComment] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [lightbox, setLightbox] = useState<string | null>(null);
+
+  const canDelete = post.authorId === currentUserId || canPin;
+
+  // ESC đóng lightbox (§5.3).
+  useEffect(() => {
+    if (!lightbox) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setLightbox(null);
+    }
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [lightbox]);
 
   function toggle() {
     const next = !liked;
@@ -71,89 +147,149 @@ export function PostCard({ post }: { post: SerializedPost }) {
     });
   }
 
+  function handlePin() {
+    startTransition(async () => {
+      const res = await togglePin(post.id);
+      if (res?.error) alert(res.error);
+      else router.refresh();
+    });
+  }
+
+  function handleDelete() {
+    if (!window.confirm("Xóa bài viết này?")) return;
+    startTransition(async () => {
+      const res = await deletePost(post.id);
+      if (res?.error) alert(res.error);
+      else router.refresh();
+    });
+  }
+
   return (
-    <article
-      className={cn(
-        "rounded-2xl bg-surface p-4 shadow-sm ring-1",
-        post.isPinned ? "ring-primary/25" : "ring-border"
-      )}
-    >
+    <article className="border-b border-border py-5 last:border-b-0">
       <header className="flex items-center gap-3">
         <span
           className={cn(
-            "grid size-9 shrink-0 select-none place-items-center rounded-full text-xs font-extrabold",
+            "grid size-10 shrink-0 select-none place-items-center rounded-full text-sm font-extrabold",
             post.authorRole === "TEACHER"
               ? "bg-primary text-primary-foreground"
-              : "bg-warning-light text-warning"
+              : "bg-surface-hover text-text-secondary"
           )}
+          aria-hidden
         >
           {getInitials(post.authorName)}
         </span>
+
         <div className="min-w-0 flex-1">
-          <p className="flex items-center gap-1.5 truncate text-sm font-semibold text-text">
+          <p className="flex flex-wrap items-center gap-x-2 gap-y-1 truncate text-sm font-semibold text-text">
             {post.authorName}
             {post.authorRole === "TEACHER" && (
-              <span className="rounded-full bg-primary-light px-1.5 py-px text-[10px] font-semibold text-primary">
+              <span className="rounded bg-primary-light px-1.5 py-px text-[10px] font-bold uppercase tracking-wide text-primary">
                 Giáo viên
               </span>
             )}
           </p>
           <p className="text-xs text-text-muted">{post.createdAtLabel}</p>
         </div>
+
         {post.isPinned && (
-          <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-warning-light px-2 py-0.5 text-[10px] font-semibold text-warning">
-            <Pin aria-hidden className="size-3" />
-            Đã ghim
+          <span className="inline-flex shrink-0 items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-accent-ink">
+            <span className="size-2 rounded-[2px] bg-accent" aria-hidden />
+            Ghim trên bảng
           </span>
         )}
+
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <button
+                type="button"
+                aria-label="Tùy chọn bài viết"
+                disabled={pending}
+                className="grid size-9 shrink-0 place-items-center rounded-lg text-text-muted transition-colors hover:bg-surface-hover hover:text-text disabled:opacity-50"
+              >
+                <MoreHorizontal className="size-4" aria-hidden />
+              </button>
+            }
+          />
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              onClick={() => {
+                void navigator.clipboard?.writeText(
+                  `${window.location.origin}/feed`
+                );
+              }}
+            >
+              <Link2 className="size-4" aria-hidden />
+              Sao chép link
+            </DropdownMenuItem>
+            {canPin && (
+              <DropdownMenuItem onClick={handlePin}>
+                <Pin className="size-4" aria-hidden />
+                {post.isPinned ? "Bỏ ghim" : "Ghim bài"}
+              </DropdownMenuItem>
+            )}
+            {canDelete && (
+              <DropdownMenuItem variant="destructive" onClick={handleDelete}>
+                <Trash2 className="size-4" aria-hidden />
+                Xóa bài
+              </DropdownMenuItem>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </header>
 
-      <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-text">
-        {post.content}
-      </p>
+      {post.content && (
+        <p className="mt-3 whitespace-pre-wrap break-words text-[15px] leading-relaxed text-text">
+          {post.content}
+        </p>
+      )}
 
-      <footer className="mt-3 flex items-center gap-2 border-t border-border pt-3">
+      <PostImages urls={post.imageUrls} onOpen={setLightbox} />
+
+      <footer className="mt-3 flex items-center gap-1">
         <button
           type="button"
           onClick={toggle}
           disabled={pending}
           aria-pressed={liked}
+          aria-label={liked ? "Bỏ thích bài viết" : "Thích bài viết"}
           className={cn(
-            "inline-flex min-h-9 items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold transition-colors disabled:opacity-60",
-            liked
-              ? "bg-danger-light text-danger"
-              : "bg-surface-hover text-text-secondary hover:text-text"
+            "inline-flex min-h-9 items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold transition-colors duration-150 disabled:opacity-60",
+            liked ? "text-danger" : "text-text-secondary hover:bg-surface-hover hover:text-text"
           )}
         >
           <Heart
             aria-hidden
-            className={cn("size-4", liked && "fill-current")}
+            className={cn("size-4 transition-all duration-150", liked && "fill-current")}
           />
-          {likeCount}
+          <span className="tabular-nums transition-colors duration-150">
+            {likeCount}
+          </span>
         </button>
+
         <button
           type="button"
           onClick={() => setShowComments((v) => !v)}
-          className="inline-flex min-h-9 items-center gap-1.5 rounded-full bg-surface-hover px-3.5 py-2 text-xs font-semibold text-text-secondary transition-colors hover:text-text"
+          aria-expanded={showComments}
+          className="inline-flex min-h-9 items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold text-text-secondary transition-colors duration-150 hover:bg-surface-hover hover:text-text"
         >
           <MessageCircle aria-hidden className="size-4" />
-          {post.commentCount}
+          <span className="tabular-nums">{post.commentCount}</span>
         </button>
       </footer>
 
       {showComments && (
-        <div className="mt-3 border-t border-border pt-3">
-          <div className="max-h-64 space-y-1 overflow-y-auto">
+        <div className="mt-2 border-t border-border pt-2">
+          <div className="max-h-64 overflow-y-auto">
             {post.comments.length > 0 ? (
-              post.comments.map((c) => (
-                <CommentRow key={c.id} comment={c} />
-              ))
+              post.comments.map((c) => <CommentRow key={c.id} comment={c} />)
             ) : (
-              <p className="py-2 text-center text-xs text-text-muted">
-                Chưa có bình luận nào.
+              <p className="py-2 text-xs text-text-muted">
+                Chưa có bình luận nào. Nói câu gì đi.
               </p>
             )}
           </div>
+
           <form onSubmit={submitComment} className="mt-2 flex items-center gap-2">
             <input
               value={comment}
@@ -175,11 +311,33 @@ export function PostCard({ post }: { post: SerializedPost }) {
               )}
             </button>
           </form>
+
           {error && (
             <p role="alert" className="mt-1.5 px-1 text-xs text-danger">
               {error}
             </p>
           )}
+        </div>
+      )}
+
+      {lightbox && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Xem ảnh"
+          onClick={() => setLightbox(null)}
+          className="fixed inset-0 z-50 grid place-items-center bg-black/90 p-4"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element -- ảnh user-uploaded */}
+          <img
+            src={lightbox}
+            alt=""
+            onClick={(e) => e.stopPropagation()}
+            className="max-h-[88vh] max-w-[92vw] rounded-lg object-contain"
+          />
+          <p className="absolute bottom-5 text-xs text-white/60">
+            Nhấn ESC hoặc click để đóng
+          </p>
         </div>
       )}
     </article>

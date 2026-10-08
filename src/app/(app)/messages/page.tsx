@@ -6,7 +6,7 @@ export default function ChatPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-xl font-bold tracking-tight text-text sm:text-2xl">
+        <h1 className="text-xl font-extrabold tracking-tight text-text sm:text-2xl">
           Nhắn tin
         </h1>
         <p className="mt-0.5 text-sm text-text-secondary">

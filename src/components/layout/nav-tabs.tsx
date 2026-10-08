@@ -2,28 +2,23 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Trophy, ListTodo, UsersRound, LayoutDashboard, LayoutGrid } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { HOME_PATH } from "@/lib/home";
+import { cn } from "@/lib/utils";
+import { navItems } from "@/components/layout/nav-items";
 
 type Props = {
   isTeacher?: boolean;
 };
 
+/** Core destinations trên desktop — tin nhắn/hỗ trợ/hồ sơ đi qua user menu. */
+const CORE_HREFS = new Set(["/dashboard", "/feed", "/competition", "/tasks", "/members", HOME_PATH]);
+
 export function NavTabs({ isTeacher }: Props) {
   const pathname = usePathname();
 
-  const tabs = [
-    { href: "/competition", label: "Thi đua", icon: Trophy },
-    { href: "/tasks", label: "Hoạt động", icon: ListTodo },
-    { href: "/members", label: "Thành viên", icon: UsersRound },
-    { href: "/dashboard", label: "Tổng quan", icon: LayoutDashboard },
-    { href: HOME_PATH, label: "Công cụ", icon: LayoutGrid },
-  ];
-
-  if (isTeacher) {
-    tabs.push({ href: "/class", label: "Dữ liệu lớp", icon: UsersRound });
-  }
+  const tabs = navItems.filter(
+    (item) => CORE_HREFS.has(item.href) && (!item.teacherOnly || isTeacher)
+  );
 
   return (
     <nav className="hidden md:flex items-center gap-1">
@@ -38,10 +33,11 @@ export function NavTabs({ isTeacher }: Props) {
           <Link
             key={tab.href}
             href={tab.href}
+            aria-current={isActive ? "page" : undefined}
             className={cn(
-              "relative flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-bold transition-all",
+              "flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-bold transition-colors",
               isActive
-                ? "bg-sky-500/15 text-sky ring-1 ring-sky-500/30 shadow-sm"
+                ? "bg-primary-light text-primary"
                 : "text-text-secondary hover:bg-surface-hover hover:text-text"
             )}
           >

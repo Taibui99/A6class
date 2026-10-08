@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useTransition } from "react";
 import {
@@ -31,17 +31,17 @@ type Props = {
 };
 
 const TEAM_COLORS: Record<string, { bg: string; text: string; ring: string }> = {
-  "Tổ 1": { bg: "bg-sky-500/15", text: "text-sky-300", ring: "ring-sky-500/30" },
-  "Tổ 2": { bg: "bg-violet-500/15", text: "text-violet-300", ring: "ring-violet-500/30" },
-  "Tổ 3": { bg: "bg-emerald-500/15", text: "text-emerald-300", ring: "ring-emerald-500/30" },
-  "Tổ 4": { bg: "bg-amber-500/15", text: "text-amber-300", ring: "ring-amber-500/30" },
+  "Tổ 1": { bg: "bg-primary/10", text: "text-primary", ring: "ring-primary/30" },
+  "Tổ 2": { bg: "bg-violet-500/15", text: "text-violet-600", ring: "ring-violet-500/30" },
+  "Tổ 3": { bg: "bg-emerald-500/15", text: "text-emerald-600", ring: "ring-emerald-500/30" },
+  "Tổ 4": { bg: "bg-amber-500/15", text: "text-amber-700", ring: "ring-amber-500/30" },
   "Cả lớp": { bg: "bg-fuchsia-500/15", text: "text-fuchsia-300", ring: "ring-fuchsia-500/30" },
 };
 
 const PRIORITY_CONFIG = {
-  URGENT: { label: "Khẩn cấp", icon: Flame, badge: "bg-rose-500/15 text-rose-300 ring-rose-500/30" },
-  HIGH: { label: "Quan trọng", icon: AlertCircle, badge: "bg-amber-500/15 text-amber-300 ring-amber-500/30" },
-  MEDIUM: { label: "Thường", icon: Clock, badge: "bg-sky-500/15 text-sky-300 ring-sky-500/30" },
+  URGENT: { label: "Khẩn cấp", icon: Flame, badge: "bg-rose-500/15 text-rose-600 ring-rose-500/30" },
+  HIGH: { label: "Quan trọng", icon: AlertCircle, badge: "bg-amber-500/15 text-amber-700 ring-amber-500/30" },
+  MEDIUM: { label: "Thường", icon: Clock, badge: "bg-primary/10 text-primary ring-primary/30" },
   LOW: { label: "Nhẹ nhàng", icon: Sparkles, badge: "bg-slate-500/15 text-slate-300 ring-slate-500/30" },
 };
 
@@ -93,24 +93,24 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
     <div className="space-y-6">
       {/* Toast thông báo */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-xl bg-sky-500 px-4 py-3 text-sm font-semibold text-slate-950 shadow-xl transition-all animate-in fade-in slide-in-from-bottom-2">
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-slate-950 shadow-lg transition-all animate-in fade-in slide-in-from-bottom-2">
           <Check className="size-4 stroke-[3]" />
           {toastMessage}
         </div>
       )}
 
       {/* Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 via-surface to-accent/5 p-6 sm:p-8 ring-1 ring-border shadow-md">
+      <div className="relative overflow-hidden rounded-2xl border border-border bg-surface p-6 sm:p-8 shadow-sm">
         
 
         <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 rounded-full bg-sky-500/15 px-3 py-1 text-xs font-bold text-sky-300 ring-1 ring-sky-500/30">
+            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary ring-1 ring-primary/30">
               <Sparkles className="size-3.5" />
               Kế hoạch & Hoạt động lớp 12A6
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-text">
-              Hoạt động & Nhiệm vụ theo tổ
+            <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-text">
+              Nhiệm vụ theo tổ
             </h1>
             <p className="text-sm text-text-secondary max-w-xl">
               Nơi giao việc, theo dõi tiến độ nộp bài, phân công trực nhật và cộng điểm thi đua cho từng tổ xuất sắc.
@@ -119,7 +119,7 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
 
           <Button
             onClick={() => setShowCreateModal(true)}
-            className="self-start md:self-auto gap-2 bg-gradient-to-r from-sky-400 to-indigo-500 hover:from-sky-300 hover:to-indigo-400 text-slate-950 font-bold px-5 py-2.5 rounded-xl shadow-lg shadow-sky-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+            className="self-start md:self-auto gap-2 bg-primary text-primary-foreground hover:bg-primary-hover font-bold px-5 py-2.5 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98]"
           >
             <Plus className="size-4 stroke-[2.5]" />
             Giao việc / Thêm hoạt động
@@ -128,7 +128,7 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
 
         {/* 4 Thẻ thống kê */}
         <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-          <div className="rounded-2xl bg-surface p-4 ring-1 ring-border/80">
+          <div className="rounded-2xl bg-surface p-4 border border-border/80">
             <div className="flex items-center justify-between text-text-muted">
               <span className="text-xs font-semibold">Tổng việc</span>
               <ListTodo className="size-4 text-sky" />
@@ -136,34 +136,34 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
             <p className="mt-2 text-2xl font-black text-text">{totalCount}</p>
           </div>
 
-          <div className="rounded-2xl bg-surface p-4 ring-1 ring-border/80">
+          <div className="rounded-2xl bg-surface p-4 border border-border/80">
             <div className="flex items-center justify-between text-text-muted">
               <span className="text-xs font-semibold">Đang triển khai</span>
               <Clock className="size-4 text-amber" />
             </div>
-            <p className="mt-2 text-2xl font-black text-amber-300">{inProgressCount}</p>
+            <p className="mt-2 text-2xl font-black text-amber-700">{inProgressCount}</p>
           </div>
 
-          <div className="rounded-2xl bg-surface p-4 ring-1 ring-border/80">
+          <div className="rounded-2xl bg-surface p-4 border border-border/80">
             <div className="flex items-center justify-between text-text-muted">
               <span className="text-xs font-semibold">Gấp / Quan trọng</span>
               <Flame className="size-4 text-rose-400" />
             </div>
-            <p className="mt-2 text-2xl font-black text-rose-300">{urgentCount}</p>
+            <p className="mt-2 text-2xl font-black text-rose-600">{urgentCount}</p>
           </div>
 
-          <div className="rounded-2xl bg-surface p-4 ring-1 ring-border/80">
+          <div className="rounded-2xl bg-surface p-4 border border-border/80">
             <div className="flex items-center justify-between text-text-muted">
               <span className="text-xs font-semibold">Đã hoàn tất</span>
-              <CheckCircle2 className="size-4 text-emerald-400" />
+              <CheckCircle2 className="size-4 text-emerald-600" />
             </div>
-            <p className="mt-2 text-2xl font-black text-emerald-300">{completedCount}</p>
+            <p className="mt-2 text-2xl font-black text-emerald-600">{completedCount}</p>
           </div>
         </div>
       </div>
 
       {/* Bộ lọc và Tabs */}
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-surface p-4 ring-1 ring-border">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-surface p-4 border border-border">
         {/* Lọc theo Trạng thái */}
         <div className="flex flex-wrap items-center gap-1.5">
           <span className="text-xs font-bold text-text-muted mr-1.5 flex items-center gap-1">
@@ -180,7 +180,7 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
               onClick={() => setFilterStatus(item.key)}
               className={`rounded-xl px-3 py-1.5 text-xs font-bold transition-all ${
                 filterStatus === item.key
-                  ? "bg-sky-500/20 text-sky ring-1 ring-sky-500/40 shadow-sm"
+                  ? "bg-primary/15 text-sky ring-1 ring-primary/40 shadow-sm"
                   : "text-text-secondary hover:bg-surface-hover hover:text-text"
               }`}
             >
@@ -197,6 +197,7 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
           <select
             value={filterTeam}
             onChange={(e) => setFilterTeam(e.target.value)}
+            aria-label="Lọc theo phụ trách"
             className="rounded-xl border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text focus-visible:outline-2 focus-visible:outline-sky"
           >
             <option value="ALL">Mọi đối tượng</option>
@@ -211,7 +212,7 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
 
       {/* Danh sách nhiệm vụ dạng Grid Thẻ */}
       {filteredTasks.length === 0 ? (
-        <div className="rounded-3xl border border-dashed border-border bg-surface/40 p-12 text-center">
+        <div className="rounded-2xl border border-dashed border-border bg-surface/40 p-12 text-center">
           <div className="mx-auto grid size-12 place-items-center rounded-2xl bg-surface-hover text-text-muted">
             <ListTodo className="size-6" />
           </div>
@@ -232,14 +233,14 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
                 key={task.id}
                 className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-surface p-5 ring-1 transition-all hover:shadow-lg hover:-translate-y-0.5 ${
                   isDone
-                    ? "ring-emerald-500/25 bg-emerald-950/10 opacity-80"
-                    : "ring-border hover:ring-sky-500/40"
+                    ? "ring-emerald-500/25 bg-emerald-500/10 opacity-80"
+                    : "ring-border hover:ring-primary/40"
                 }`}
               >
                 {/* Viền màu nhỏ phía trên thể hiện trạng thái */}
                 <div
                   className={`absolute top-0 left-0 right-0 h-1 ${
-                    isDone ? "bg-emerald-500" : isInProgress ? "bg-amber-500" : "bg-sky-500"
+                    isDone ? "bg-emerald-500" : isInProgress ? "bg-amber-500" : "bg-primary"
                   }`}
                 />
 
@@ -254,7 +255,7 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
                     </span>
 
                     {task.points ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2.5 py-0.5 text-[11px] font-bold text-amber-300 ring-1 ring-amber-500/30">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2.5 py-0.5 text-[11px] font-bold text-amber-700 ring-1 ring-amber-500/30">
                         <Award className="size-3" />+{task.points} điểm thi đua
                       </span>
                     ) : null}
@@ -300,7 +301,7 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
                         <span className="text-text-muted flex items-center gap-1">
                           <Calendar className="size-3.5" /> Hạn chót:
                         </span>
-                        <span className="font-semibold text-sky-300">
+                        <span className="font-semibold text-primary">
                           {new Intl.DateTimeFormat("vi-VN", {
                             day: "2-digit",
                             month: "2-digit",
@@ -325,10 +326,10 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
                     onClick={() => handleToggleStatus(task)}
                     className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition-all ${
                       isDone
-                        ? "bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-500/40 hover:bg-emerald-500/30"
+                        ? "bg-emerald-500/15 text-emerald-600 ring-1 ring-emerald-500/40 hover:bg-emerald-500/30"
                         : isInProgress
-                        ? "bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/40 hover:bg-amber-500/30"
-                        : "bg-surface-hover text-text-secondary hover:text-text hover:bg-surface-elevated ring-1 ring-border"
+                        ? "bg-amber-500/20 text-amber-700 ring-1 ring-amber-500/40 hover:bg-amber-500/30"
+                        : "bg-surface-hover text-text-secondary hover:text-text hover:bg-surface-elevated border border-border"
                     }`}
                   >
                     {isDone ? (
@@ -359,7 +360,7 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
       {/* Modal Tạo Hoạt Động Mới */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 animate-in fade-in">
-          <div className="w-full max-w-lg rounded-3xl bg-surface p-6 ring-1 ring-border shadow-2xl space-y-5">
+          <div className="w-full max-w-lg rounded-2xl bg-surface p-6 border border-border shadow-lg space-y-5">
             <div className="flex items-center justify-between border-b border-border pb-4">
               <div>
                 <h3 className="text-lg font-bold text-text">Giao việc / Thêm hoạt động mới</h3>
@@ -399,7 +400,7 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
 
                 setTasks((prev) => [newTask, ...prev]);
                 setShowCreateModal(false);
-                showToast("Đã giao việc mới cho lớp thành công! 🚀");
+                showToast("Đã giao việc mới cho lớp thành công!");
 
                 await createTaskAction({ ok: true, message: "" }, formData);
               }}
@@ -427,8 +428,9 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold text-text mb-1">Đối tượng phụ trách</label>
+                  <label htmlFor="task-team-name" className="block font-bold text-text mb-1">Đối tượng phụ trách</label>
                   <select
+                    id="task-team-name"
                     name="teamName"
                     className="h-10 w-full rounded-xl border border-border bg-surface px-3 text-xs font-semibold text-text focus-visible:outline-2 focus-visible:outline-sky"
                   >
@@ -442,13 +444,14 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
                 </div>
 
                 <div>
-                  <label className="block font-bold text-text mb-1">Mức độ ưu tiên</label>
+                  <label htmlFor="task-priority" className="block font-bold text-text mb-1">Mức độ ưu tiên</label>
                   <select
+                    id="task-priority"
                     name="priority"
                     className="h-10 w-full rounded-xl border border-border bg-surface px-3 text-xs font-semibold text-text focus-visible:outline-2 focus-visible:outline-sky"
                   >
-                    <option value="URGENT">🔥 Khẩn cấp</option>
-                    <option value="HIGH">⚡ Quan trọng</option>
+                    <option value="URGENT">Khẩn cấp</option>
+                    <option value="HIGH">Quan trọng</option>
                     <option value="MEDIUM">Thường</option>
                     <option value="LOW">Nhẹ nhàng</option>
                   </select>
@@ -487,7 +490,7 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
                 </Button>
                 <Button
                   type="submit"
-                  className="rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs"
+                  className="rounded-xl bg-primary hover:bg-primary-hover text-slate-950 font-bold text-xs"
                 >
                   Tạo và giao việc
                 </Button>

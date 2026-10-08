@@ -2,6 +2,20 @@
 
 > Nguồn duy nhất để theo dõi tiến độ. Đánh dấu `[x]` sau khi THỰC SỰ xong.
 
+## Phase R: Redesign UI — "BẢNG LỚP 12A6"
+> Đặc tả đầy đủ: `DESIGN-REDESIGN.md` (kết quả audit dashboard desktop/mobile + feed).
+- [x] A. Tokens mới (warm canvas, radius nhỏ, gỡ gradient) + shell
+- [x] B. App shell: nav, header mobile, bottom nav (fix che content)
+- [x] C. Dashboard mới (hero rút gọn, leaderboard là hero, flatten card)
+- [x] D. Feed mới (wall + divider, composer compact, ảnh first-class, comment inline)
+- [x] E. Các trang còn lại khớp token
+- [x] F. Hệ thống thành tích (Achievement)
+- [x] G. Dashboard theo vai trò
+- [x] H. Polish (motion, empty/loading/error, a11y, mobile)
+- [x] I. Verify (build/typecheck/lint + screenshot + audit lại bằng AI)
+- [ ] J. Deploy Vercel
+
+
 ## Phase 1: Foundation
 - [x] Project init (Next.js 16 + Tailwind v4 + shadcn/ui)
 - [x] Prisma schema (30+ tables) + Prisma 6 client

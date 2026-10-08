@@ -8,7 +8,7 @@ const sizes = {
 
 /**
  * Logo A6 Apex Delta: chữ A + số 6 vẽ bằng nét, dải gradient
- * #00F2FE → #4FACFE → #6B11FF, chữ "CLASS" màu cyan, chấm vàng gold.
+ * #00F2FE → #4FACFE → #6B11FF, chữ "CLASS" màu primary xanh, chấm vàng gold.
  *
  * `id` cố định vì mọi bản sao đều vẽ cùng một gradient: trình duyệt lấy
  * định nghĩa đầu tiên, mà các bản sao giống hệt nhau nên không sai khác.
@@ -78,7 +78,7 @@ export function Logo({
         letterSpacing="-1"
       >
         A6
-        <tspan fill="#0E7490">CLASS</tspan>
+        <tspan fill="#2563EB">CLASS</tspan>
       </text>
       <circle cx="242" cy="42" r="4" fill="#FFB800" />
     </svg>

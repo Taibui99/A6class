@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/current";
 import { Brand } from "@/components/layout/brand";
 import { UserMenu } from "@/components/layout/user-menu";
-import { MobilePageTitle } from "@/components/layout/mobile-page-title";
 import { AnimatedPage } from "@/components/layout/animated-page";
 import { NavTabs } from "@/components/layout/nav-tabs";
 import { BottomNav } from "@/components/layout/bottom-nav";
@@ -30,25 +29,22 @@ export default async function AppLayout({
           <NavTabs isTeacher={isTeacher} />
         </div>
 
-        <div className="md:hidden">
-          <MobilePageTitle />
-        </div>
-
         <div className="flex shrink-0 items-center gap-2">
           <ScanMemberButton />
           <UserMenu user={user} variant="mobile" />
         </div>
       </header>
 
-      {/* Main content với padding đáy cho mobile bottom bar */}
-      <main className="flex-1 pb-20 md:pb-8">
+      {/* Main content: padding đáy = chiều cao bottom nav + safe-area —
+          nội dung cuối KHÔNG bị thanh điều hướng che (§5.1). */}
+      <main className="flex-1 pb-[calc(72px+env(safe-area-inset-bottom))] md:pb-8">
         <div className="mx-auto w-full max-w-6xl px-3 py-5 sm:px-6 lg:px-8">
           <AnimatedPage>{children}</AnimatedPage>
         </div>
       </main>
 
       {/* Bottom navigation bar cho điện thoại */}
-      <BottomNav isTeacher={isTeacher} />
+      <BottomNav />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -33,7 +33,7 @@ export function ScanMemberButton() {
             className="absolute inset-0 bg-[#0B1220]/90"
           />
 
-          <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-[#0B1220] p-6 text-white shadow-2xl">
+          <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-[#0B1220] p-6 text-white shadow-lg">
             <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
               <span className="vt-scan-line top-0" />
             </div>

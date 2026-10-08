@@ -1,5 +1,6 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import { GraduationCap, Mail, Trophy, Users } from "lucide-react";
+import { GraduationCap, Mail, Medal, Trophy, Users } from "lucide-react";
 
 import { getCurrentUser } from "@/lib/auth/current";
 import { getDashboardSummary } from "@/lib/dashboard";
@@ -15,17 +16,24 @@ export default async function ProfilePage() {
 
   return (
     <div className="mx-auto max-w-xl space-y-6">
-      <header>
-        <h1 className="text-xl font-bold tracking-tight text-text sm:text-2xl">
+      <header className="flex items-end justify-between gap-3">
+        <h1 className="text-xl font-extrabold tracking-tight text-text sm:text-2xl">
           Hồ sơ của tôi
         </h1>
+        <Link
+          href="/achievements"
+          className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-accent-light px-3.5 text-xs font-extrabold text-accent-ink transition-colors hover:bg-accent/30"
+        >
+          <Medal aria-hidden className="size-4" />
+          Bảng thành tích
+        </Link>
       </header>
 
       {/* Thẻ hồ sơ */}
-      <div className="overflow-hidden rounded-xl bg-surface ring-1 ring-border">
+      <div className="overflow-hidden rounded-xl bg-surface border border-border">
         <div
           aria-hidden="true"
-          className="h-20 bg-gradient-to-r from-primary to-primary-hover"
+          className="h-20 bg-primary"
         />
         <div className="-mt-10 flex flex-col items-center px-6 pb-6 text-center">
           <Avatar data-size="lg" className="size-20 ring-4 ring-surface">
@@ -46,7 +54,7 @@ export default async function ProfilePage() {
       </div>
 
       {/* Thông tin */}
-      <div className="rounded-xl bg-surface p-5 ring-1 ring-border">
+      <div className="rounded-xl bg-surface p-5 border border-border">
         <ul className="divide-y divide-border">
           <li className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
             <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-surface-hover text-text-muted">

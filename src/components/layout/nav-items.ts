@@ -22,8 +22,24 @@ export type NavItem = {
   teacherOnly?: boolean;
 };
 
-/** Kho công cụ đứng đầu: đây là trang chính, chọn công cụ rồi chuyển tới. */
+/**
+ * Thứ tự theo mental model học sinh (DESIGN-REDESIGN.md §5.1):
+ * Tổng quan → Bảng lớp → Thi đua → Nhiệm vụ → Thành viên → Công cụ,
+ * rồi mới tới taxonomy phần mềm (Dữ liệu lớp, tin nhắn, hỗ trợ, hồ sơ).
+ */
 export const navItems: NavItem[] = [
+  {
+    href: "/dashboard",
+    label: "Tổng quan",
+    shortLabel: "Tổng quan",
+    icon: LayoutDashboard,
+  },
+  {
+    href: "/feed",
+    label: "Bảng lớp",
+    shortLabel: "Bảng lớp",
+    icon: Newspaper,
+  },
   {
     href: "/competition",
     label: "Thi đua",
@@ -32,8 +48,8 @@ export const navItems: NavItem[] = [
   },
   {
     href: "/tasks",
-    label: "Hoạt động",
-    shortLabel: "Việc lớp",
+    label: "Nhiệm vụ",
+    shortLabel: "Nhiệm vụ",
     icon: ListTodo,
   },
   {
@@ -43,14 +59,8 @@ export const navItems: NavItem[] = [
     icon: UsersRound,
   },
   {
-    href: "/dashboard",
-    label: "Tổng quan",
-    shortLabel: "Tổng quan",
-    icon: LayoutDashboard,
-  },
-  {
     href: HOME_PATH,
-    label: "Kho công cụ",
+    label: "Công cụ",
     shortLabel: "Công cụ",
     icon: LayoutGrid,
   },
@@ -60,12 +70,6 @@ export const navItems: NavItem[] = [
     shortLabel: "Lớp",
     icon: UsersRound,
     teacherOnly: true,
-  },
-  {
-    href: "/feed",
-    label: "Feed lớp",
-    shortLabel: "Feed",
-    icon: Newspaper,
   },
   {
     href: "/messages",

@@ -32,7 +32,7 @@ type Props = {
 type Tab = "rank" | "entry" | "history";
 type Scope = "week" | "year";
 
-const PANEL = "rounded-2xl bg-surface ring-1 ring-border";
+const PANEL = "rounded-2xl bg-surface border border-border";
 const INITIAL: ActionState = { ok: true, message: "" };
 
 /* ══════════════════════════════════════════════════════════ */
@@ -79,10 +79,10 @@ export default function CompetitionArena({ data, viewPeriodId }: Props) {
       <header className={cn(PANEL, "px-4 py-4 sm:px-5")}>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
-            <h1 className="flex items-center gap-2 text-lg font-extrabold tracking-tight text-text sm:text-xl">
+            <h1 className="flex items-center gap-2 text-xl font-extrabold tracking-tight text-text sm:text-2xl">
               <Trophy aria-hidden className="size-5 text-sky" />
-              Thi đua lớp {data.className}
-              <span className="text-sm font-medium text-muted">· {data.schoolYear}</span>
+              Thi đua lớp {data.className}{" "}
+              <span className="text-sm font-medium text-muted" aria-hidden>· {data.schoolYear.replace(/(\d) - (\d)/, "$1 – $2")}</span>
             </h1>
             <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
               {period ? (
@@ -95,8 +95,8 @@ export default function CompetitionArena({ data, viewPeriodId }: Props) {
                     className={cn(
                       "rounded-full px-2 py-0.5 font-semibold",
                       period.daysLeft === 0
-                        ? "bg-amber-500/15 text-amber-300"
-                        : "bg-sky-500/15 text-sky-300",
+                        ? "bg-amber-500/15 text-amber-700"
+                        : "bg-primary/10 text-primary",
                     )}
                   >
                     {period.daysLeft === 0 ? "Hết tuần" : `Còn ${period.daysLeft} ngày`}
@@ -121,8 +121,8 @@ export default function CompetitionArena({ data, viewPeriodId }: Props) {
                 className={cn(
                   "inline-flex h-9 items-center gap-1.5 rounded-xl px-3 text-xs font-bold transition",
                   period.publishedAt
-                    ? "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-500/30 hover:bg-emerald-500/25"
-                    : "bg-surface-2 text-muted ring-1 ring-border hover:text-text",
+                    ? "bg-emerald-500/15 text-emerald-600 ring-1 ring-emerald-500/30 hover:bg-emerald-500/25"
+                    : "bg-surface-2 text-muted border border-border hover:text-text",
                 )}
               >
                 {period.publishedAt ? (
@@ -139,7 +139,7 @@ export default function CompetitionArena({ data, viewPeriodId }: Props) {
             {access.isTeacher && (
               <Link
                 href="/competition/settings"
-                className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-surface-2 px-3 text-xs font-bold text-muted ring-1 ring-border transition hover:text-text"
+                className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-surface-2 px-3 text-xs font-bold text-muted border border-border transition hover:text-text"
               >
                 <Settings2 aria-hidden className="size-3.5" /> Cấu hình điểm
               </Link>
@@ -167,8 +167,8 @@ export default function CompetitionArena({ data, viewPeriodId }: Props) {
               className={cn(
                 "inline-flex h-9 items-center gap-1.5 rounded-xl px-3.5 text-xs font-bold transition",
                 tab === t.key
-                  ? "bg-sky-500/15 text-sky-300 ring-1 ring-sky-500/30"
-                  : "bg-surface text-muted ring-1 ring-border hover:text-text",
+                  ? "bg-primary/10 text-primary ring-1 ring-primary/30"
+                  : "bg-surface text-muted border border-border hover:text-text",
               )}
             >
               <t.icon aria-hidden className="size-3.5" />
@@ -177,7 +177,7 @@ export default function CompetitionArena({ data, viewPeriodId }: Props) {
           ))}
 
         {(tab === "rank" || tab === "history") && (
-          <div className="ml-auto flex gap-1 rounded-xl bg-surface p-0.5 ring-1 ring-border">
+          <div className="ml-auto flex gap-1 rounded-xl bg-surface p-0.5 border border-border">
             {(["week", "year"] as const).map((s) => (
               <button
                 key={s}
@@ -185,7 +185,7 @@ export default function CompetitionArena({ data, viewPeriodId }: Props) {
                 onClick={() => setScope(s)}
                 className={cn(
                   "h-8 rounded-lg px-3 text-xs font-bold transition",
-                  scope === s ? "bg-sky-500/15 text-sky-300" : "text-muted hover:text-text",
+                  scope === s ? "bg-primary/10 text-primary" : "text-muted hover:text-text",
                 )}
               >
                 {s === "week" ? "Tuần này" : "Cả năm"}
@@ -200,7 +200,7 @@ export default function CompetitionArena({ data, viewPeriodId }: Props) {
           role="status"
           className={cn(
             "rounded-xl px-3 py-2 text-xs font-semibold",
-            toast.ok ? "bg-emerald-500/15 text-emerald-300" : "bg-rose-500/15 text-rose-300",
+            toast.ok ? "bg-emerald-500/15 text-emerald-600" : "bg-rose-500/15 text-rose-600",
           )}
         >
           {toast.message}
@@ -209,7 +209,14 @@ export default function CompetitionArena({ data, viewPeriodId }: Props) {
 
       {/* ── Nội dung ───────────────────────────────────────── */}
       {tab === "rank" && (
-        <RankPanel students={students} teams={teams} me={me} meTeam={meTeam} />
+        <RankPanel
+          students={students}
+          teams={teams}
+          me={me}
+          meTeam={meTeam}
+          scope={scope}
+          periodName={scope === "week" ? (period?.name ?? null) : null}
+        />
       )}
       {tab === "entry" && access.canRecord && period && (
         <EntryGrid data={data} onToast={setToast} />
@@ -260,7 +267,7 @@ function PeriodPicker({
           window.location.href = v ? `/competition?period=${v}` : "/competition";
         }}
         aria-label="Chọn tuần"
-        className="h-9 appearance-none rounded-xl bg-surface-2 pl-3 pr-8 text-xs font-bold text-muted ring-1 ring-border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky"
+        className="h-9 appearance-none rounded-xl bg-surface-2 pl-3 pr-8 text-xs font-bold text-muted border border-border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky"
       >
         {periods.length === 0 && <option value="">Chưa có tuần nào</option>}
         {periods.map((p) => (
@@ -288,49 +295,87 @@ function RankPanel({
   teams,
   me,
   meTeam,
+  scope,
+  periodName,
 }: {
   students: StudentRow[];
   teams: CompetitionData["weekTeams"];
   me?: StudentRow;
   meTeam?: CompetitionData["weekTeams"][number];
+  scope: Scope;
+  periodName: string | null;
 }) {
-  return (
-    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
-      {/* Xếp hạng tổ — theo trung bình mỗi thành viên */}
-      <section className={cn(PANEL, "p-4")}>
-        <h2 className="flex items-center gap-1.5 text-sm font-extrabold text-text">
-          <Crown aria-hidden className="size-4 text-amber" />
-          Xếp hạng tổ
-        </h2>
-        <p className="mt-1 text-[11px] leading-relaxed text-muted">
-          Tổ có 10/10/9/7 em nên tính theo <b className="text-text">trung bình mỗi thành viên</b>{" "}
-          cho công bằng, không tính tổng.
-        </p>
+  // Chưa có điểm nào trong kỳ/năm đang xem → phân biệt "chưa ghi" với "0 điểm"
+  // và giải thích vì sao số ở đây có thể khác Trang chủ (tổng tích lũy).
+  const hasAnyScore =
+    students.some((s) => s.marks > 0) || teams.some((t) => t.direct !== 0);
 
-        {teams.length > 0 && teams[0] && (
-          <div className="mt-3 relative overflow-hidden rounded-2xl bg-gradient-to-r from-amber-500/20 via-yellow-500/10 to-transparent p-4 ring-1 ring-amber-500/30">
-            <div className="flex items-center gap-3">
-              <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-400 text-slate-950 font-black text-xl shadow-md">
-                🏆
-              </span>
-              <div className="min-w-0">
-                <span className="inline-block rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-300 ring-1 ring-amber-500/40">
-                  TOP 1 XUẤT SẮC TUẦN NÀY
+  return (
+    <div className="space-y-4">
+      {!hasAnyScore && (
+        <div className="flex items-start gap-2 rounded-2xl border border-border bg-canvas px-4 py-3 text-xs leading-relaxed text-muted">
+          <CalendarDays aria-hidden className="mt-0.5 size-3.5 shrink-0 text-sky" />
+          <p>
+            {scope === "week" ? (
+              <>
+                Kỳ <b className="text-text">{periodName ?? "này"}</b> chưa được ghi điểm nào.
+                Bảng sẽ cập nhật ngay khi cán bộ nhập điểm.{" "}
+                <b className="text-text">Trang chủ hiển thị tổng tích lũy cả năm</b>, còn bảng
+                này chỉ tính kỳ đang xem.
+              </>
+            ) : (
+              <>
+                Chưa có điểm nào từ đầu năm học. Bảng sẽ cập nhật ngay khi cán bộ nhập điểm —
+                tổng tích lũy các kỳ sẽ hiển thị tại đây và ở Trang chủ.
+              </>
+            )}
+          </p>
+        </div>
+      )}
+
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
+        {/* Xếp hạng tổ — theo trung bình mỗi thành viên */}
+        <section className={cn(PANEL, "p-4")}>
+          <h2 className="flex items-center gap-1.5 text-sm font-extrabold text-text">
+            <Crown aria-hidden className="size-4 text-amber" />
+            Xếp hạng tổ
+          </h2>
+          <p className="mt-1 text-[11px] leading-relaxed text-muted">
+            Tổ có 10/10/9/7 em nên tính theo <b className="text-text">trung bình mỗi thành viên</b>{" "}
+            cho công bằng, không tính tổng.{" "}
+            {scope === "week" ? (
+              <>
+                Chỉ tính điểm trong kỳ <b className="text-text">{periodName ?? "đang xem"}</b>.
+              </>
+            ) : (
+              <>Đây là tổng mọi kỳ từ đầu năm học.</>
+            )}
+          </p>
+
+          {hasAnyScore && teams.length > 0 && teams[0] && (
+            <div className="mt-3 relative overflow-hidden rounded-2xl bg-amber-500/10 p-4 ring-1 ring-amber-500/30">
+              <div className="flex items-center gap-3">
+                <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-amber-500 text-white">
+                  <Trophy className="size-6" aria-hidden />
                 </span>
-                <p className="mt-0.5 truncate text-base font-black text-text">
-                  {teams[0].teamName}
-                </p>
-                <p className="text-xs text-amber-300/90 font-medium">
-                  Điểm trung bình: <strong className="font-extrabold">{teams[0].average.toFixed(1)}</strong> đ/bạn
-                </p>
+                <div className="min-w-0">
+                  <span className="inline-block rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-700 ring-1 ring-amber-500/40">
+                    {scope === "week" ? "#1 tuần này" : "#1 cả năm"}
+                  </span>
+                  <p className="mt-0.5 truncate text-base font-black text-text">
+                    {teams[0].teamName}
+                  </p>
+                  <p className="text-xs text-amber-700/90 font-medium">
+                    Điểm trung bình: <strong className="font-extrabold">{teams[0].average.toFixed(1)}</strong> đ/bạn
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
         <ol className="mt-3 space-y-2.5">
           {teams.map((t, idx) => {
-            const medals = ["🥇", "🥈", "🥉", "🏅"];
+            
             const maxAvg = Math.max(...teams.map((x) => x.average), 1);
             const pct = Math.max(10, Math.min(100, Math.round((t.average / maxAvg) * 100)));
 
@@ -340,16 +385,16 @@ function RankPanel({
                 className={cn(
                   "rounded-2xl bg-canvas p-3.5 ring-1 transition-all",
                   meTeam?.teamId === t.teamId
-                    ? "ring-sky-500/50 bg-sky-950/20"
+                    ? "ring-primary/50 bg-primary/10"
                     : "ring-border hover:ring-border-strong",
                 )}
               >
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <span className="text-base shrink-0">{medals[idx] ?? "🏅"}</span>
+                    <span className={cn("grid size-6 shrink-0 place-items-center rounded-md text-xs font-extrabold tabular-nums", idx === 0 ? "bg-accent-light text-accent-ink" : "bg-surface-hover text-text-secondary")} aria-hidden>{idx + 1}</span>
                     <span className="truncate text-sm font-bold text-text">{t.teamName}</span>
                     {meTeam?.teamId === t.teamId && (
-                      <span className="rounded-full bg-sky-500/20 px-2 py-0.5 text-[10px] font-bold text-sky-300 ring-1 ring-sky-500/30">
+                      <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-bold text-primary ring-1 ring-primary/30">
                         Tổ của bạn
                       </span>
                     )}
@@ -376,11 +421,11 @@ function RankPanel({
                     <dd className="font-semibold text-text tabular-nums">{t.memberIds.length} bạn</dd>
                   </div>
                   <div>
-                    <dt>Từ cá nhân</dt>
+                    <dt>Điểm cá nhân</dt>
                     <dd className="font-semibold text-text tabular-nums">{t.fromMembers}</dd>
                   </div>
                   <div>
-                    <dt>Cộng tổ</dt>
+                    <dt>Điểm tổ</dt>
                     <dd className="font-semibold text-text tabular-nums">{t.direct}</dd>
                   </div>
                 </dl>
@@ -397,12 +442,15 @@ function RankPanel({
             <BarChart3 aria-hidden className="size-4 text-violet" />
             Xếp hạng cá nhân
           </h2>
-          <span className="text-[11px] text-muted">{students.length} học sinh</span>
+          <span className="text-[11px] text-muted">
+            {students.length} học sinh ·{" "}
+            {scope === "week" ? `kỳ ${periodName ?? "đang xem"}` : "tổng cả năm"}
+          </span>
         </div>
 
         {me && (
-          <div className="mx-4 mb-3 flex flex-wrap items-center gap-2 rounded-xl bg-sky-500/10 px-3 py-2 text-xs ring-1 ring-sky-500/25">
-            <span className="font-bold text-sky-300">Bạn</span>
+          <div className="mx-4 mb-3 flex flex-wrap items-center gap-2 rounded-xl bg-primary/10 px-3 py-2 text-xs ring-1 ring-primary/30">
+            <span className="font-bold text-primary">Bạn</span>
             <span className="text-muted">
               hạng <b className="tabular-nums text-text">#{me.rank}</b> ·{" "}
               <b className="tabular-nums text-text">{me.net > 0 ? `+${me.net}` : me.net}</b> điểm ·{" "}
@@ -447,10 +495,10 @@ function RankPanel({
                       )}
                     </span>
                   </td>
-                  <td className="px-2 py-2 text-right tabular-nums text-emerald-300">
+                  <td className="px-2 py-2 text-right tabular-nums text-emerald-600">
                     {s.positive || "—"}
                   </td>
-                  <td className="px-2 py-2 text-right tabular-nums text-rose-300">
+                  <td className="px-2 py-2 text-right tabular-nums text-rose-600">
                     {s.negative || "—"}
                   </td>
                   <td className="px-2 py-2 text-right font-bold tabular-nums text-text">
@@ -463,6 +511,7 @@ function RankPanel({
           </table>
         </div>
       </section>
+      </div>
     </div>
   );
 }
@@ -566,7 +615,7 @@ function EntryGrid({
                   colSpan={g.input === "GRADE" ? 1 : 1}
                   className={cn(
                     "min-w-16 border-l border-border px-1 py-1.5 align-bottom text-[9px] font-bold leading-tight",
-                    g.kind === "POSITIVE" ? "text-emerald-300/90" : "text-rose-300/90",
+                    g.kind === "POSITIVE" ? "text-emerald-600/90" : "text-rose-600/90",
                   )}
                 >
                   <span title={g.label}>{shortGroupLabel(g.label)}</span>
@@ -658,9 +707,9 @@ function EntryGrid({
                       className={cn(
                         "font-bold tabular-nums",
                         (week?.net ?? 0) > 0
-                          ? "text-emerald-300"
+                          ? "text-emerald-600"
                           : (week?.net ?? 0) < 0
-                            ? "text-rose-300"
+                            ? "text-rose-600"
                             : "text-muted",
                       )}
                     >
@@ -844,7 +893,7 @@ function HistoryPanel({ data }: { data: CompetitionData }) {
             <span
               className={cn(
                 "w-14 text-right font-extrabold tabular-nums",
-                r.points > 0 ? "text-emerald-300" : "text-rose-300",
+                r.points > 0 ? "text-emerald-600" : "text-rose-600",
               )}
             >
               {r.points > 0 ? `+${r.points}` : r.points}

@@ -37,7 +37,7 @@ const kindMeta: Record<
   SUBMISSION: { icon: ClipboardCheck, tone: "bg-success-light text-secondary" },
   REPORT: {
     icon: FileText,
-    tone: "bg-surface-hover text-text-secondary ring-1 ring-border",
+    tone: "bg-surface-hover text-text-secondary border border-border",
   },
   ANNOUNCEMENT: { icon: Megaphone, tone: "bg-primary-light text-primary" },
   POST: { icon: Newspaper, tone: "bg-primary-light text-primary" },

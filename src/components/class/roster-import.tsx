@@ -27,7 +27,7 @@ export function RosterImport({ classId }: { classId: string }) {
     <form action={formAction} className="space-y-4">
       <input type="hidden" name="classId" value={classId} />
 
-      <div className="rounded-xl bg-surface-hover/60 p-3.5 ring-1 ring-border">
+      <div className="rounded-xl bg-surface-hover/60 p-3.5 border border-border">
         <p className="text-xs font-semibold text-text">Cách nhập</p>
         <p className="mt-1 text-xs leading-relaxed text-text-secondary">
           Mỗi dòng một học sinh. Các cột theo thứ tự:{" "}
@@ -48,7 +48,7 @@ export function RosterImport({ classId }: { classId: string }) {
         <button
           type="button"
           onClick={() => setText(SAMPLE)}
-          className="mt-2.5 text-xs font-semibold text-sky-300 underline-offset-4 hover:underline"
+          className="mt-2.5 text-xs font-semibold text-primary underline-offset-4 hover:underline"
         >
           Xem ví dụ mẫu
         </button>
@@ -59,7 +59,7 @@ export function RosterImport({ classId }: { classId: string }) {
           role="status"
           className={`flex items-start gap-2.5 rounded-lg border px-3 py-2.5 text-sm ${
             state.ok
-              ? "border-emerald-500/25 bg-emerald-500/10 text-emerald-300"
+              ? "border-emerald-500/25 bg-emerald-500/10 text-emerald-600"
               : "border-danger/20 bg-danger-light text-danger"
           }`}
         >

@@ -33,7 +33,7 @@ export function ClassInfoForm({ klass }: { klass: ClassInfo }) {
         <p
           role="status"
           className={`flex items-start gap-2 text-sm ${
-            state.ok ? "text-emerald-300" : "text-danger"
+            state.ok ? "text-emerald-600" : "text-danger"
           }`}
         >
           {state.ok ? null : (
@@ -99,7 +99,7 @@ export function CreateClassForm() {
         <p
           role="status"
           className={`flex items-start gap-2 text-sm ${
-            state.ok ? "text-emerald-300" : "text-danger"
+            state.ok ? "text-emerald-600" : "text-danger"
           }`}
         >
           {state.ok ? null : (
