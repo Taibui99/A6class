@@ -79,7 +79,7 @@ export default async function ProfilePage() {
             </div>
           </li>
           <li className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
-            <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-success-light text-secondary">
+            <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-success-light text-success">
               <Users aria-hidden="true" className="size-4" />
             </span>
             <div className="min-w-0">

@@ -68,9 +68,9 @@ function taskUrgency(task: ClassTask, now: Date): 0 | 1 | 2 | 3 {
 
 function taskState(task: ClassTask, now: Date) {
   const urgency = taskUrgency(task, now);
-  if (urgency === 0) return { dot: "bg-red-500", label: "Quá hạn", labelColor: "text-red-600" };
-  if (urgency === 1) return { dot: "bg-amber-500", label: "Hôm nay", labelColor: "text-amber-700" };
-  if (urgency === 3) return { dot: "bg-emerald-500", label: "Đã xong", labelColor: "text-emerald-600" };
+  if (urgency === 0) return { dot: "bg-danger", label: "Quá hạn", labelColor: "text-danger" };
+  if (urgency === 1) return { dot: "bg-amber", label: "Hôm nay", labelColor: "text-amber" };
+  if (urgency === 3) return { dot: "bg-success", label: "Đã xong", labelColor: "text-success" };
   if (task.deadline) {
     const days = Math.max(
       1,

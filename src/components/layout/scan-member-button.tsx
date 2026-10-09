@@ -30,10 +30,10 @@ export function ScanMemberButton() {
             type="button"
             aria-label="Đóng"
             onClick={() => setOpen(false)}
-            className="absolute inset-0 bg-[#0B1220]/90"
+            className="absolute inset-0 bg-black/70"
           />
 
-          <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-[#0B1220] p-6 text-white shadow-lg">
+          <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-surface-2 p-6 text-white shadow-lg">
             <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
               <span className="vt-scan-line top-0" />
             </div>

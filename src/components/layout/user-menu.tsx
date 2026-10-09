@@ -68,7 +68,7 @@ export function UserMenu({
         </Avatar>
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-text">{user.fullName}</p>
-          <p className="flex items-center gap-1 text-xs font-medium text-secondary">
+          <p className="flex items-center gap-1 text-xs font-medium text-text-secondary">
             <GraduationCap aria-hidden="true" className="size-3.5" />
             {isTeacher ? "Giáo viên" : "Học sinh"}
             {user.className ? ` · ${user.className}` : ""}

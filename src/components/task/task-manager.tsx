@@ -32,17 +32,17 @@ type Props = {
 
 const TEAM_COLORS: Record<string, { bg: string; text: string; ring: string }> = {
   "Tổ 1": { bg: "bg-primary/10", text: "text-primary", ring: "ring-primary/30" },
-  "Tổ 2": { bg: "bg-violet-500/15", text: "text-violet-600", ring: "ring-violet-500/30" },
-  "Tổ 3": { bg: "bg-emerald-500/15", text: "text-emerald-600", ring: "ring-emerald-500/30" },
-  "Tổ 4": { bg: "bg-amber-500/15", text: "text-amber-700", ring: "ring-amber-500/30" },
+  "Tổ 2": { bg: "bg-violet/15", text: "text-violet", ring: "ring-violet/30" },
+  "Tổ 3": { bg: "bg-success/15", text: "text-success", ring: "ring-success/30" },
+  "Tổ 4": { bg: "bg-amber/15", text: "text-amber", ring: "ring-amber/30" },
   "Cả lớp": { bg: "bg-fuchsia-500/15", text: "text-fuchsia-300", ring: "ring-fuchsia-500/30" },
 };
 
 const PRIORITY_CONFIG = {
-  URGENT: { label: "Khẩn cấp", icon: Flame, badge: "bg-rose-500/15 text-rose-600 ring-rose-500/30" },
-  HIGH: { label: "Quan trọng", icon: AlertCircle, badge: "bg-amber-500/15 text-amber-700 ring-amber-500/30" },
+  URGENT: { label: "Khẩn cấp", icon: Flame, badge: "bg-danger/15 text-danger ring-danger/30" },
+  HIGH: { label: "Quan trọng", icon: AlertCircle, badge: "bg-amber/15 text-amber ring-amber/30" },
   MEDIUM: { label: "Thường", icon: Clock, badge: "bg-primary/10 text-primary ring-primary/30" },
-  LOW: { label: "Nhẹ nhàng", icon: Sparkles, badge: "bg-slate-500/15 text-slate-300 ring-slate-500/30" },
+  LOW: { label: "Nhẹ nhàng", icon: Sparkles, badge: "bg-surface-2 text-text-secondary ring-border" },
 };
 
 export function TaskManager({ tasks: initialTasks, userRole }: Props) {
@@ -141,23 +141,23 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
               <span className="text-xs font-semibold">Đang triển khai</span>
               <Clock className="size-4 text-amber" />
             </div>
-            <p className="mt-2 text-2xl font-black text-amber-700">{inProgressCount}</p>
+            <p className="mt-2 text-2xl font-black text-amber">{inProgressCount}</p>
           </div>
 
           <div className="rounded-2xl bg-surface p-4 border border-border/80">
             <div className="flex items-center justify-between text-text-muted">
               <span className="text-xs font-semibold">Gấp / Quan trọng</span>
-              <Flame className="size-4 text-rose-400" />
+              <Flame className="size-4 text-danger" />
             </div>
-            <p className="mt-2 text-2xl font-black text-rose-600">{urgentCount}</p>
+            <p className="mt-2 text-2xl font-black text-danger">{urgentCount}</p>
           </div>
 
           <div className="rounded-2xl bg-surface p-4 border border-border/80">
             <div className="flex items-center justify-between text-text-muted">
               <span className="text-xs font-semibold">Đã hoàn tất</span>
-              <CheckCircle2 className="size-4 text-emerald-600" />
+              <CheckCircle2 className="size-4 text-success" />
             </div>
-            <p className="mt-2 text-2xl font-black text-emerald-600">{completedCount}</p>
+            <p className="mt-2 text-2xl font-black text-success">{completedCount}</p>
           </div>
         </div>
       </div>
@@ -180,7 +180,7 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
               onClick={() => setFilterStatus(item.key)}
               className={`rounded-xl px-3 py-1.5 text-xs font-bold transition-all ${
                 filterStatus === item.key
-                  ? "bg-primary/15 text-sky ring-1 ring-primary/40 shadow-sm"
+                  ? "bg-primary/15 text-primary ring-1 ring-primary/40 shadow-sm"
                   : "text-text-secondary hover:bg-surface-hover hover:text-text"
               }`}
             >
@@ -233,14 +233,14 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
                 key={task.id}
                 className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-surface p-5 ring-1 transition-all hover:shadow-lg hover:-translate-y-0.5 ${
                   isDone
-                    ? "ring-emerald-500/25 bg-emerald-500/10 opacity-80"
+                    ? "ring-success/25 bg-success/10 opacity-80"
                     : "ring-border hover:ring-primary/40"
                 }`}
               >
                 {/* Viền màu nhỏ phía trên thể hiện trạng thái */}
                 <div
                   className={`absolute top-0 left-0 right-0 h-1 ${
-                    isDone ? "bg-emerald-500" : isInProgress ? "bg-amber-500" : "bg-primary"
+                    isDone ? "bg-success" : isInProgress ? "bg-amber" : "bg-primary"
                   }`}
                 />
 
@@ -255,7 +255,7 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
                     </span>
 
                     {task.points ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2.5 py-0.5 text-[11px] font-bold text-amber-700 ring-1 ring-amber-500/30">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-amber/15 px-2.5 py-0.5 text-[11px] font-bold text-amber ring-1 ring-amber/30">
                         <Award className="size-3" />+{task.points} điểm thi đua
                       </span>
                     ) : null}
@@ -326,9 +326,9 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
                     onClick={() => handleToggleStatus(task)}
                     className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition-all ${
                       isDone
-                        ? "bg-emerald-500/15 text-emerald-600 ring-1 ring-emerald-500/40 hover:bg-emerald-500/30"
+                        ? "bg-success/15 text-success ring-1 ring-success/40 hover:bg-success/30"
                         : isInProgress
-                        ? "bg-amber-500/20 text-amber-700 ring-1 ring-amber-500/40 hover:bg-amber-500/30"
+                        ? "bg-amber/20 text-amber ring-1 ring-amber/40 hover:bg-amber/30"
                         : "bg-surface-hover text-text-secondary hover:text-text hover:bg-surface-elevated border border-border"
                     }`}
                   >

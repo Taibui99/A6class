@@ -23,7 +23,7 @@ function Message({ state }: { state: ActionState }) {
   return (
     <p
       role="status"
-      className={`text-xs ${state.ok ? "text-emerald-600" : "text-danger"}`}
+      className={`text-xs ${state.ok ? "text-success" : "text-danger"}`}
     >
       {state.message}
     </p>

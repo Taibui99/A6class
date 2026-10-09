@@ -106,7 +106,7 @@ export default function CriterionSettings({
           role="status"
           className={cn(
             "rounded-xl px-3 py-2 text-xs font-semibold",
-            toast.ok ? "bg-emerald-500/15 text-emerald-600" : "bg-rose-500/15 text-rose-600",
+            toast.ok ? "bg-success/15 text-success" : "bg-danger/15 text-danger",
           )}
         >
           {toast.message}
@@ -121,8 +121,8 @@ export default function CriterionSettings({
               className={cn(
                 "rounded-full px-2 py-0.5 text-[10px] font-bold",
                 g.kind === "POSITIVE"
-                  ? "bg-emerald-500/15 text-emerald-600"
-                  : "bg-rose-500/15 text-rose-600",
+                  ? "bg-success/15 text-success"
+                  : "bg-danger/15 text-danger",
               )}
             >
               {g.kind === "POSITIVE" ? "Điểm cộng" : "Điểm trừ"}
@@ -137,8 +137,8 @@ export default function CriterionSettings({
                   className={cn(
                     "grid size-8 shrink-0 place-items-center rounded-lg text-xs font-extrabold tabular-nums",
                     g.kind === "POSITIVE"
-                      ? "bg-emerald-500/15 text-emerald-600"
-                      : "bg-rose-500/15 text-rose-600",
+                      ? "bg-success/15 text-success"
+                      : "bg-danger/15 text-danger",
                   )}
                 >
                   {c.kind === "POSITIVE" ? `+${c.points}` : `−${c.points}`}

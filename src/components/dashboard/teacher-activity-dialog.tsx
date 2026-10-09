@@ -34,7 +34,7 @@ const kindMeta: Record<
   { icon: LucideIcon; tone: string }
 > = {
   POINT: { icon: Trophy, tone: "bg-warning-light text-warning" },
-  SUBMISSION: { icon: ClipboardCheck, tone: "bg-success-light text-secondary" },
+  SUBMISSION: { icon: ClipboardCheck, tone: "bg-success-light text-success" },
   REPORT: {
     icon: FileText,
     tone: "bg-surface-hover text-text-secondary border border-border",

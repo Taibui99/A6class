@@ -13,7 +13,13 @@
 - [x] G. Dashboard theo vai trò
 - [x] H. Polish (motion, empty/loading/error, a11y, mobile)
 - [x] I. Verify (build/typecheck/lint + screenshot + audit lại bằng AI)
-- [ ] J. Deploy Vercel
+- [x] J. Deploy Vercel
+
+## Phase V2: Theme "Bảng Đen & Phấn" (dark warm board)
+> Đặc tả đầy đủ: `DESIGN-V2-BANG-DEN.md` + mockup `ui-v2-bang-den.html`.
+- [x] V2.1 Palette (nền #1A1714, phấn vàng #EDB72E, pastel phấn ấm) + logo bảng đen
+- [x] V2.2 Flip token toàn app + sửa class Tailwind vỡ tương phản (amber-700/emerald-600/rose-600…)
+- [x] V2.3 Verify (tsc/eslint/build + probe computed-colors + screenshot AI review) + deploy
 
 
 ## Phase 1: Foundation

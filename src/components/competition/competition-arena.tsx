@@ -95,7 +95,7 @@ export default function CompetitionArena({ data, viewPeriodId }: Props) {
                     className={cn(
                       "rounded-full px-2 py-0.5 font-semibold",
                       period.daysLeft === 0
-                        ? "bg-amber-500/15 text-amber-700"
+                        ? "bg-amber/15 text-amber"
                         : "bg-primary/10 text-primary",
                     )}
                   >
@@ -121,7 +121,7 @@ export default function CompetitionArena({ data, viewPeriodId }: Props) {
                 className={cn(
                   "inline-flex h-9 items-center gap-1.5 rounded-xl px-3 text-xs font-bold transition",
                   period.publishedAt
-                    ? "bg-emerald-500/15 text-emerald-600 ring-1 ring-emerald-500/30 hover:bg-emerald-500/25"
+                    ? "bg-success/15 text-success ring-1 ring-success/30 hover:bg-success/25"
                     : "bg-surface-2 text-muted border border-border hover:text-text",
                 )}
               >
@@ -200,7 +200,7 @@ export default function CompetitionArena({ data, viewPeriodId }: Props) {
           role="status"
           className={cn(
             "rounded-xl px-3 py-2 text-xs font-semibold",
-            toast.ok ? "bg-emerald-500/15 text-emerald-600" : "bg-rose-500/15 text-rose-600",
+            toast.ok ? "bg-success/15 text-success" : "bg-danger/15 text-danger",
           )}
         >
           {toast.message}
@@ -353,19 +353,19 @@ function RankPanel({
           </p>
 
           {hasAnyScore && teams.length > 0 && teams[0] && (
-            <div className="mt-3 relative overflow-hidden rounded-2xl bg-amber-500/10 p-4 ring-1 ring-amber-500/30">
+            <div className="mt-3 relative overflow-hidden rounded-2xl bg-primary/10 p-4 ring-1 ring-primary/30">
               <div className="flex items-center gap-3">
-                <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-amber-500 text-white">
+                <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-primary text-primary-foreground">
                   <Trophy className="size-6" aria-hidden />
                 </span>
                 <div className="min-w-0">
-                  <span className="inline-block rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-700 ring-1 ring-amber-500/40">
+                  <span className="inline-block rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-bold text-primary ring-1 ring-primary/40">
                     {scope === "week" ? "#1 tuần này" : "#1 cả năm"}
                   </span>
                   <p className="mt-0.5 truncate text-base font-black text-text">
                     {teams[0].teamName}
                   </p>
-                  <p className="text-xs text-amber-700/90 font-medium">
+                  <p className="text-xs text-primary/90 font-medium">
                     Điểm trung bình: <strong className="font-extrabold">{teams[0].average.toFixed(1)}</strong> đ/bạn
                   </p>
                 </div>
@@ -495,10 +495,10 @@ function RankPanel({
                       )}
                     </span>
                   </td>
-                  <td className="px-2 py-2 text-right tabular-nums text-emerald-600">
+                  <td className="px-2 py-2 text-right tabular-nums text-success">
                     {s.positive || "—"}
                   </td>
-                  <td className="px-2 py-2 text-right tabular-nums text-rose-600">
+                  <td className="px-2 py-2 text-right tabular-nums text-danger">
                     {s.negative || "—"}
                   </td>
                   <td className="px-2 py-2 text-right font-bold tabular-nums text-text">
@@ -615,7 +615,7 @@ function EntryGrid({
                   colSpan={g.input === "GRADE" ? 1 : 1}
                   className={cn(
                     "min-w-16 border-l border-border px-1 py-1.5 align-bottom text-[9px] font-bold leading-tight",
-                    g.kind === "POSITIVE" ? "text-emerald-600/90" : "text-rose-600/90",
+                    g.kind === "POSITIVE" ? "text-success/90" : "text-danger/90",
                   )}
                 >
                   <span title={g.label}>{shortGroupLabel(g.label)}</span>
@@ -707,9 +707,9 @@ function EntryGrid({
                       className={cn(
                         "font-bold tabular-nums",
                         (week?.net ?? 0) > 0
-                          ? "text-emerald-600"
+                          ? "text-success"
                           : (week?.net ?? 0) < 0
-                            ? "text-rose-600"
+                            ? "text-danger"
                             : "text-muted",
                       )}
                     >
@@ -893,7 +893,7 @@ function HistoryPanel({ data }: { data: CompetitionData }) {
             <span
               className={cn(
                 "w-14 text-right font-extrabold tabular-nums",
-                r.points > 0 ? "text-emerald-600" : "text-rose-600",
+                r.points > 0 ? "text-success" : "text-danger",
               )}
             >
               {r.points > 0 ? `+${r.points}` : r.points}

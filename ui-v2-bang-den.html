@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A6Class UI v2 — Bảng Đen & Phấn (mockup)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS (phần 2 của DESIGN-V2-BANG-DEN.md) ============ */
+:root{
+  --color-bg:#1A1714; --color-surface:#221E1A; --color-surface-2:#2A2621; --color-surface-hover:#2F2A24;
+  --color-border:#3D3831; --color-border-strong:#544E44;
+  --color-text:#F7F2E6; --color-text-secondary:#D6CFBE; --color-text-muted:#A0988C;
+  --color-primary:#EDB72E; --color-primary-hover:#F5C943; --color-primary-ink:#201704;
+  --color-success:#9FCE8D; --color-danger:#E58A7B; --color-info:#93B8DE; --color-violet:#B4A5D8;
+  --team-1:#F4917E; --team-2:#7FA7E6; --team-3:#8ECB98; --team-4:#F1C25C;
+  --font:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:var(--color-bg);color:var(--color-text);font-family:var(--font);font-size:15px;line-height:1.55}
+.board-lines{background-image:repeating-linear-gradient(0deg,transparent,transparent 23px,rgba(255,255,255,.035) 23px,rgba(255,255,255,.035) 24px)}
+.tnum{font-variant-numeric:tabular-nums}
+.label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--color-text-muted)}
+.num{font-weight:800}
+h1.display{font-size:26px;line-height:1.2;font-weight:800;letter-spacing:-.02em}
+h2.sec{font-size:16px;font-weight:800}
+/* demo chrome */
+.demo-topbar{position:sticky;top:0;z-index:50;display:flex;gap:8px;align-items:center;flex-wrap:wrap;
+  background:var(--color-surface);border-bottom:1px solid var(--color-border);padding:10px 16px}
+.demo-topbar b{color:var(--color-primary)}
+.demo-topbar a{color:var(--color-text-secondary);text-decoration:none;font-size:12px;font-weight:700;padding:5px 8px;border:1px solid var(--color-border);border-radius:8px}
+.demo-topbar a:hover{color:var(--color-text);border-color:var(--color-border-strong)}
+.btn-demo{border:1px solid var(--color-border);background:var(--color-surface-2);color:var(--color-text);border-radius:8px;padding:5px 8px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font)}
+.btn-demo.on{background:var(--color-primary);color:var(--color-primary-ink);border-color:var(--color-primary)}
+.mock{max-width:1100px;margin:0 auto;padding:42px 20px 60px}
+.mock-head{margin-bottom:16px}
+.mock-head .label{margin-bottom:6px}
+.mock-head h1{font-size:20px;font-weight:800}
+.screen{background:var(--color-surface);border:1px solid var(--color-border);border-radius:12px;overflow:hidden}
+.screen-bar{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--color-border);background:var(--color-surface-2)}
+.screen-bar code{font-size:12px;color:var(--color-text-muted)}
+/* ============ CARD / BUTTON / BADGE / INPUT (phần 4) ============ */
+.card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:12px;padding:16px}
+.btn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 18px;border-radius:10px;border:1px solid transparent;
+  font:700 14px/1 var(--font);cursor:pointer;text-decoration:none;transition:background 140ms,transform 100ms}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:var(--color-primary);color:var(--color-primary-ink)}
+.btn-primary:hover{background:var(--color-primary-hover)}
+.btn-secondary{background:transparent;color:var(--color-text);border-color:var(--color-border)}
+.btn-secondary:hover{background:var(--color-surface-hover);border-color:var(--color-border-strong)}
+.btn-ghost{background:transparent;color:var(--color-text-secondary);font-weight:600;color:var(--color-primary)}
+.btn-ghost:hover{color:var(--color-text)}
+.badge{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 10px;font-size:11px;font-weight:700}
+.badge-primary{background:rgba(232,178,60,.14);color:var(--color-primary)}
+.badge-success{background:rgba(111,203,122,.14);color:var(--color-success)}
+.badge-danger{background:rgba(239,116,116,.14);color:var(--color-danger)}
+.badge-muted{background:var(--color-surface-2);color:var(--color-text-muted);border:1px solid var(--color-border)}
+.badge-info{background:rgba(127,178,255,.14);color:var(--color-info)}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none}
+.input{width:100%;height:42px;border-radius:10px;border:1px solid var(--color-border);background:var(--color-surface-2);
+  padding:0 12px;color:var(--color-text);font:400 14px/1 var(--font)}
+.input::placeholder{color:var(--color-text-muted)}
+.input:focus{outline:2px solid rgba(232,178,60,.35);border-color:var(--color-border-strong)}
+/* empty state (phần 4.7) */
+.empty{display:none;text-align:center;padding:26px 16px;background:var(--color-surface);border:1px dashed var(--color-border);border-radius:12px}
+.empty .circle{width:56px;height:56px;margin:0 auto 12px;border-radius:50%;border:1px dashed var(--color-border);
+  display:flex;align-items:center;justify-content:center;color:var(--color-text-muted)}
+.empty h4{font-size:14px;font-weight:700;margin-bottom:4px}
+.empty p{font-size:13px;color:var(--color-text-muted);margin-bottom:14px}
+body.zero .data{display:none!important}
+body.zero .empty{display:block}
+/* ============ SCREEN A: LOGIN ============ */
+.login{display:grid;grid-template-columns:1.1fr 1fr}
+.login-hero{background:var(--color-surface);border-right:1px solid var(--color-border);padding:44px 40px}
+.login-form{padding:44px 40px}
+@media(max-width:860px){.login{grid-template-columns:1fr}.login-hero{border-right:none;border-bottom:1px solid var(--color-border)}}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px}
+.logo-mark{width:30px;height:30px;border-radius:9px;background:var(--color-primary);color:var(--color-primary-ink);
+  display:flex;align-items:center;justify-content:center;font-weight:800}
+.point{display:flex;gap:12px;align-items:flex-start;color:var(--color-text-secondary);font-size:14px;margin-top:10px}
+.point svg{flex:none;color:var(--color-primary);margin-top:2px}
+/* ============ SCREEN B: DASHBOARD (phone + desktop) ============ */
+.dash-grid{display:grid;grid-template-columns:340px 1fr;gap:20px;align-items:start}
+@media(max-width:900px){.dash-grid{grid-template-columns:1fr}}
+.phone{width:340px;background:var(--color-bg);border:1px solid var(--color-border);border-radius:24px;overflow:hidden;margin:0 auto}
+.phone-bar{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--color-border);background:var(--color-surface)}
+.phone-body{padding:16px;display:flex;flex-direction:column;gap:14px}
+.hero{background:var(--color-surface);border:1px solid var(--color-border);border-radius:12px;padding:16px;border-radius:12px}
+.stat-row{display:flex;gap:10px;margin-top:12px}
+.stat{flex:1;background:var(--color-surface-2);border:1px solid var(--color-border);border-radius:10px;padding:10px}
+.stat .num{font-size:18px}
+.stat .stat-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-text-muted);font-weight:700}
+.shortcuts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.shortcut{height:44px;border:1px solid var(--color-border);border-radius:10px;background:var(--color-surface);color:var(--color-text);
+  display:flex;align-items:center;justify-content:center;gap:8px;font:700 13px/1 var(--font);cursor:pointer}
+.shortcut.primary{background:var(--color-primary);color:var(--color-primary-ink);border-color:var(--color-primary)}
+.sec-head{display:flex;justify-content:space-between;align-items:center}
+.rank-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--color-border)}
+.rank-row:last-child{border-bottom:none}
+.rank-row .rank{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:800;background:var(--color-surface-2);color:var(--color-text-muted)}
+.rank-row.first{background:var(--color-surface-2);border-radius:10px;padding:10px;margin:0 -6px;padding:10px 12px;border:1px solid rgba(232,178,60,.4)}
+.rank-row.first .rank{background:var(--color-primary);color:var(--color-primary-ink)}
+.bar{height:5px;border-radius:99px;background:var(--color-surface-2);overflow:hidden;flex:1;margin-left:6px}
+.bar i{display:block;height:100%;border-radius:99px}
+.task-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--color-border)}
+.task-row:last-child{border:none}
+.task-row .t-main{flex:1}
+.task-row .t-name{font-size:14px}
+.task-row .t-sub{font-size:11px;color:var(--color-text-muted)}
+/* ============ SCREEN C: FEED ============ */
+.feed{display:grid;grid-template-columns:740px 300px;gap:20px;align-items:start;justify-content:center}
+@media(max-width:1080px){.feed{grid-template-columns:1fr}}
+.post{padding:16px 0;border-bottom:1px solid var(--color-border)}
+.post-head{display:flex;gap:10px;align-items:center}
+.post-head .who{flex:1}
+.post-head .who b{font-size:14px}
+.post-head .who span{font-size:12px;color:var(--color-text-muted)}
+.post p{font-size:15px;margin-top:8px}
+.post-foot{display:flex;gap:18px;margin-top:10px;color:var(--color-text-muted);font-size:13px}
+.side{display:flex;flex-direction:column;gap:14px;position:sticky;top:64px}
+.side-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:12px;padding:14px}
+.avatar{width:38px;height:38px;border-radius:50%;background:var(--color-surface-2);display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:800}
+.avatar.t1{border:2px solid var(--team-1);color:var(--team-1)} .avatar.t2{border:2px solid var(--team-2);color:var(--team-2)}
+.avatar.t3{border:2px solid var(--team-3);color:var(--team-3)} .avatar.t4{border:2px solid var(--team-4);color:var(--team-4)}
+.composer{display:flex;gap:10px;padding:12px 14px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:12px;align-items:center;margin-bottom:16px}
+.composer input{flex:1;background:transparent;border:none;color:var(--color-text);font:400 14px var(--font);outline:none;min-width:0}
+/* ============ SCREEN D: COMPETITION ============ */
+.seg{display:inline-flex;background:var(--color-surface-2);border:1px solid var(--color-border);border-radius:10px;padding:3px;gap:2px}
+.seg button{background:transparent;color:var(--color-text-muted);font:700 12px/1 var(--font);padding:7px 12px;border-radius:8px;border:none;cursor:pointer}
+.seg button.on{background:var(--color-primary);color:var(--color-primary-ink)}
+table{width:100%;border-collapse:collapse}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--color-text-muted);text-align:left;padding:8px 10px;font-weight:700}
+td{padding:10px;border-top:1px solid var(--color-border);font-size:14px}
+td.r,th.r{text-align:right}
+tbody tr:hover{background:var(--color-surface-hover)}
+.banner{display:flex;gap:12px;align-items:flex-start;background:var(--color-surface-2);border:1px solid var(--color-border);border-radius:12px;padding:14px 16px;margin-bottom:16px}
+.banner svg{flex:none;color:var(--color-primary);margin-top:2px}
+.tier{font-size:11px;font-weight:800;letter-spacing:.05em}
+.tier-yeu{color:var(--color-danger)} .tier-kha{color:var(--color-success)}
+/* palette strip */
+.palette{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.palette .chip{display:flex;flex-direction:column;gap:4px;align-items:center;width:86px;padding:10px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:10px}
+.palette .sw{width:100%;height:34px;border-radius:6px;border:1px solid rgba(255,255,255,.08)}
+.palette code{font-size:10px;color:var(--color-text-muted)}
+svg{vertical-align:middle}
+body:not(.zero) .data{display:block}
+.data.on-phone{display:block}
+body:not(.zero) .only-empty{display:none}
+</style>
+</head>
+<body>
+
+<div class="demo-topbar">
+  <b>A6·UI v2 “Bảng Đen & Phấn”</b>
+  <a href="#login">Login</a><a href="#dash">Dashboard</a><a href="#feed">Bảng lớp</a><a href="#competition">Thi đua</a><a href="#tokens">Tokens</a>
+  <span style="flex:1"></span>
+  <button class="btn-demo on" id="b-data" onclick="setZero(false)">Có dữ liệu</button>
+  <button class="btn-demo" id="b-zero" onclick="setZero(true)">Bảng trống · empty states</button>
+</div>
+
+<!-- ============ TOKENS ============ -->
+<section id="tokens" class="mock">
+  <div class="mock-head"><div class="label">Palette · 2.1</div><h1>Bảng màu đêm</h1></div>
+  <div class="palette">
+    <div class="chip"><div class="sw" style="background:#1A1714"></div><code>#1A1714</code><code class="label" style="font-size:9px">bg</code></div>
+    <div class="chip"><div class="sw" style="background:#221E1A"></div><code>#221E1A</code><code class="label" style="font-size:9px">surface</code></div>
+    <div class="chip"><div class="sw" style="background:#2A2621"></div><code>#2A2621</code><code class="label" style="font-size:9px">surface-2</code></div>
+    <div class="chip"><div class="sw" style="background:#3D3831"></div><code>#3D3831</code><code class="label" style="font-size:9px">border</code></div>
+    <div class="chip"><div class="sw" style="background:#F7F2E6"></div><code>#F7F2E6</code><code class="label" style="font-size:9px">text</code></div>
+    <div class="chip"><div class="sw" style="background:#EDB72E"></div><code>#EDB72E</code><code class="label" style="font-size:9px">primary</code></div>
+    <div class="chip"><div class="sw" style="background:#9FCE8D"></div><code>#9FCE8D</code><code class="label" style="font-size:9px">success</code></div>
+    <div class="chip"><div class="sw" style="background:#E58A7B"></div><code>#E58A7B</code><code class="label" style="font-size:9px">danger</code></div>
+    <div class="chip"><div class="sw" style="background:#93B8DE"></div><code>#93B8DE</code><code class="label" style="font-size:9px">info</code></div>
+  </div>
+</section>
+
+<!-- ============ LOGIN ============ -->
+<section id="login" class="mock">
+  <div class="mock-head"><div class="label">Screen A</div><h1>Đăng nhập / Đăng ký</h1></div>
+  <div class="screen">
+    <div class="screen-bar"><span>Đăng nhập</span><code>route /login</code></div>
+    <div class="login">
+      <div class="login-hero board-lines">
+        <div class="logo"><span class="logo-mark">A6</span> A6Class</div>
+        <p style="color:var(--color-text-secondary);margin-top:14px;font-size:15px">Bảng phấn của riêng lớp bạn — chấm điểm, giao việc và đua tuần cùng cả lớp.</p>
+        <div style="margin-top:24px">
+          <div class="point"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2l7 4v6c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>Chấm điểm thi đua theo tuần minh bạch</div>
+          <div class="point"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>Theo dõi tiến triển của cả lớp</div>
+          <div class="point"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Giáo viên & học sinh một không gian</div>
+        </div>
+      </div>
+      <div class="login-form">
+        <div class="label">Đăng nhập</div>
+        <h2 class="display" style="margin:6px 0 18px">Chào mừng quay lại</h2>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <input class="input" placeholder="Email" value="">
+          <input class="input" placeholder="Mật khẩu" value="">
+          <button class="btn btn-primary" style="width:100%;justify-content:center;height:44px">Vào lớp</button>
+        </div>
+        <div style="margin-top:16px;text-align:center;font-size:13px;color:var(--color-text-muted)">
+          Chưa có tài khoản? <a class="btn btn-ghost" style="height:auto;padding:0">Đăng ký ngay</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DASHBOARD ============ -->
+<section id="dash" class="mock">
+  <div class="mock-head"><div class="label">Screen B · P0–P4</div><h1>Tổng quan — phone 340px + desktop</h1></div>
+  <div class="dash-grid">
+
+    <!-- PHONE -->
+    <div class="phone">
+      <div class="phone-bar">
+        <div class="logo" style="font-size:15px"><span class="logo-mark" style="width:26px;height:26px;border-radius:8px;font-size:13px">A6</span> 12A6</div>
+        <svg style="color:var(--color-text-muted)" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </div>
+      <div class="phone-body">
+        <div class="hero board-lines">
+          <div class="label">LỚP 12A6 · THỨ NĂM 08/10</div>
+          <div style="font-size:14px;color:var(--color-text-secondary);margin-top:4px">Em chưa có việc nào mới.</div>
+          <h1 class="display" style="margin-top:2px">Tổ 1 đang dẫn đầu</h1>
+          <div class="stat-row">
+            <div class="stat"><div class="stat-label">Điểm tôi</div><div class="num tnum">24</div></div>
+            <div class="stat"><div class="stat-label">Hạng</div><div class="num tnum">3</div></div>
+            <div class="stat"><div class="stat-label">Tổ tôi</div><div class="num tnum">2</div></div>
+          </div>
+        </div>
+        <div class="shortcuts">
+          <button class="shortcut primary">Giao việc cho tổ</button>
+          <button class="shortcut">Bảng tin lớp</button>
+        </div>
+        <div>
+          <div class="sec-head"><span class="label">Bảng xếp hạng tổ</span><a class="btn btn-ghost" href="#competition" style="height:auto;padding:0;font-size:12px">Xem thêm</a></div>
+          <div class="data" style="margin-top:4px">
+            <div class="rank-row first" style="border-color:rgba(232,178,60,.4)">
+              <span class="rank">1</span><span style="width:10px;height:10px;border-radius:2px;background:var(--team-1)"></span><b style="font-size:14px">Tổ 1</b><span style="font-size:12px;color:var(--color-text-muted)">trung bình</span>
+              <span class="num tnum" style="font-size:14px">45.0</span>
+            </div>
+            <div class="rank-row"><span class="rank">2</span><span style="width:10px;height:10px;border-radius:2px;background:var(--team-4)"></span><b style="font-size:14px">Tổ 4</b><span class="num tnum" style="margin-left:auto">21.0</span></div>
+            <div class="rank-row"><span class="rank">3</span><span style="width:10px;height:10px;border-radius:2px;background:var(--team-3)"></span><b style="font-size:14px">Tổ 3</b><span class="num tnum" style="margin-left:auto">20.0</span></div>
+          </div>
+          <div class="empty"><div class="circle"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></div><h4>Chưa có tổ nào nhập điểm</h4><p>Thầy cô bắt đầu một kỳ thi đua để cả lớp đua tuần.</p><button class="btn btn-primary">Tạo kỳ thi đua</button></div>
+        </div>
+        <div>
+          <div class="sec-head"><span class="label">Việc cần chốt</span></div>
+          <div class="data">
+            <div class="task-row"><span class="dot" style="background:var(--color-danger)"></span><div class="t-main"><div class="t-name">Nộp báo cáo Vật lý</div><div class="t-sub">hết hạn hôm qua</div></div><span class="badge badge-danger">−3đ</span></div>
+            <div class="task-row"><span class="dot" style="background:var(--color-primary)"></span><div class="t-main"><div class="t-name">Làm bài tập Toán 45’</div><div class="t-sub">hạn hôm nay</div></div><span class="badge badge-primary">+5đ</span></div>
+            <div class="task-row"><span class="dot" style="background:var(--color-success)"></span><div class="t-main"><div class="t-name">Chuẩn bị thuyết trình Văn</div><div class="t-sub">đã nộp · sắp tới</div></div><span class="badge badge-success">hoàn thành</span></div>
+          </div>
+          <div class="empty"><div class="circle"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3Z"/><path d="M15 3v6h6"/><path d="M9 13h6M9 17h4"/></svg></div><h4>Bảng chưa có việc nào</h4><p>Lớp đang có 0 việc — chưa việc nào áp cho bạn.</p><button class="btn btn-ghost" style="height:auto;padding:0">Xem tất cả việc của lớp</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DESKTOP -->
+    <div class="screen">
+      <div class="screen-bar"><span>Dashboard desktop</span><code>widescreen ≥1280 · 2 cột</code></div>
+      <div class="card" style="border:none;border-radius:0">
+        <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:12px" class="data">
+          <div class="hero board-lines" style="border-width:1px">
+            <div class="label">LỚP 12A6 · THỨ NĂM 08/10</div>
+            <h1 class="display" style="margin-top:4px">Tổ 1 đang dẫn đầu</h1>
+            <p style="color:var(--color-text-muted);font-size:13px;margin-top:4px">Em đã góp 24 điểm, xếp hạng 3 toàn lớp.</p>
+            <div style="margin-top:14px;display:flex;gap:10px">
+              <button class="btn btn-primary">Giao việc cho tổ</button>
+              <button class="btn btn-secondary">Bảng tin lớp</button>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+            <div class="stat"><div class="stat-label">Điểm tôi</div><div class="num tnum" style="font-size:22px">24</div></div>
+            <div class="stat"><div class="stat-label">Hạng</div><div class="num tnum" style="font-size:22px">3</div></div>
+            <div class="stat"><div class="stat-label">Tổ tôi</div><div class="num tnum" style="font-size:22px">2</div></div>
+          </div>
+        </div>
+        <div class="empty" style="margin-top:12px"><div class="circle"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></div><h4>Lớp chưa có dữ liệu thi đua</h4><p>Bảng sạch — thầy cô tạo kỳ thi đua để bắt đầu.</p><button class="btn btn-primary">Tạo kỳ thi đua đầu tiên</button></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px">
+        <div class="card">
+          <div class="sec-head"><span class="label">Bảng xếp hạng tổ</span></div>
+          <div class="data">
+            <div class="rank-row first"><span class="rank">1</span><span style="width:10px;height:10px;border-radius:2px;background:var(--team-1)"></span><b>Tổ 1</b><div class="bar"><i style="width:88%;background:var(--team-1)"></i></div><span class="num tnum">45.0</span></div>
+            <div class="rank-row"><span class="rank">2</span><span style="width:10px;height:10px;border-radius:2px;background:var(--team-4)"></span><b>Tổ 4</b><div class="bar"><i style="width:41%;background:var(--team-4)"></i></div><span class="num tnum">21.0</span></div>
+            <div class="rank-row"><span class="rank">3</span><span style="width:10px;height:10px;border-radius:2px;background:var(--team-3)"></span><b>Tổ 3</b><div class="bar"><i style="width:39%;background:var(--team-3)"></i></div><span class="num tnum">20.0</span></div>
+          </div>
+          <div class="empty"><div class="circle"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4Z"/><path d="M12 18a3 3 0 1 0 0-.01"/></svg></div><h4>Chưa có tổ nào</h4><p>Chia tổ đầu tiên để bắt đầu thi đua.</p></div>
+        </div>
+        <div class="card">
+          <div class="sec-head"><span class="label">Việc cần chốt</span></div>
+          <div class="data">
+            <div class="task-row"><span class="dot" style="background:var(--color-danger)"></span><div class="t-main"><div class="t-name">Nộp báo cáo Vật lý</div><div class="t-sub">hết hạn hôm qua</div></div><span class="badge badge-danger">−3đ</span></div>
+            <div class="task-row"><span class="dot" style="background:var(--color-primary)"></span><div class="t-main"><div class="t-name">Làm bài tập Toán 45’</div><div class="t-sub">hạn hôm nay</div></div><span class="badge badge-primary">+5đ</span></div>
+            <div class="task-row"><span class="dot" style="background:var(--color-success)"></span><div class="t-main"><div class="t-name">Chuẩn bị thuyết trình Văn</div><div class="t-sub">đã nộp</div></div><span class="badge badge-success">hoàn thành</span></div>
+          </div>
+          <div class="empty"><div class="circle">📝</div><h4>Chưa có việc nào</h4><p>Giao việc đầu tiên để cả lớp cùng làm.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEED ============ -->
+<section id="feed" class="mock">
+  <div class="mock-head"><div class="label">Screen C</div><h1>Bảng lớp — wall 740px + cột phụ 300px (≥xl)</h1></div>
+  <div class="screen">
+    <div class="screen-bar"><span>Bảng lớp</span><code>max-w-1064 · grid-cols-[740px_300px]</code></div>
+    <div class="feed" style="padding:16px">
+      <div>
+        <div class="composer">
+          <div class="avatar t2">TB</div>
+          <input placeholder="Cả lớp có gì mới?">
+          <button class="btn btn-primary" style="height:36px;padding:0 14px">Đăng</button>
+        </div>
+        <div class="data">
+          <div class="post">
+            <div class="post-head">
+              <div class="avatar t1">MA</div>
+              <div class="who"><b>Cô Mai Anh</b> · <span class="badge badge-info">Giáo viên</span><br><span>hôm qua · 15:20</span></div>
+              <span class="badge badge-primary">Ghim</span>
+            </div>
+            <p>Tuần này cả lớp tập trung ôn thi học kỳ. Tổ nào dẫn đầu tuần sẽ được cộng 2 điểm thưởng cuối kỳ. Cố lên!</p>
+            <div class="post-foot"><span>Thả tim · 12</span><span>Bình luận · 5</span></div>
+          </div>
+          <div class="post">
+            <div class="post-head">
+              <div class="avatar t3">ND</div>
+              <div class="who"><b>Nguyễn Đức</b><br><span>hôm nay · 08:02</span></div>
+            </div>
+            <p>Bạn nào còn giữ bài giảng Hóa chương 3 thì cho mình mượn check với ạ.</p>
+            <div class="post-foot"><span>Thả tim · 3</span><span>Bình luận · 2</span></div>
+          </div>
+        </div>
+        <div class="empty"><div class="circle"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m3 11 18-5v12L3 14v-3Z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></div><h4>Chưa có bài nào</h4><p>Lớp chưa có bài đăng — viết bài đầu tiên để mở bảng tin.</p><button class="btn btn-primary">Viết bài đầu tiên</button></div>
+      </div>
+      <div class="side">
+        <div class="side-card">
+          <div class="label" style="margin-bottom:10px">Thông báo ghim</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="font-size:13px"><b>Nghỉ lễ 2/9</b> · <span style="color:var(--color-text-muted)">toàn trường</span></div>
+            <div style="font-size:13px"><b>Họp phụ huynh cuối kỳ</b> · <span style="color:var(--color-text-muted)">lớp 12A6</span></div>
+          </div>
+        </div>
+        <div class="side-card">
+          <div class="label" style="margin-bottom:10px">Sự kiện của lớp</div>
+          <div style="font-size:13px"><b>Ôn thi học kỳ I</b><br><span style="color:var(--color-text-muted)">14/10 → 20/10</span></div>
+        </div>
+        <div class="side-card">
+          <div class="label" style="margin-bottom:10px">Đi nhanh</div>
+          <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;font-weight:600">
+            <a style="color:var(--color-text-secondary)">Thi đua tuần</a>
+            <a style="color:var(--color-text-secondary)">Việc của lớp</a>
+            <a style="color:var(--color-text-secondary)">Bảng thành tích</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COMPETITION ============ -->
+<section id="competition" class="mock">
+  <div class="mock-head"><div class="label">Screen D</div><h1>Thi đua — leaderboard + zero-state</h1></div>
+  <div class="screen">
+    <div class="screen-bar">
+      <span>Thi đua</span>
+      <div class="seg"><button class="on">Tuần này</button><button>Cả năm</button></div>
+    </div>
+    <div style="padding:16px">
+      <div class="banner data">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        <div style="font-size:13px;color:var(--color-text-secondary)"><b style="color:var(--color-text)">Kỳ “Tuần 5 · 05–11/10” chưa được ghi điểm nào.</b><br>Trang chủ hiển thị tổng tích lũy cả năm. Ghi điểm đầu tiên để mở bảng tuần.</div>
+      </div>
+      <div class="empty" style="margin-top:10px"><div class="circle"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/></svg></div><h4>Chưa có kỳ thi đua nào</h4><p>Thầy cô tạo kỳ và ghi điểm — bảng sẽ tự hiện phấn đầu tiên.</p><button class="btn btn-primary">Tạo kỳ thi đua</button></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px" class="data">
+        <div class="card"><div class="label" style="margin-bottom:8px">Hạng tổ · trung bình</div>
+          <div class="rank-row first"><span class="rank">1</span><span style="width:10px;height:10px;border-radius:2px;background:var(--team-1)"></span><b>Tổ 1</b><span style="margin-left:auto;font-size:12px;color:var(--color-text-muted)">trung bình</span><span class="num tnum" style="font-size:18px">45.0</span></div>
+          <div class="rank-row"><span class="rank">2</span><span style="width:10px;height:10px;border-radius:2px;background:var(--team-4)"></span><b>Tổ 4</b><span style="margin-left:auto" class="num tnum">21.0</span></div>
+          <div class="rank-row"><span class="rank">3</span><span style="width:10px;height:10px;border-radius:2px;background:var(--team-3)"></span><b>Tổ 3</b><span style="margin-left:auto" class="num tnum">20.0</span></div>
+          <div class="rank-row"><span class="rank">4</span><span style="width:10px;height:10px;border-radius:2px;background:var(--team-2)"></span><b>Tổ 2</b><span style="margin-left:auto" class="num tnum">19.0</span></div>
+        </div>
+        <div class="card"><div class="label" style="margin-bottom:8px">Cá nhân · 6 cột</div>
+          <table>
+            <thead><tr><th>#</th><th>Học sinh</th><th class="r">Cộng</th><th class="r">Trừ</th><th class="r">Ròng</th><th>Xếp loại</th></tr></thead>
+            <tbody>
+              <tr><td class="num tnum">1</td><td><b>Trần Minh An</b></td><td class="r tnum">12</td><td class="r tnum">0</td><td class="r tnum num">12</td><td><span class="tier tier-kha">Khá</span></td></tr>
+              <tr><td class="num tnum">2</td><td><b>Lê Thu</b></td><td class="r tnum">10</td><td class="r tnum">1</td><td class="r tnum num">9</td><td><span class="tier tier-kha">Khá</span></td></tr>
+              <tr><td class="num tnum">3</td><td><b>Phạm Hà</b></td><td class="r tnum">8</td><td class="r tnum">0</td><td class="r tnum num">8</td><td><span class="tier tier-kha">Khá</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<p style="text-align:center;color:var(--color-text-muted);font-size:12px;padding-bottom:40px">
+  Mockup tĩnh minh hoạ DESIGN-V2-BANG-DEN.md · bấm “Bảng trống” để xem empty state được thiết kế sẵn cho mọi trang.
+</p>
+
+<script>
+function setZero(z){document.body.classList.toggle('zero',z);document.getElementById('b-data').classList.toggle('on',!z);document.getElementById('b-zero').classList.toggle('on',z);}
+</script>
+</body>
+</html>

@@ -20,9 +20,9 @@ import type { MemberCard, MembersPageData } from "@/lib/members";
 
 const TEAM_FALLBACK = [
   { bg: "bg-primary/15", text: "text-primary", ring: "ring-primary/40" },
-  { bg: "bg-secondary/15", text: "text-secondary", ring: "ring-secondary/40" },
+  { bg: "bg-surface-2", text: "text-text-secondary", ring: "ring-border" },
   { bg: "bg-accent/15", text: "text-accent-ink", ring: "ring-accent/40" },
-  { bg: "bg-rose-500/15", text: "text-rose-600", ring: "ring-rose-500/40" },
+  { bg: "bg-danger/15", text: "text-danger", ring: "ring-danger/40" },
 ];
 
 function teamTone(index: number) {
@@ -329,7 +329,7 @@ export function MembersDirectory({
       {data.teams.length > 0 && (
         <section className="space-y-4">
           <h2 className="flex items-center gap-2 text-base font-bold text-text">
-            <Flag className="size-4 text-secondary" />
+            <Flag className="size-4 text-text-secondary" />
             Các tổ
           </h2>
           <div className="cv-auto grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -447,14 +447,14 @@ export function MembersDirectory({
             type="button"
             aria-label="Đóng"
             onClick={() => setScanning(false)}
-            className="absolute inset-0 bg-[#0B1220]/90"
+            className="absolute inset-0 bg-black/70"
           />
 
           <div
             role="dialog"
             aria-modal="true"
             aria-labelledby="vip-scan-title"
-            className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-[#0B1220] p-6 text-white shadow-lg"
+            className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-surface-2 p-6 text-white shadow-lg"
           >
             <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
               <span className="vt-scan-line top-0" />

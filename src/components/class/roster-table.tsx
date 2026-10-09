@@ -123,7 +123,7 @@ function StudentRow({
         {updateState.message && (
           <span
             role="status"
-            className={`text-xs ${updateState.ok ? "text-emerald-600" : "text-danger"}`}
+            className={`text-xs ${updateState.ok ? "text-success" : "text-danger"}`}
           >
             {updateState.message}
           </span>
@@ -131,7 +131,7 @@ function StudentRow({
         {removeState.message && (
           <span
             role="status"
-            className={`text-xs ${removeState.ok ? "text-emerald-600" : "text-danger"}`}
+            className={`text-xs ${removeState.ok ? "text-success" : "text-danger"}`}
           >
             {removeState.message}
           </span>

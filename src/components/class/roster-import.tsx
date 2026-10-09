@@ -59,7 +59,7 @@ export function RosterImport({ classId }: { classId: string }) {
           role="status"
           className={`flex items-start gap-2.5 rounded-lg border px-3 py-2.5 text-sm ${
             state.ok
-              ? "border-emerald-500/25 bg-emerald-500/10 text-emerald-600"
+              ? "border-success/25 bg-success/10 text-success"
               : "border-danger/20 bg-danger-light text-danger"
           }`}
         >
