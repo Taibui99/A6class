@@ -1015,6 +1015,19 @@ select:focus {
   box-shadow: 3px 3px 0 rgba(30, 27, 22, 0.9);
 }
 
+/* ============ Chế độ chiếu: sân khấu sạch ============ */
+
+/* Khi chiếu, màn hình chỉ giữ: tiến trình, câu hỏi, đáp án, đồng hồ,
+   đội + điểm. Toàn bộ nút bấm, panel cài đặt, emoji bay đều ẩn —
+   giáo viên vẫn điều khiển bằng phím tắt (→ ← Space F M Esc W). */
+.tgd.present .float,
+.tgd.present #ttsbar,
+.tgd.present .tbtns,
+.tgd.present #flow,
+.tgd.present .present-hide {
+  display: none !important;
+}
+
 /* ============ Phản hồi thao tác soạn (thấy ngay cái vừa đổi) ============ */
 
 /* Chấm tròn trạng thái lưu ở thanh tab: vàng nhấp nháy = đang lưu,

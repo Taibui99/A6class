@@ -748,7 +748,7 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
                 <button onClick={timer}>⏱ Chạy/Dừng</button>
                 <button onClick={resetT}>↺ Đặt lại</button>
               </div>
-              <div style={{ marginTop: 10, borderTop: "2px dashed #23233A55", paddingTop: 8 }}>
+              <div style={{ marginTop: 10, borderTop: "2px dashed #23233A55", paddingTop: 8 }} className="present-hide">
                 <h4>⏲ PHIÊN</h4>
                 <div id="sess" className={sessLeft !== null && sessLeft <= 300 ? "low" : ""}>
                   {sessLeft === null
@@ -807,8 +807,8 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
               <div id="opts">{renderOpts()}</div>
             </div>
             <div className="side" id="sideR">
-              <h4>📢 Bảng tin</h4>
-              <div id="news" className={newsHot ? "hot" : ""} dangerouslySetInnerHTML={{ __html: newsHtml }} />
+              <h4 className="present-hide">📢 Bảng tin</h4>
+              <div id="news" className={`${newsHot ? "hot" : ""} present-hide`} dangerouslySetInnerHTML={{ __html: newsHtml }} />
               <div id="teams">
                 {teams.map((n, k) => (
                   <div className="team" key={k}>
@@ -826,11 +826,12 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
                   </div>
                 ))}
               </div>
-              <label style={{ fontSize: 13, fontWeight: 900 }}>
+              <label className="present-hide" style={{ fontSize: 13, fontWeight: 900 }}>
                 Mệnh giá mỗi câu đúng:
               </label>
               <select
                 id="denom"
+                className="present-hide"
                 value={denom}
                 onChange={(e) => setDenom(parseInt(e.target.value, 10))}
               >
@@ -840,7 +841,7 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
                   </option>
                 ))}
               </select>
-              <div style={{ marginTop: 10, borderTop: "2px dashed #23233A55", paddingTop: 8 }}>
+              <div style={{ marginTop: 10, borderTop: "2px dashed #23233A55", paddingTop: 8 }} className="present-hide">
                 <h4 style={{ margin: "0 0 6px", fontSize: 15, color: "#8a8aa3" }}>
                   🎵 NHẠC NỀN (ONLINE)
                 </h4>
@@ -883,7 +884,7 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
                   Nhạc: Kevin MacLeod (CC-BY) · mất mạng tự dùng nhạc máy
                 </div>
               </div>
-              <div style={{ marginTop: 10, borderTop: "2px dashed #23233A55", paddingTop: 8 }}>
+              <div style={{ marginTop: 10, borderTop: "2px dashed #23233A55", paddingTop: 8 }} className="present-hide">
                 <h4 style={{ margin: "0 0 6px", fontSize: 15, color: "#8a8aa3" }}>
                   🔊 GIỌNG ĐỌC
                 </h4>
