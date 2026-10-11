@@ -226,28 +226,32 @@ export default function Editor({
               <button
                 className="iconbtn"
                 title="Lên"
-                onClick={() =>
-                  i > 0 &&
+                onClick={() => {
+                  if (i === 0) return;
                   mut((q) => {
                     const t = q[i];
                     q[i] = q[i - 1];
                     q[i - 1] = t;
-                  })
-                }
+                  });
+                  setCollapsed({});
+                  flash(i - 1);
+                }}
               >
                 ▲
               </button>
               <button
                 className="iconbtn"
                 title="Xuống"
-                onClick={() =>
-                  i < qlen(quiz) - 1 &&
+                onClick={() => {
+                  if (i >= qlen(quiz) - 1) return;
                   mut((q) => {
                     const t = q[i];
                     q[i] = q[i + 1];
                     q[i + 1] = t;
-                  })
-                }
+                  });
+                  setCollapsed({});
+                  flash(i + 1);
+                }}
               >
                 ▼
               </button>
