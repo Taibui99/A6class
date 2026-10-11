@@ -4,19 +4,16 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { Logo } from "@/components/layout/logo";
-import { Mascot } from "@/components/mascot";
-
 const SKY_TONES = [
-  "rgba(59,130,246,0.55)",
-  "rgba(168,85,247,0.45)",
-  "rgba(6,182,212,0.35)",
+  "rgba(37,99,235,0.4)",
+  "rgba(14,116,144,0.45)",
+  "rgba(255,197,49,0.28)",
 ];
 
 /**
  * Màn chờ ngắn khi `/` đưa khách về trang đăng nhập.
  *
- * Cố tình không dựng cảnh nặng: chỉ một nền trời đêm mờ, linh vật nhịp nhàng
+ * Cố tình không dựng cảnh nặng: chỉ nền kẹo pop mờ, linh vật nhịp nhàng
  * và thanh tiến trình không xác định. Sau `FALLBACK_DELAY_MS` nếu điều
  * hướng chưa chạy (JS chậm, mạng lag, JS bị chặn) thì hiện nút vào thẳng,
  * để không bao giờ thành màn hình chết.
@@ -38,10 +35,10 @@ export function EntryLoading({ to = "/login" }: { to?: string }) {
 
   return (
     <main
-      className="relative flex min-h-dvh w-full items-center justify-center overflow-hidden bg-hello p-6"
+      className="relative flex min-h-dvh w-full items-center justify-center overflow-hidden bg-[#0a182e] p-6 text-white"
       aria-busy="true"
     >
-      {/* Nền trời đêm: ba quầng sáng mờ trôi rất chậm */}
+      {/* Nền kẹo pop: ba quầng sáng mờ trôi rất chậm */}
       <div aria-hidden className="absolute inset-0">
         {SKY_TONES.map((tone, index) => (
           <span
@@ -62,31 +59,62 @@ export function EntryLoading({ to = "/login" }: { to?: string }) {
       <div className="relative flex flex-col items-center gap-7 text-center">
         <span
           aria-hidden
-          className="entry-bob motion-reduce:animate-none flex size-20 items-center justify-center rounded-3xl bg-surface ring-1 ring-white/10"
+          className="entry-bob motion-reduce:animate-none flex size-20 items-center justify-center rounded-3xl bg-white/10 ring-1 ring-white/25"
         >
-          <Mascot size={54} />
+          <svg viewBox="6 4 78 70" width="52" height="52" aria-hidden="true">
+            <defs>
+              <linearGradient
+                id="entryApex"
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="100%"
+              >
+                <stop offset="0%" stopColor="#FFD964" />
+                <stop offset="55%" stopColor="#FFC531" />
+                <stop offset="100%" stopColor="#F5A800" />
+              </linearGradient>
+            </defs>
+            <path
+              d="M 18,62 L 38,16 L 58,62 H 44 L 38,48 H 28"
+              stroke="url(#entryApex)"
+              strokeWidth="7"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
+            />
+            <path
+              d="M 58,62 C 68,62 72,52 70,42 C 67,32 54,32 46,40 C 40,46 42,58 52,60 C 60,61 66,54 64,44"
+              stroke="url(#entryApex)"
+              strokeWidth="6.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
+            />
+          </svg>
         </span>
 
         <div className="flex items-center gap-2.5">
-          <Logo size="sm" />
-          <span className="text-sm font-semibold text-text">A6Class</span>
+          <span className="text-lg font-black tracking-tight text-white">
+            A6<span className="text-[#FF5C8A]">CLASS</span>
+          </span>
         </div>
 
         {/* Thanh tiến trình không xác định */}
         <div
           role="status"
           aria-live="polite"
-          className="h-1 w-52 overflow-hidden rounded-full bg-white/10"
+          className="h-1.5 w-52 overflow-hidden rounded-full bg-white/15"
         >
-          <span className="entry-progress block h-full w-1/3 rounded-full bg-sky motion-reduce:animate-none" />
+          <span className="entry-progress block h-full w-1/3 rounded-full bg-[#38bdf8] motion-reduce:animate-none" />
         </div>
 
-        <p className="text-sm text-text-muted">Đang chuẩn bị không gian của bạn…</p>
+        <p className="text-sm text-white/60">Đang chuẩn bị không gian của bạn…</p>
 
         {showFallback && (
           <Link
             href={to}
-            className="rounded-lg border border-border bg-surface px-4 py-2 text-sm font-medium text-text transition hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky"
+            className="rounded-xl bg-white px-4 py-2 text-sm font-bold text-[#0b3b4d] transition hover:bg-white/90"
           >
             Vào thẳng trang đăng nhập
           </Link>

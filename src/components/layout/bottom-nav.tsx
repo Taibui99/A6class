@@ -9,7 +9,7 @@ import { HOME_PATH } from "@/lib/home";
 /**
  * 5 đích theo mental model học sinh (DESIGN-REDESIGN.md §5.1):
  * Tổng quan → Bảng lớp → Thi đua → Nhiệm vụ → Công cụ.
- * Phẳng + border-top, active = pill xanh rất nhẹ — không glassmorphism,
+ * Pop Gen-Z: active = pill mực chữ kem — không glassmorphism,
  * không floating, không gradient. Hit area ≥44px.
  */
 export function BottomNav() {
@@ -19,7 +19,7 @@ export function BottomNav() {
     { href: "/dashboard", label: "Tổng quan", icon: LayoutDashboard },
     { href: "/feed", label: "Bảng lớp", icon: Newspaper },
     { href: "/competition", label: "Thi đua", icon: Trophy },
-    { href: "/tasks", label: "Nhiệm vụ", icon: ListTodo },
+    { href: "/tasks", label: "Việc lớp", icon: ListTodo },
     { href: HOME_PATH, label: "Công cụ", icon: LayoutGrid },
   ];
 
@@ -39,8 +39,8 @@ export function BottomNav() {
               href={item.href}
               aria-current={isActive ? "page" : undefined}
               className={cn(
-                "flex min-h-16 flex-1 flex-col items-center justify-center gap-0.5 rounded-lg px-1 py-1.5 text-[11px] font-semibold transition-colors",
-                isActive ? "bg-primary-light text-primary" : "text-text-muted"
+                "flex min-h-16 flex-1 flex-col items-center justify-center gap-0.5 rounded-2xl px-1 py-1.5 text-[11px] font-bold transition-all",
+                isActive ? "bg-primary text-primary-ink" : "text-text-muted"
               )}
             >
               <Icon className="size-5 shrink-0" aria-hidden />

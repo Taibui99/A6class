@@ -44,6 +44,7 @@ model User {
   notifications       Notification[]
   reports             Report[]             @relation("ReportCreator")
   announcements       Announcement[]
+  attendanceRecords   AttendanceRecord[]
 }
 
 enum UserRole {
@@ -82,6 +83,8 @@ model Class {
   pointTransactions  PointTransaction[]
   criteria           Criterion[]
   reports            Report[]
+  attendanceRecords  AttendanceRecord[]
+  timetableSlots     TimetableSlot[]
 }
 
 model ClassMembership {
@@ -628,4 +631,44 @@ enum ReportStatus {
   SUBMITTED
   REVIEWED
   ARCHIVED
+}
+
+/// Điểm danh theo ngày. Mặc định cả lớp có mặt — chỉ lưu dòng khác PRESENT.
+model AttendanceRecord {
+  id        String           @id @default(cuid())
+  classId   String
+  userId    String
+  date      DateTime         @db.Date
+  status    AttendanceStatus @default(PRESENT)
+  note      String?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([classId, userId, date])
+  @@index([classId, date])
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  EXCUSED
+}
+
+/// Tiết cố định lặp theo tuần. day: 1=T2 … 6=T7. Ô trống = chuỗi rỗng.
+model TimetableSlot {
+  id        String   @id @default(cuid())
+  classId   String
+  day       Int
+  period    Int
+  subject   String   @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@unique([classId, day, period])
+  @@index([classId])
 }

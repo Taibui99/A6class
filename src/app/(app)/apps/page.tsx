@@ -37,7 +37,7 @@ const ACCENTS = {
   amber: {
     bg: "bg-amber/10",
     ring: "ring-amber/25",
-    text: "text-amber",
+    text: "text-amber-ink",
     glow: "bg-amber/20",
   },
   emerald: {
@@ -169,7 +169,7 @@ export default async function HubPage() {
             />
             <div className="relative flex items-start gap-3">
               <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-amber/10 ring-1 ring-amber/25">
-                <GraduationCap aria-hidden className="size-6 text-amber" />
+                <GraduationCap aria-hidden className="size-6 text-amber-ink" />
               </span>
               <div className="min-w-0 flex-1">
                 <h2 className="flex items-center gap-1.5 text-lg font-black text-text">

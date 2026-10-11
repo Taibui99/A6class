@@ -59,7 +59,7 @@ const RARITY_TEXT: Record<Rarity, string> = {
   UNCOMMON: "text-success",
   RARE: "text-primary",
   EPIC: "text-violet",
-  LEGENDARY: "text-amber",
+  LEGENDARY: "text-amber-ink",
 };
 
 const RANK_METRICS = new Set(["personalTop", "teamRank"]);

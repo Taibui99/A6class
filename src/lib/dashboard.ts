@@ -141,6 +141,47 @@ export async function getTodayTeamDeltas(
   }
 }
 
+/**
+ * Tổng điểm dương 7 ngày gần nhất (kể cả hôm nay) — vẽ biểu đồ "nhịp thi đua".
+ * Chỉ 1 query, gom theo ngày ở JS. Ngày không điểm = 0, không bịa số.
+ * DB lỗi thì trả khung 0 — trang vẫn hiện, không vỡ.
+ */
+export async function getDailyPoints(
+  classId: string,
+  days = 7
+): Promise<{ key: string; label: string; total: number; isToday: boolean }[]> {
+  const WD = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
+  const now = new Date();
+  const out = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    out.push({
+      key: d.toDateString(),
+      label: WD[d.getDay()],
+      total: 0,
+      isToday: i === 0,
+    });
+  }
+  try {
+    const start = new Date(now);
+    start.setDate(start.getDate() - (days - 1));
+    start.setHours(0, 0, 0, 0);
+    const rows = await prisma.pointTransaction.findMany({
+      where: { classId, createdAt: { gte: start }, amount: { gt: 0 } },
+      select: { amount: true, createdAt: true },
+    });
+    const byDay = new Map(out.map((d) => [d.key, d]));
+    for (const r of rows) {
+      const slot = byDay.get(new Date(r.createdAt).toDateString());
+      if (slot) slot.total += r.amount;
+    }
+  } catch {
+    /* giữ khung 0 */
+  }
+  return out;
+}
+
 export async function getRecentActivities(classId: string): Promise<RecentActivity[]> {
   try {
     const since = new Date(Date.now() - 24 * 60 * 60 * 1000);

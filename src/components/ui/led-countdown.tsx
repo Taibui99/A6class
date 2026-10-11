@@ -84,7 +84,7 @@ export function LEDCountdown({
 
   return (
     <div
-      className="rounded-2xl border border-white/10 bg-surface-2 px-5 py-4 text-center"
+      className="rounded-[20px] border-2 border-[#1E1B16] bg-[#1E1B16] px-5 py-4 text-center shadow-[4px_4px_0_#FF5C8A]"
       role="timer"
       aria-live="off"
     >

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import "./(app)/apps/tram-gia-dinh/tram-gia-dinh.css";
 import { SplashScreen } from "@/components/layout/splash-screen";
 
 export const metadata: Metadata = {

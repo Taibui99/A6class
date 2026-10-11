@@ -1,0 +1,691 @@
+export type SlideType = "info" | "one" | "many" | "fill" | "guess";
+export interface Answer { text: string; correct: boolean }
+export interface Slide { round: string; type: SlideType; text: string; answers: Answer[]; note?: string; img?: string }
+export const SHARED_KEY = "tram_gia_dinh_quiz";
+export const SEED_QUIZ: Slide[] = [
+  {
+    "round": "Mở màn",
+    "type": "info",
+    "text": "Chào mừng đến với game Trạm Gia Đình!!!\nHôm nay chúng ta sẽ thử thách về tính trách nhiệm của bản thân đối với gia đình.",
+    "answers": []
+  },
+  {
+    "round": "Mở màn",
+    "type": "info",
+    "text": "Tổng cộng có 4 vòng chơi, đến cuối cùng, đội nào giành nhiều kết quả đúng nhất sẽ là đội chiến thắng!",
+    "answers": []
+  },
+  {
+    "round": "Mở màn",
+    "type": "info",
+    "text": "Để bắt đầu vòng 1, Mỗi đội hãy cử ra 1 thành viên ưu tú nhất để làm đội trưởng!",
+    "answers": []
+  },
+  {
+    "round": "Vòng 1 · Bật công tắc yêu thương",
+    "type": "info",
+    "text": "Vòng 1 — BẬT CÔNG TẮC YÊU THƯƠNG",
+    "answers": []
+  },
+  {
+    "round": "Vòng 1 · Bật công tắc yêu thương",
+    "type": "one",
+    "text": "Hành động nào thể hiện rõ nhất trách nhiệm của học sinh đối với gia đình?",
+    "answers": [
+      {
+        "text": "Chỉ làm việc nhà khi được trả tiền.",
+        "correct": false
+      },
+      {
+        "text": "Đăng ảnh Capcut giật giật lên MXH để mọi người biết mình yêu gia đình",
+        "correct": false
+      },
+      {
+        "text": "Để bố mẹ tự giải quyết mọi vấn đề.",
+        "correct": false
+      },
+      {
+        "text": "Chủ động học tập, phụ giúp việc nhà phù hợp và quan tâm người thân.",
+        "correct": true
+      }
+    ],
+    "img": "https://live.staticflickr.com/2796/4151100524_9e9d933e33_b.jpg"
+  },
+  {
+    "round": "Vòng 1 · Bật công tắc yêu thương",
+    "type": "one",
+    "text": "Khi bất đồng ý kiến với bố mẹ, cách ứng xử nào phù hợp nhất?",
+    "answers": [
+      {
+        "text": "Đồng ý mọi thứ nhưng làm theo ý mình.",
+        "correct": false
+      },
+      {
+        "text": "Im lặng và đi ngủ",
+        "correct": false
+      },
+      {
+        "text": "Bình tĩnh lắng nghe, trình bày quan điểm và cùng tìm giải pháp.",
+        "correct": true
+      },
+      {
+        "text": "Bỏ đi và không nói chuyện nhiều ngày.",
+        "correct": false
+      }
+    ],
+    "img": "https://live.staticflickr.com/7029/6764058985_5950233288_b.jpg"
+  },
+  {
+    "round": "Vòng 1 · Bật công tắc yêu thương",
+    "type": "one",
+    "text": "Việc nào sau đây thể hiện sự sẻ chia trong gia đình?",
+    "answers": [
+      {
+        "text": "Chỉ quan tâm đến việc của mình.",
+        "correct": false
+      },
+      {
+        "text": "Mặc kệ cuộc đời, mở điện thoại lướt tiktok.",
+        "correct": false
+      },
+      {
+        "text": "Chờ bố mẹ nhắc mới làm mọi việc.",
+        "correct": false
+      },
+      {
+        "text": "Chủ động giúp người thân khi họ gặp khó khăn.",
+        "correct": true
+      }
+    ],
+    "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/19/Helping_Hand_LDN1355.jpg/960px-Helping_Hand_LDN1355.jpg"
+  },
+  {
+    "round": "Vòng 1 · Bật công tắc yêu thương",
+    "type": "one",
+    "text": "Nếu bố mẹ đang bận rộn, em nên làm gì?",
+    "answers": [
+      {
+        "text": "Đòi hỏi bố mẹ giải quyết ngay việc của mình.",
+        "correct": false
+      },
+      {
+        "text": "Mặc kệ và ra ngoài đi chơi với người yêu.",
+        "correct": false
+      },
+      {
+        "text": "Chủ động làm những việc phù hợp với khả năng và hỏi xem cần giúp đỡ không",
+        "correct": true
+      },
+      {
+        "text": "Phàn nàn rằng bố mẹ không quan tâm.",
+        "correct": false
+      }
+    ],
+    "img": "https://live.staticflickr.com/2013/2137839280_b5b022eb96_b.jpg"
+  },
+  {
+    "round": "Vòng 1 · Bật công tắc yêu thương",
+    "type": "one",
+    "text": "Mẹ gọi xuống ăn cơm lần thứ năm. Em đang trong trận game xếp hạng. Giải pháp nào ít gây “sóng gió gia đình” nhất?",
+    "answers": [
+      {
+        "text": "Giả vờ mất kết nối với thế giới.",
+        "correct": false
+      },
+      {
+        "text": "Trả lời “5 phút nữa” cho đến bữa cơm tối mai.",
+        "correct": false
+      },
+      {
+        "text": "Đề nghị cả nhà chờ mình lên Cao thủ.",
+        "correct": false
+      },
+      {
+        "text": "Báo đồng đội, dừng ở thời điểm phù hợp và xuống ăn cơm.",
+        "correct": true
+      }
+    ],
+    "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fa/Family_eating_meal.jpg/960px-Family_eating_meal.jpg"
+  },
+  {
+    "round": "Vòng 1 · Bật công tắc yêu thương",
+    "type": "one",
+    "text": "Bố mẹ nhờ em quét nhà. Em nhìn xuống sàn và nhận ra bụi đã xây dựng được cả một nền văn minh. Em nên làm gì?",
+    "answers": [
+      {
+        "text": "Xin cấp phép khảo cổ.",
+        "correct": false
+      },
+      {
+        "text": "Chờ bụi tự giác rời khỏi lãnh thổ.",
+        "correct": false
+      },
+      {
+        "text": "Chụp ảnh đăng Locket: “Hệ sinh thái mới được phát hiện.”",
+        "correct": false
+      },
+      {
+        "text": "Bắt tay vào dọn dẹp.",
+        "correct": true
+      }
+    ],
+    "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ef/Pupils_sweeping_their_school_surrounding.jpg/960px-Pupils_sweeping_their_school_surrounding.jpg"
+  },
+  {
+    "round": "Vòng 1 · Bật công tắc yêu thương",
+    "type": "one",
+    "text": "Mẹ nói: “Nhìn con nhà người ta kìa!” Em nên làm gì để thể hiện trách nhiệm với gia đình?",
+    "answers": [
+      {
+        "text": "Xin thông tin liên lạc của con nhà người ta để học hỏi.",
+        "correct": false
+      },
+      {
+        "text": "“Thế mẹ nhận nó về nuôi đi!”",
+        "correct": false
+      },
+      {
+        "text": "Im lặng, xem mình cần cải thiện điều gì và cố gắng hơn.",
+        "correct": true
+      },
+      {
+        "text": "Đề nghị mẹ tổ chức cuộc thi tuyển chọn con.",
+        "correct": false
+      }
+    ],
+    "img": "https://live.staticflickr.com/1695/25716850005_40bf9fac16_b.jpg"
+  },
+  {
+    "round": "Vòng 1 · Bật công tắc yêu thương",
+    "type": "one",
+    "text": "Sau khi đi học về, bạn thấy mẹ cầm chổi vào và quát \"SAO phòng mày bừa bộn thế hả con?\". bạn nên trả lời thế nào?",
+    "answers": [
+      {
+        "text": "“Con xin lỗi mẹ, con sẽ dọn ngay ạ.”",
+        "correct": true
+      },
+      {
+        "text": "“Mẹ dọn giúp con đi, con đang bận cày lên CAO THỦ.”",
+        "correct": false
+      },
+      {
+        "text": "“Phòng con sạch mà, mẹ nhìn nhầm rồi.”",
+        "correct": false
+      }
+    ],
+    "img": "https://live.staticflickr.com/2145/2349891648_e2a5331d85_b.jpg"
+  },
+  {
+    "round": "Vòng 1 · Bật công tắc yêu thương",
+    "type": "one",
+    "text": "Mẹ bảo bạn đi chợ mua ít rau, bạn đang định đi thì bạn thân gọi ra đá bóng.\nBạn chọn cách nào?",
+    "answers": [
+      {
+        "text": "Bảo mẹ: “Con bận rồi, mẹ đi hộ con.”",
+        "correct": false
+      },
+      {
+        "text": "Đi đá bóng luôn, về nói với mẹ là “chợ hết rau”.",
+        "correct": false
+      },
+      {
+        "text": "Đi chợ nhưng mua thêm đồ ăn vặt rồi về ăn lén.",
+        "correct": false
+      },
+      {
+        "text": "Nói với bạn: “Đợi anh 15 phút, anh đi chợ xong rồi qua.”",
+        "correct": true
+      }
+    ],
+    "img": "https://live.staticflickr.com/8225/8364421890_7216137da1_b.jpg"
+  },
+  {
+    "round": "Vòng 1 · Bật công tắc yêu thương",
+    "type": "one",
+    "text": "Bạn vô tình làm vỡ chiếc cốc của gia đình khi không có ai nhìn thấy. Phương án nào đúng nhất?",
+    "answers": [
+      {
+        "text": "Lấy băng keo dán cốc lại và đặt về chổ cũ, coi như không có gì xảy ra.",
+        "correct": false
+      },
+      {
+        "text": "Thu dọn an toàn, thành thật nhận lỗi và xin lỗi.",
+        "correct": true
+      },
+      {
+        "text": "Đổ lỗi cho con mèo, kể cả nhà không nuôi mèo.",
+        "correct": false
+      },
+      {
+        "text": "Im lặng, hy vọng camera gia đình chưa cập nhật phần mềm.",
+        "correct": false
+      }
+    ],
+    "img": "https://live.staticflickr.com/5164/5326580513_f3d652fdea_b.jpg"
+  },
+  {
+    "round": "Vòng 2 · Xử lí tình huống",
+    "type": "info",
+    "text": "Vòng 2: Xử lí tình huống\n\nHãy giải quyết tình huống ở mỗi câu sau là đúng hay sai.",
+    "answers": []
+  },
+  {
+    "round": "Vòng 2 · Xử lí tình huống",
+    "type": "many",
+    "text": "Em dùng AI tạo một đoạn tin nhắn giả giống hệt lời mẹ nói để trêu bạn bè trong nhóm lớp. Nhận định sau đúng hay sai?",
+    "answers": [
+      {
+        "text": "Vì AI tạo ra nên em không chịu trách nhiệm về nội dung.",
+        "correct": false
+      },
+      {
+        "text": "Em nên đính chính thông tin sai lệch và giải thích rõ đây là nội dung giả.",
+        "correct": true
+      },
+      {
+        "text": "Chỉ cần xóa tin nhắn là đủ, không cần quan tâm người khác đã hiểu thế nào",
+        "correct": false
+      },
+      {
+        "text": "Người tạo và chia sẻ nội dung giả cần cân nhắc hậu quả đối với người bị nhắc",
+        "correct": true
+      }
+    ],
+    "img": "https://live.staticflickr.com/3892/14836238854_f4f7493d13_b.jpg"
+  },
+  {
+    "round": "Vòng 2 · Xử lí tình huống",
+    "type": "many",
+    "text": "Cuối tuần bố mẹ đi vắng, dặn em trông em nhỏ và không mở cửa cho người lạ. Có chú tự xưng là bạn của bố đến gửi đồ và muốn vào nhà chờ. Nhận định nào ĐÚNG?",
+    "answers": [
+      {
+        "text": "Cứ mở cửa vì trông chú hiền, lại là bạn của bố.",
+        "correct": false
+      },
+      {
+        "text": "Không mở cửa, gọi điện xin ý kiến bố mẹ trước.",
+        "correct": true
+      },
+      {
+        "text": "Nhờ bác hàng xóm sang cùng xác minh rồi tính tiếp.",
+        "correct": true
+      },
+      {
+        "text": "Chụp ảnh chú đăng lên mạng hỏi ý kiến mọi người.",
+        "correct": false
+      }
+    ],
+    "img": "https://live.staticflickr.com/2736/4414783483_7538d282ee_b.jpg"
+  },
+  {
+    "round": "Vòng 2 · Xử lí tình huống",
+    "type": "many",
+    "text": "Tối nay bố mẹ cãi nhau to, mẹ khóc rồi đóng sập cửa phòng. Nhận định nào ĐÚNG?",
+    "answers": [
+      {
+        "text": "Chạy vào bênh một người, trách người còn lại.",
+        "correct": false
+      },
+      {
+        "text": "Đợi cả nhà bình tĩnh rồi hỏi han, động viên.",
+        "correct": true
+      },
+      {
+        "text": "Giả vờ không biết, đeo tai nghe chơi game tiếp.",
+        "correct": false
+      },
+      {
+        "text": "Pha cốc nước ấm, gõ cửa hỏi mẹ có cần giúp gì không.",
+        "correct": true
+      }
+    ],
+    "img": "https://live.staticflickr.com/4095/4752202154_4c2873011c_b.jpg"
+  },
+  {
+    "round": "Vòng 2 · Xử lí tình huống",
+    "type": "many",
+    "text": "Bạn thân rủ em nói dối bố mẹ là đi học nhóm để đi chơi xa. Nhận định nào ĐÚNG?",
+    "answers": [
+      {
+        "text": "Đồng ý cho xong vì sợ mất bạn.",
+        "correct": false
+      },
+      {
+        "text": "Từ chối và rủ bạn đi chơi chỗ khác an toàn hơn.",
+        "correct": true
+      },
+      {
+        "text": "Đi chơi nhưng về đúng giờ thì không sao.",
+        "correct": false
+      },
+      {
+        "text": "Kể thật với bố mẹ để được tư vấn.",
+        "correct": true
+      }
+    ],
+    "img": "https://live.staticflickr.com/8530/8492816667_d9ba15caca_b.jpg"
+  },
+  {
+    "round": "Vòng 2 · Xử lí tình huống",
+    "type": "many",
+    "text": "Em lỡ tay đổ nước vào laptop của bố. Nhận định nào ĐÚNG?",
+    "answers": [
+      {
+        "text": "Lau khô, úp ngược máy và báo ngay cho bố.",
+        "correct": true
+      },
+      {
+        "text": "Giấu đi, hy vọng máy tự khô rồi chạy lại.",
+        "correct": false
+      },
+      {
+        "text": "Bật máy lên thử xem còn chạy không.",
+        "correct": false
+      },
+      {
+        "text": "Xin lỗi, nhận trách nhiệm và cùng bố tìm cách sửa.",
+        "correct": true
+      }
+    ],
+    "img": "https://live.staticflickr.com/65535/47571408752_f0d4b48539_b.jpg"
+  },
+  {
+    "round": "Vòng 3 · Xử lí tình huống nhanh",
+    "type": "info",
+    "text": "Vòng 3 — XỬ LÍ TÌNH HUỐNG NHANH\nMỗi câu 30 giây · chọn cách xử lí hay nhất!",
+    "answers": []
+  },
+  {
+    "round": "Vòng 3 · Xử lí tình huống nhanh",
+    "type": "one",
+    "text": "Giờ cơm tối, nhóm bạn gọi rủ leo rank gấp vì 'thiếu 1 người là thua'. Em xử lí sao hay nhất?",
+    "answers": [
+      {
+        "text": "Block luôn nhóm bạn cho khỏi phiền.",
+        "correct": false
+      },
+      {
+        "text": "Xin phép cả nhà 1 phút, nhắn 'ăn xong em vào' rồi cất máy.",
+        "correct": true
+      },
+      {
+        "text": "Vừa ăn vừa chơi, cơm chan nước mắt cũng xong.",
+        "correct": false
+      },
+      {
+        "text": "Bắt máy leo rank ngay tại mâm cơm.",
+        "correct": false
+      }
+    ],
+    "img": "https://live.staticflickr.com/2672/4242670916_a84ba7b14c_b.jpg"
+  },
+  {
+    "round": "Vòng 3 · Xử lí tình huống nhanh",
+    "type": "one",
+    "text": "Bố đi làm về mệt, ngủ quên trên ghế. Em và em nhỏ đang ồn ào chơi đuổi bắt. Em làm gì?",
+    "answers": [
+      {
+        "text": "Lấy gối chọi thử xem bố tỉnh không.",
+        "correct": false
+      },
+      {
+        "text": "Bật loa hát karaoke mừng bố về.",
+        "correct": false
+      },
+      {
+        "text": "Cứ chơi tiếp, bố ngủ say không dậy đâu.",
+        "correct": false
+      },
+      {
+        "text": "Rủ em nhỏ chơi trò yên tĩnh và đắp chăn cho bố.",
+        "correct": true
+      }
+    ],
+    "img": "https://live.staticflickr.com/3467/3941510338_2b17ce8c4c_b.jpg"
+  },
+  {
+    "round": "Vòng 3 · Xử lí tình huống nhanh",
+    "type": "one",
+    "text": "Mẹ ốm phải nghỉ, dặn em nấu cháo. Lần đầu em đứng bếp một mình. Em làm gì?",
+    "answers": [
+      {
+        "text": "Gọi video hỏi mẹ từng bước và làm cẩn thận.",
+        "correct": true
+      },
+      {
+        "text": "Khóc lóc gọi cả họ đến nấu hộ.",
+        "correct": false
+      },
+      {
+        "text": "Đặt đồ ăn ngoài rồi nhận là mình nấu.",
+        "correct": false
+      },
+      {
+        "text": "Nấu đại, mặn ngọt cũng là tấm lòng.",
+        "correct": false
+      }
+    ],
+    "img": "https://upload.wikimedia.org/wikipedia/commons/9/9d/Kitchen_Companions%2C_Cooking_Together.jpg"
+  },
+  {
+    "round": "Vòng 3 · Xử lí tình huống nhanh",
+    "type": "one",
+    "text": "Nhà có khách, mẹ nhờ em rót nước. Em hậu đậu làm đổ ra bàn. Em làm gì?",
+    "answers": [
+      {
+        "text": "Cười trừ rồi bỏ đi chơi.",
+        "correct": false
+      },
+      {
+        "text": "Đứng hình rồi chạy vào phòng khóa cửa.",
+        "correct": false
+      },
+      {
+        "text": "Đổ tại cái ly trơn.",
+        "correct": false
+      },
+      {
+        "text": "Bình tĩnh lau sạch, xin lỗi và rót ly khác.",
+        "correct": true
+      }
+    ],
+    "img": "https://live.staticflickr.com/1378/1390997942_1855225769_b.jpg"
+  },
+  {
+    "round": "Vòng 3 · Xử lí tình huống nhanh",
+    "type": "one",
+    "text": "Ông bà gọi video hỏi thăm việc học, mà em vừa bị điểm kém. Em trả lời sao?",
+    "answers": [
+      {
+        "text": "Giả vờ mất mạng mỗi lần bị hỏi điểm.",
+        "correct": false
+      },
+      {
+        "text": "Hỏi thăm sức khỏe ông bà rồi lảng sang chuyện khác.",
+        "correct": false
+      },
+      {
+        "text": "Nói dối điểm cao cho ông bà vui.",
+        "correct": false
+      },
+      {
+        "text": "Thành thật kể và hứa kế hoạch cải thiện.",
+        "correct": true
+      }
+    ],
+    "img": "https://live.staticflickr.com/3066/3074177116_0ac875f0f0_b.jpg"
+  },
+  {
+    "round": "Vòng 3 · Xử lí tình huống nhanh",
+    "type": "one",
+    "text": "Em và anh/chị tranh nhau cái điều khiển TV, sắp cãi to. Em làm gì?",
+    "answers": [
+      {
+        "text": "Đề xuất mỗi người 30 phút, bấm giờ công bằng.",
+        "correct": true
+      },
+      {
+        "text": "Ai khỏe hơn thì giữ remote.",
+        "correct": false
+      },
+      {
+        "text": "Giận dỗi nhịn ăn tối.",
+        "correct": false
+      },
+      {
+        "text": "Mách bố mẹ tịch thu TV cho hòa cả làng.",
+        "correct": false
+      }
+    ],
+    "img": "https://live.staticflickr.com/30/54475816_d67ba23c21_b.jpg"
+  },
+  {
+    "round": "Vòng 3 · Xử lí tình huống nhanh",
+    "type": "one",
+    "text": "Tết được mừng tuổi 2 triệu, mẹ bảo đưa mẹ giữ hộ. Cách nào hợp lí nhất?",
+    "answers": [
+      {
+        "text": "Tiêu hết trong một tuần cho khỏi phải giữ.",
+        "correct": false
+      },
+      {
+        "text": "Đưa hết cho mẹ và không bao giờ hỏi lại.",
+        "correct": false
+      },
+      {
+        "text": "Giấu hết, bảo chỉ được có 200 nghìn.",
+        "correct": false
+      },
+      {
+        "text": "Thương lượng: gửi mẹ một phần, giữ một phần tiêu có kế hoạch.",
+        "correct": true
+      }
+    ],
+    "img": "https://live.staticflickr.com/2613/4202922288_461558b6b0_b.jpg"
+  },
+  {
+    "round": "Vòng 3 · Xử lí tình huống nhanh",
+    "type": "one",
+    "text": "Em phát hiện mẹ hay lén đọc tin nhắn của mình. Em nên làm gì?",
+    "answers": [
+      {
+        "text": "Xóa hết tin nhắn mỗi ngày cho an toàn.",
+        "correct": false
+      },
+      {
+        "text": "Đọc trộm lại tin nhắn của mẹ cho huề.",
+        "correct": false
+      },
+      {
+        "text": "Bình tĩnh nói với mẹ là em cần sự riêng tư và cùng thống nhất giới hạn.",
+        "correct": true
+      },
+      {
+        "text": "Đặt mật khẩu mới và cấm mẹ động vào máy.",
+        "correct": false
+      }
+    ],
+    "img": "https://live.staticflickr.com/8074/8255829890_77ee29e0f7_b.jpg"
+  },
+  {
+    "round": "Vòng 3 · Xử lí tình huống nhanh",
+    "type": "one",
+    "text": "Mẹ đăng ảnh hồi nhỏ của em lên Facebook được trăm like, em thấy rất xấu hổ. Em nên làm gì?",
+    "answers": [
+      {
+        "text": "Nhắn riêng, nói rõ em không thích và nhờ mẹ gỡ hoặc để chế độ bạn bè.",
+        "correct": true
+      },
+      {
+        "text": "Xóa kết bạn với mẹ luôn.",
+        "correct": false
+      },
+      {
+        "text": "Bình luận cãi nhau dưới bài đăng.",
+        "correct": false
+      },
+      {
+        "text": "Đăng ảnh dìm của mẹ để trả đũa.",
+        "correct": false
+      }
+    ],
+    "img": "https://live.staticflickr.com/5568/14516340085_8e96ab30fd_b.jpg"
+  },
+  {
+    "round": "Vòng 3 · Xử lí tình huống nhanh",
+    "type": "one",
+    "text": "Vì điểm kém, bố thu điện thoại một tháng. Em phản ứng sao cho có trách nhiệm?",
+    "answers": [
+      {
+        "text": "Đổ tại cô giáo cho đề khó.",
+        "correct": false
+      },
+      {
+        "text": "Tuyệt thực đến khi được trả máy.",
+        "correct": false
+      },
+      {
+        "text": "Chấp nhận, lập kế hoạch học để lấy lại niềm tin.",
+        "correct": true
+      },
+      {
+        "text": "Lén mua điện thoại khác để dùng.",
+        "correct": false
+      }
+    ],
+    "img": "https://live.staticflickr.com/1616/25471016656_8e96ab30fd_b.jpg"
+  },
+  {
+    "round": "Vòng 3 · Xử lí tình huống nhanh",
+    "type": "one",
+    "text": "Cả nhà đang tất bật dọn nhà đón khách, em lại lôi điện thoại ra quay TikTok. Em nên làm gì?",
+    "answers": [
+      {
+        "text": "Cất điện thoại, xắn tay dọn cùng cả nhà.",
+        "correct": true
+      },
+      {
+        "text": "Quay tiếp vì video đang lên view.",
+        "correct": false
+      },
+      {
+        "text": "Bắt em nhỏ làm hết để mình quay.",
+        "correct": false
+      },
+      {
+        "text": "Livestream luôn cho nóng.",
+        "correct": false
+      }
+    ]
+  },
+  {
+    "round": "Vòng 3 · Xử lí tình huống nhanh",
+    "type": "one",
+    "text": "Em thức đến 2 giờ sáng cày phim, sáng dậy muộn suýt trễ học. Giải pháp lâu dài là gì?",
+    "answers": [
+      {
+        "text": "Đặt 10 cái báo thức.",
+        "correct": false
+      },
+      {
+        "text": "Tự đặt giờ giới nghiêm và ngủ đúng giờ.",
+        "correct": true
+      },
+      {
+        "text": "Nghỉ học buổi sáng để ngủ bù.",
+        "correct": false
+      },
+      {
+        "text": "Nhờ mẹ gọi dậy mỗi sáng.",
+        "correct": false
+      }
+    ],
+    "img": "https://live.staticflickr.com/3431/3196084839_02d78a9825_b.jpg"
+  },
+  {
+    "round": "Về đích",
+    "type": "info",
+    "text": "VỀ ĐÍCH — TỔNG KẾT\nCộng điểm lần cuối và công bố đội chiến thắng! 🏆",
+    "answers": []
+  }
+];

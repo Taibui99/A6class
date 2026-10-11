@@ -26,7 +26,7 @@ const AVATAR_TONES = [
   "bg-sky/20 ring-sky/40 text-sky",
   "bg-violet/20 ring-violet/40 text-violet",
   "bg-success/20 ring-success/40 text-success",
-  "bg-amber/20 ring-amber/40 text-amber",
+  "bg-amber/20 ring-amber/40 text-amber-ink",
 ];
 
 const DONE = new Set(["COMPLETED"]);
@@ -107,7 +107,7 @@ export function BentoWelcome({ overview, greeting, userName }: Props) {
             </div>
 
             {overview.daysLeft !== null ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-amber/15 px-3 py-1.5 text-xs font-bold text-amber ring-1 ring-amber/30">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-amber/15 px-3 py-1.5 text-xs font-bold text-amber-ink ring-1 ring-amber/30">
                 <CalendarClock aria-hidden className="size-3.5" />
                 {overview.periodName ?? "Kỳ thi"} · còn {overview.daysLeft} ngày
               </span>
@@ -123,7 +123,7 @@ export function BentoWelcome({ overview, greeting, userName }: Props) {
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex min-w-0 items-center gap-2.5">
-                <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-amber/15 text-amber ring-1 ring-amber/30">
+                <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-amber/15 text-amber-ink ring-1 ring-amber/30">
                   <Trophy aria-hidden className="size-4.5" />
                 </span>
                 <div className="min-w-0">
@@ -138,7 +138,7 @@ export function BentoWelcome({ overview, greeting, userName }: Props) {
               {overview.canSeeAllTeams ? (
                 <Link
                   href="/competition"
-                  className="inline-flex shrink-0 items-center gap-1 text-xs font-bold text-amber hover:underline"
+                  className="inline-flex shrink-0 items-center gap-1 text-xs font-bold text-amber-ink hover:underline"
                 >
                   Xem bảng điểm
                   <ChevronRight aria-hidden className="size-3.5" />
@@ -149,7 +149,7 @@ export function BentoWelcome({ overview, greeting, userName }: Props) {
             {teams.length === 0 ? (
               <p className="mt-5 rounded-xl border border-border bg-canvas/40 p-4 text-xs text-text/70">
                 Lớp chưa có tổ nào. Vào{" "}
-                <Link href="/class" className="font-bold text-amber hover:underline">
+                <Link href="/class" className="font-bold text-amber-ink hover:underline">
                   Dữ liệu lớp
                 </Link>{" "}
                 để tạo tổ.
@@ -187,7 +187,7 @@ export function BentoWelcome({ overview, greeting, userName }: Props) {
                         <span className="mt-2 block truncate text-xs font-bold text-text">
                           {team.name}
                         </span>
-                        <span className="block text-lg font-black tabular-nums text-amber">
+                        <span className="block text-lg font-black tabular-nums text-amber-ink">
                           {hasScores ? team.average.toFixed(1) : "—"}
                           {hasScores ? (
                             <span className="ml-1 text-[10px] font-medium text-text/60">
@@ -216,7 +216,7 @@ export function BentoWelcome({ overview, greeting, userName }: Props) {
                   </span>
                   <Link
                     href="/competition"
-                    className="inline-flex min-h-6 shrink-0 items-center gap-1 font-bold text-amber hover:underline"
+                    className="inline-flex min-h-6 shrink-0 items-center gap-1 font-bold text-amber-ink hover:underline"
                   >
                     Chi tiết
                     <ChevronRight aria-hidden className="size-3.5" />

@@ -165,14 +165,21 @@ export function PostCard({ post, currentUserId, canPin }: Props) {
   }
 
   return (
-    <article className="border-b border-border py-5 last:border-b-0">
+    <article
+      className={cn(
+        "rounded-[20px] border p-4 shadow-md sm:p-5",
+        post.isPinned
+          ? "border-[#1E1B16] bg-[#FFF3D6]"
+          : "border-border bg-white"
+      )}
+    >
       <header className="flex items-center gap-3">
         <span
           className={cn(
-            "grid size-10 shrink-0 select-none place-items-center rounded-full text-sm font-extrabold",
+            "grid size-10 shrink-0 select-none place-items-center rounded-full border-2 text-sm font-extrabold",
             post.authorRole === "TEACHER"
-              ? "bg-primary text-primary-foreground"
-              : "bg-surface-hover text-text-secondary"
+              ? "border-[#FF5C8A] bg-primary text-primary-foreground"
+              : "border-[#1E1B16] bg-surface-hover text-text-secondary"
           )}
           aria-hidden
         >
@@ -183,7 +190,7 @@ export function PostCard({ post, currentUserId, canPin }: Props) {
           <p className="flex flex-wrap items-center gap-x-2 gap-y-1 truncate text-sm font-semibold text-text">
             {post.authorName}
             {post.authorRole === "TEACHER" && (
-              <span className="rounded bg-primary-light px-1.5 py-px text-[10px] font-bold uppercase tracking-wide text-primary">
+              <span className="rounded-full border border-[#1E1B16] bg-[#FFE08A] px-2 py-px text-[10px] font-extrabold uppercase tracking-wide text-[#1E1B16]">
                 Giáo viên
               </span>
             )}
@@ -192,9 +199,9 @@ export function PostCard({ post, currentUserId, canPin }: Props) {
         </div>
 
         {post.isPinned && (
-          <span className="inline-flex shrink-0 items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-accent-ink">
-            <span className="size-2 rounded-[2px] bg-accent" aria-hidden />
-            Ghim trên bảng
+          <span className="sticker sticker-tilt shrink-0">
+            <Pin aria-hidden className="size-3" />
+            Ghim
           </span>
         )}
 
@@ -302,7 +309,7 @@ export function PostCard({ post, currentUserId, canPin }: Props) {
               type="submit"
               disabled={pending || !comment.trim()}
               aria-label="Gửi bình luận"
-              className="grid size-10 shrink-0 place-items-center rounded-lg bg-primary text-primary-foreground transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+              className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground shadow-[3px_3px_0_#FF5C8A] transition-all hover:bg-primary-hover active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
             >
               {pending ? (
                 <Loader2 aria-hidden className="size-4 animate-spin" />

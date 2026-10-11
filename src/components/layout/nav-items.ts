@@ -8,6 +8,9 @@ import {
   LayoutDashboard,
   UsersRound,
   ListTodo,
+  ClipboardCheck,
+  CalendarDays,
+  Bell,
   type LucideIcon,
 } from "lucide-react";
 
@@ -23,8 +26,8 @@ export type NavItem = {
 };
 
 /**
- * Thứ tự theo mental model học sinh (DESIGN-REDESIGN.md §5.1):
- * Tổng quan → Bảng lớp → Thi đua → Nhiệm vụ → Thành viên → Công cụ,
+ * Thứ tự theo cấu trúc demo đã duyệt: Tổng quan → Học sinh → Điểm danh →
+ * Bảng lớp → Thi đua → Việc lớp → Thời khóa biểu → Thông báo → Công cụ,
  * rồi mới tới taxonomy phần mềm (Dữ liệu lớp, tin nhắn, hỗ trợ, hồ sơ).
  */
 export const navItems: NavItem[] = [
@@ -33,6 +36,18 @@ export const navItems: NavItem[] = [
     label: "Tổng quan",
     shortLabel: "Tổng quan",
     icon: LayoutDashboard,
+  },
+  {
+    href: "/members",
+    label: "Học sinh",
+    shortLabel: "Học sinh",
+    icon: UsersRound,
+  },
+  {
+    href: "/attendance",
+    label: "Điểm danh",
+    shortLabel: "Điểm danh",
+    icon: ClipboardCheck,
   },
   {
     href: "/feed",
@@ -48,15 +63,21 @@ export const navItems: NavItem[] = [
   },
   {
     href: "/tasks",
-    label: "Nhiệm vụ",
-    shortLabel: "Nhiệm vụ",
+    label: "Việc lớp",
+    shortLabel: "Việc lớp",
     icon: ListTodo,
   },
   {
-    href: "/members",
-    label: "Thành viên",
-    shortLabel: "Thành viên",
-    icon: UsersRound,
+    href: "/timetable",
+    label: "Thời khóa biểu",
+    shortLabel: "TKB",
+    icon: CalendarDays,
+  },
+  {
+    href: "/notices",
+    label: "Thông báo",
+    shortLabel: "Thông báo",
+    icon: Bell,
   },
   {
     href: HOME_PATH,

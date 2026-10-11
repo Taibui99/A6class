@@ -34,13 +34,13 @@ const TEAM_COLORS: Record<string, { bg: string; text: string; ring: string }> = 
   "Tổ 1": { bg: "bg-primary/10", text: "text-primary", ring: "ring-primary/30" },
   "Tổ 2": { bg: "bg-violet/15", text: "text-violet", ring: "ring-violet/30" },
   "Tổ 3": { bg: "bg-success/15", text: "text-success", ring: "ring-success/30" },
-  "Tổ 4": { bg: "bg-amber/15", text: "text-amber", ring: "ring-amber/30" },
+  "Tổ 4": { bg: "bg-amber/15", text: "text-amber-ink", ring: "ring-amber/30" },
   "Cả lớp": { bg: "bg-fuchsia-500/15", text: "text-fuchsia-300", ring: "ring-fuchsia-500/30" },
 };
 
 const PRIORITY_CONFIG = {
   URGENT: { label: "Khẩn cấp", icon: Flame, badge: "bg-danger/15 text-danger ring-danger/30" },
-  HIGH: { label: "Quan trọng", icon: AlertCircle, badge: "bg-amber/15 text-amber ring-amber/30" },
+  HIGH: { label: "Quan trọng", icon: AlertCircle, badge: "bg-amber/15 text-amber-ink ring-amber/30" },
   MEDIUM: { label: "Thường", icon: Clock, badge: "bg-primary/10 text-primary ring-primary/30" },
   LOW: { label: "Nhẹ nhàng", icon: Sparkles, badge: "bg-surface-2 text-text-secondary ring-border" },
 };
@@ -139,9 +139,9 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
           <div className="rounded-2xl bg-surface p-4 border border-border/80">
             <div className="flex items-center justify-between text-text-muted">
               <span className="text-xs font-semibold">Đang triển khai</span>
-              <Clock className="size-4 text-amber" />
+              <Clock className="size-4 text-amber-ink" />
             </div>
-            <p className="mt-2 text-2xl font-black text-amber">{inProgressCount}</p>
+            <p className="mt-2 text-2xl font-black text-amber-ink">{inProgressCount}</p>
           </div>
 
           <div className="rounded-2xl bg-surface p-4 border border-border/80">
@@ -255,7 +255,7 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
                     </span>
 
                     {task.points ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-amber/15 px-2.5 py-0.5 text-[11px] font-bold text-amber ring-1 ring-amber/30">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-amber/15 px-2.5 py-0.5 text-[11px] font-bold text-amber-ink ring-1 ring-amber/30">
                         <Award className="size-3" />+{task.points} điểm thi đua
                       </span>
                     ) : null}
@@ -328,7 +328,7 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
                       isDone
                         ? "bg-success/15 text-success ring-1 ring-success/40 hover:bg-success/30"
                         : isInProgress
-                        ? "bg-amber/20 text-amber ring-1 ring-amber/40 hover:bg-amber/30"
+                        ? "bg-amber/20 text-amber-ink ring-1 ring-amber/40 hover:bg-amber/30"
                         : "bg-surface-hover text-text-secondary hover:text-text hover:bg-surface-elevated border border-border"
                     }`}
                   >

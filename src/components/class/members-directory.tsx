@@ -10,11 +10,10 @@ import {
   X,
   Medal,
   Flag,
-  QrCode,
-  ShieldCheck,
 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
 import { TiltCard } from "@/components/ui/tilt-card";
 import type { MemberCard, MembersPageData } from "@/lib/members";
 
@@ -161,30 +160,23 @@ function MemberCard3D({
 
 export function MembersDirectory({
   data,
-  scanOpen = false,
 }: {
   data: MembersPageData;
-  scanOpen?: boolean;
 }) {
   const [search, setSearch] = useState("");
   const [selectedTeam, setSelectedTeam] = useState<string>("ALL");
   const [selected, setSelected] = useState<MemberCard | null>(null);
-  // Mở sẵn modal quét khi vào từ nút "Quét thành viên" ở thanh trên cùng
-  // (?scan=1). Khởi tạo từ prop thay vì setState trong effect — điều hướng
-  // sang URL khác sẽ mount lại component nên không cần đồng bộ lại.
-  const [scanning, setScanning] = useState(scanOpen);
 
   useEffect(() => {
-    if (!selected && !scanning) return;
+    if (!selected) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setSelected(null);
-        setScanning(false);
       }
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [selected, scanning]);
+  }, [selected]);
 
   const officers = useMemo(
     () => data.members.filter((m) => m.role !== "STUDENT"),
@@ -401,15 +393,6 @@ export function MembersDirectory({
           ))}
         </div>
 
-<button
-            type="button"
-            onClick={() => setScanning(true)}
-            className="vt-btn-gold inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg px-3.5 text-xs font-bold"
-          >
-            <QrCode aria-hidden className="size-3.5" />
-            Quét thành viên
-          </button>
-
           <div className="relative w-full sm:w-64">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-text-muted" />
             <Input
@@ -441,60 +424,6 @@ export function MembersDirectory({
         </div>
       )}
 
-      {scanning && (
-        <div className="fixed inset-0 z-50 grid place-items-center p-4">
-          <button
-            type="button"
-            aria-label="Đóng"
-            onClick={() => setScanning(false)}
-            className="absolute inset-0 bg-black/70"
-          />
-
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="vip-scan-title"
-            className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-surface-2 p-6 text-white shadow-lg"
-          >
-            <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-              <span className="vt-scan-line top-0" />
-            </div>
-
-            <div className="relative flex items-start justify-between gap-3">
-              <div>
-                <h2 id="vip-scan-title" className="vt-led vt-led-neon text-lg font-bold">
-                  Quét thẻ VIP
-                </h2>
-                <p className="mt-1 text-xs text-white/60">
-                  Đưa mã QR của học sinh vào khung bên dưới để mở hồ sơ.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setScanning(false)}
-                aria-label="Đóng"
-                className="grid size-7 shrink-0 place-items-center rounded-lg bg-white/10 text-white/80 transition hover:bg-white/20"
-              >
-                <X aria-hidden className="size-4" />
-              </button>
-            </div>
-
-            <div className="relative mt-5 grid aspect-square place-items-center rounded-xl border border-dashed border-white/20 bg-black/30">
-              <QrCode aria-hidden className="size-16 text-white/15" />
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setScanning(false)}
-              className="relative mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-white/5 text-xs font-bold text-white/70 ring-1 ring-white/15 transition hover:bg-white/10"
-            >
-              <ShieldCheck aria-hidden className="size-3.5" />
-              Chọn thủ công trong danh bạ
-            </button>
-          </div>
-        </div>
-      )}
-
       {selected && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
@@ -505,9 +434,8 @@ export function MembersDirectory({
             aria-modal="true"
             aria-label={`Hồ sơ ${selected.fullName}`}
             onClick={(e) => e.stopPropagation()}
-            className="vt-holo relative w-full max-w-md overflow-hidden rounded-2xl border border-primary/30 bg-surface p-6 shadow-lg"
+            className="relative w-full max-w-md overflow-hidden rounded-2xl border border-border bg-surface p-6 shadow-lg"
           >
-            <span className="vt-scan-line" aria-hidden />
             <button
               type="button"
               onClick={() => setSelected(null)}
@@ -527,30 +455,93 @@ export function MembersDirectory({
               </div>
             </div>
 
+            {/* Hồ sơ rút gọn: chỉ hiện dòng có dữ liệu + nút hành động theo
+                vai trò. Học sinh trống thì dẫn đi xếp tổ/chấm điểm thay vì
+                khoe 3 dòng "chưa có gì". */}
             <dl className="mt-6 space-y-3 text-sm">
-              <div className="flex items-center justify-between border-b border-border pb-2">
-                <dt className="flex items-center gap-2 text-text-muted">
-                  <Flag className="size-3.5" /> Tổ
-                </dt>
-                <dd className="font-bold text-text">{selected.teamName ?? "Chưa vào tổ"}</dd>
-              </div>
-              <div className="flex items-center justify-between border-b border-border pb-2">
-                <dt className="flex items-center gap-2 text-text-muted">
-                  <Trophy className="size-3.5" /> Điểm thi đua
-                </dt>
-                <dd className="vt-led font-bold">
-                  {selected.score !== null ? selected.score : "Chưa có điểm"}
-                </dd>
-              </div>
-              <div className="flex items-center justify-between">
-                <dt className="flex items-center gap-2 text-text-muted">
-                  <Medal className="size-3.5" /> Số ghi nhận
-                </dt>
-                <dd className="font-bold text-text">
-                  {selected.marks !== null ? selected.marks : "—"}
-                </dd>
-              </div>
+              {selected.teamName ? (
+                <div className="flex items-center justify-between border-b border-border pb-2">
+                  <dt className="flex items-center gap-2 text-text-muted">
+                    <Flag className="size-3.5" /> Tổ
+                  </dt>
+                  <dd className="font-bold text-text">{selected.teamName}</dd>
+                </div>
+              ) : (
+                selected.role !== "TEACHER" && (
+                  <div className="flex items-center justify-between border-b border-border pb-2">
+                    <dt className="flex items-center gap-2 text-text-muted">
+                      <Flag className="size-3.5" /> Tổ
+                    </dt>
+                    <dd>
+                      <Link
+                        href="/class"
+                        className="font-bold text-primary hover:underline"
+                      >
+                        Xếp vào tổ →
+                      </Link>
+                    </dd>
+                  </div>
+                )
+              )}
+              {selected.role !== "TEACHER" && (
+                <div className="flex items-center justify-between border-b border-border pb-2">
+                  <dt className="flex items-center gap-2 text-text-muted">
+                    <Trophy className="size-3.5" /> Điểm thi đua
+                  </dt>
+                  <dd className="vt-led font-bold">
+                    {selected.score !== null ? (
+                      selected.score
+                    ) : (
+                      <Link href="/competition" className="hover:underline">
+                        Chấm điểm ngay →
+                      </Link>
+                    )}
+                  </dd>
+                </div>
+              )}
+              {selected.marks !== null && (
+                <div className="flex items-center justify-between">
+                  <dt className="flex items-center gap-2 text-text-muted">
+                    <Medal className="size-3.5" /> Số ghi nhận
+                  </dt>
+                  <dd className="font-bold text-text">{selected.marks}</dd>
+                </div>
+              )}
             </dl>
+
+            <div className="mt-5 flex flex-wrap gap-2">
+              {selected.role !== "TEACHER" ? (
+                <>
+                  <Link
+                    href="/competition"
+                    className="inline-flex h-9 flex-1 items-center justify-center rounded-xl bg-primary px-3 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-hover"
+                  >
+                    Chấm điểm
+                  </Link>
+                  <Link
+                    href="/tasks"
+                    className="inline-flex h-9 flex-1 items-center justify-center rounded-xl border border-border bg-surface px-3 text-sm font-bold text-text transition-colors hover:bg-surface-hover"
+                  >
+                    Giao việc
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/tasks"
+                    className="inline-flex h-9 flex-1 items-center justify-center rounded-xl bg-primary px-3 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-hover"
+                  >
+                    Giao việc
+                  </Link>
+                  <Link
+                    href="/class"
+                    className="inline-flex h-9 flex-1 items-center justify-center rounded-xl border border-border bg-surface px-3 text-sm font-bold text-text transition-colors hover:bg-surface-hover"
+                  >
+                    Nhập danh sách
+                  </Link>
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}

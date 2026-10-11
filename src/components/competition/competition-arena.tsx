@@ -32,7 +32,7 @@ type Props = {
 type Tab = "rank" | "entry" | "history";
 type Scope = "week" | "year";
 
-const PANEL = "rounded-2xl bg-surface border border-border";
+const PANEL = "rounded-[20px] bg-surface border border-border shadow-md";
 const INITIAL: ActionState = { ok: true, message: "" };
 
 /* ══════════════════════════════════════════════════════════ */
@@ -95,7 +95,7 @@ export default function CompetitionArena({ data, viewPeriodId }: Props) {
                     className={cn(
                       "rounded-full px-2 py-0.5 font-semibold",
                       period.daysLeft === 0
-                        ? "bg-amber/15 text-amber"
+                        ? "bg-amber/15 text-amber-ink"
                         : "bg-primary/10 text-primary",
                     )}
                   >
@@ -165,9 +165,9 @@ export default function CompetitionArena({ data, viewPeriodId }: Props) {
               onClick={() => setTab(t.key)}
               aria-current={tab === t.key}
               className={cn(
-                "inline-flex h-9 items-center gap-1.5 rounded-xl px-3.5 text-xs font-bold transition",
+                "inline-flex h-9 items-center gap-1.5 rounded-2xl px-3.5 text-xs font-extrabold transition-all",
                 tab === t.key
-                  ? "bg-primary/10 text-primary ring-1 ring-primary/30"
+                  ? "bg-primary text-primary-foreground shadow-[2px_2px_0_#FF5C8A]"
                   : "bg-surface text-muted border border-border hover:text-text",
               )}
             >
@@ -177,15 +177,15 @@ export default function CompetitionArena({ data, viewPeriodId }: Props) {
           ))}
 
         {(tab === "rank" || tab === "history") && (
-          <div className="ml-auto flex gap-1 rounded-xl bg-surface p-0.5 border border-border">
+          <div className="ml-auto flex gap-1 rounded-2xl bg-white p-1 border-2 border-[#1E1B16]">
             {(["week", "year"] as const).map((s) => (
               <button
                 key={s}
                 type="button"
                 onClick={() => setScope(s)}
                 className={cn(
-                  "h-8 rounded-lg px-3 text-xs font-bold transition",
-                  scope === s ? "bg-primary/10 text-primary" : "text-muted hover:text-text",
+                  "h-8 rounded-xl px-3 text-xs font-extrabold transition-all",
+                  scope === s ? "bg-primary text-primary-foreground" : "text-muted hover:text-text",
                 )}
               >
                 {s === "week" ? "Tuần này" : "Cả năm"}
@@ -336,10 +336,10 @@ function RankPanel({
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
         {/* Xếp hạng tổ — theo trung bình mỗi thành viên */}
         <section className={cn(PANEL, "p-4")}>
-          <h2 className="flex items-center gap-1.5 text-sm font-extrabold text-text">
-            <Crown aria-hidden className="size-4 text-amber" />
-            Xếp hạng tổ
-          </h2>
+            <h2 className="flex items-center gap-1.5 text-sm font-extrabold text-text">
+              <Crown aria-hidden className="size-4 text-amber-ink" />
+              Xếp hạng tổ
+            </h2>
           <p className="mt-1 text-[11px] leading-relaxed text-muted">
             Tổ có 10/10/9/7 em nên tính theo <b className="text-text">trung bình mỗi thành viên</b>{" "}
             cho công bằng, không tính tổng.{" "}
@@ -353,20 +353,20 @@ function RankPanel({
           </p>
 
           {hasAnyScore && teams.length > 0 && teams[0] && (
-            <div className="mt-3 relative overflow-hidden rounded-2xl bg-primary/10 p-4 ring-1 ring-primary/30">
+            <div className="mt-3 relative overflow-hidden rounded-[20px] border-2 border-[#1E1B16] bg-[#FF5C8A] p-4 shadow-[4px_4px_0_#1E1B16]">
               <div className="flex items-center gap-3">
-                <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-primary text-primary-foreground">
+                <span className="grid size-12 shrink-0 place-items-center rounded-2xl border-2 border-[#1E1B16] bg-[#FFC531] text-[#1E1B16]">
                   <Trophy className="size-6" aria-hidden />
                 </span>
                 <div className="min-w-0">
-                  <span className="inline-block rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-bold text-primary ring-1 ring-primary/40">
+                  <span className="sticker sticker-white sticker-tilt">
                     {scope === "week" ? "#1 tuần này" : "#1 cả năm"}
                   </span>
-                  <p className="mt-0.5 truncate text-base font-black text-text">
+                  <p className="mt-1 truncate text-base font-black text-[#1E1B16]">
                     {teams[0].teamName}
                   </p>
-                  <p className="text-xs text-primary/90 font-medium">
-                    Điểm trung bình: <strong className="font-extrabold">{teams[0].average.toFixed(1)}</strong> đ/bạn
+                  <p className="text-xs text-[#1E1B16]/70 font-medium">
+                    Điểm trung bình: <strong className="font-extrabold tabular-nums">{teams[0].average.toFixed(1)}</strong> đ/bạn
                   </p>
                 </div>
               </div>
@@ -391,7 +391,7 @@ function RankPanel({
               >
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <span className={cn("grid size-6 shrink-0 place-items-center rounded-md text-xs font-extrabold tabular-nums", idx === 0 ? "bg-accent-light text-accent-ink" : "bg-surface-hover text-text-secondary")} aria-hidden>{idx + 1}</span>
+                    <span className={cn("medal tabular-nums", idx === 0 ? "medal-1 text-sm" : "text-xs")} aria-hidden>{idx + 1}</span>
                     <span className="truncate text-sm font-bold text-text">{t.teamName}</span>
                     {meTeam?.teamId === t.teamId && (
                       <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-bold text-primary ring-1 ring-primary/30">

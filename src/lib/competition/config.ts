@@ -293,7 +293,7 @@ export type GradeTier = {
 };
 
 export const GRADE_TIERS: GradeTier[] = [
-  { min: 20, label: "Xuất sắc", tone: "text-amber" },
+  { min: 20, label: "Xuất sắc", tone: "text-amber-ink" },
   { min: 12, label: "Tốt", tone: "text-success" },
   { min: 6, label: "Khá", tone: "text-primary" },
   { min: 1, label: "Trung bình", tone: "text-text-secondary" },

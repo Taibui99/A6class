@@ -35,9 +35,9 @@ export function NavTabs({ isTeacher }: Props) {
             href={tab.href}
             aria-current={isActive ? "page" : undefined}
             className={cn(
-              "flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-bold transition-colors",
+              "flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-extrabold transition-all",
               isActive
-                ? "bg-primary-light text-primary"
+                ? "border-2 border-[#1E1B16] bg-[#FFE08A] text-[#1E1B16]"
                 : "text-text-secondary hover:bg-surface-hover hover:text-text"
             )}
           >

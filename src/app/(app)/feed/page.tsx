@@ -32,10 +32,10 @@ type Announcement = {
   createdAt: Date;
 };
 
-const QUICK_LINKS: { label: string; href: string; icon: LucideIcon }[] = [
-  { label: "Bảng điểm thi đua", href: "/competition", icon: Trophy },
-  { label: "Việc của tôi", href: "/tasks", icon: ListTodo },
-  { label: "Bảng thành tích", href: "/achievements", icon: Medal },
+const QUICK_LINKS: { label: string; href: string; icon: LucideIcon; chip: string }[] = [
+  { label: "Bảng điểm thi đua", href: "/competition", icon: Trophy, chip: "bg-[#FFE08A]" },
+  { label: "Việc của tôi", href: "/tasks", icon: ListTodo, chip: "bg-[#B9E8C9]" },
+  { label: "Bảng thành tích", href: "/achievements", icon: Medal, chip: "bg-[#FFC9D9]" },
 ];
 
 export default async function FeedPage() {
@@ -67,7 +67,7 @@ export default async function FeedPage() {
     <div className="mx-auto grid w-full max-w-[740px] grid-cols-1 gap-5 xl:max-w-[1064px] xl:grid-cols-[740px_300px] xl:items-start xl:gap-6">
       <div className="min-w-0 space-y-5">
         <header>
-          <h1 className="text-xl font-extrabold tracking-tight text-text sm:text-2xl">
+          <h1 className="text-xl font-black tracking-tight text-text sm:text-2xl">
             Bảng lớp
           </h1>
           <p className="mt-0.5 text-sm text-text-secondary">
@@ -78,9 +78,9 @@ export default async function FeedPage() {
         {!classId ? (
           <section
             aria-label="Tham gia lớp"
-            className="flex items-start gap-4 rounded-2xl border border-warning/25 bg-warning-light p-5"
+            className="flex items-start gap-4 rounded-[20px] border-2 border-[#1E1B16] bg-[#FFE08A] p-5 shadow-[4px_4px_0_#1E1B16]"
           >
-            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-surface text-warning">
+            <span className="grid size-10 shrink-0 place-items-center rounded-xl border-2 border-[#1E1B16] bg-white text-[#1E1B16]">
               <UserRoundPlus aria-hidden className="size-5" />
             </span>
             <div className="min-w-0">
@@ -102,7 +102,7 @@ export default async function FeedPage() {
             <PostComposer />
 
             {posts.length > 0 ? (
-              <div className="border-t border-border">
+              <div className="space-y-4">
                 {posts.map((post) => (
                   <PostCard
                     key={post.id}
@@ -126,9 +126,9 @@ export default async function FeedPage() {
       {/* Cột phụ desktop — ẩn dưới xl để wall luôn có đủ chỗ 740px */}
       {classId && (
         <aside className="hidden space-y-4 xl:block xl:sticky xl:top-[72px]">
-          <section className="rounded-2xl border border-border bg-surface p-4">
+          <section className="rounded-[20px] border-2 border-[#1E1B16] bg-[#FFF3D6] p-4">
             <h2 className="flex items-center gap-1.5 text-sm font-extrabold text-text">
-              <Pin aria-hidden className="size-4 text-text-muted" />
+              <Pin aria-hidden className="size-4 text-accent-ink" />
               Thông báo ghim
             </h2>
             {announcements.length === 0 ? (
@@ -179,9 +179,11 @@ export default async function FeedPage() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="flex items-center gap-2 rounded-lg px-2 py-2 text-xs font-bold text-text-secondary transition-colors hover:bg-surface-hover hover:text-text"
+                    className="flex items-center gap-2.5 rounded-xl px-2 py-2 text-xs font-bold text-text-secondary transition-colors hover:bg-surface-hover hover:text-text"
                   >
-                    <link.icon aria-hidden className="size-4 shrink-0 text-text-muted" />
+                    <span className={`grid size-7 shrink-0 place-items-center rounded-lg border-2 border-[#1E1B16] ${link.chip}`}>
+                      <link.icon aria-hidden className="size-3.5 shrink-0 text-[#1E1B16]" />
+                    </span>
                     {link.label}
                   </Link>
                 </li>

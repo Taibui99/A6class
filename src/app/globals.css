@@ -1,56 +1,51 @@
 @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&family=Orbitron:wght@700;900&display=swap');
 @import "tailwindcss";
 
-/* Theme "BẢNG ĐEN & PHẤN" v2 — nền bảng đen espresso ấm #1A1714, chữ kem
-   phấn #F7F2E6, primary phấn vàng óng #EDB72E (chữ trên nút: mực #201704).
-   Màu trạng thái = pastel phấn ấm (giảm bão hòa, thiên ấm). Phẳng tuyệt đối:
-   phân cấp bằng surface + border, không shadow màu. Radius ≤16px.
-   Toàn bộ lý do/token nằm trong DESIGN-V2-BANG-DEN.md §2. */
+/* Theme theo phong cách bản prototype đã duyệt: sidebar navy, hero gradient
+   teal→xanh, nút teal chữ trắng, nền sáng xanh xám. Giữ nguyên TÊN biến để
+   100+ chỗ dùng token tự đổi theo — không sửa từng file. */
 :root {
-  --primary: #EDB72E;
-  --primary-hover: #F5C943;
-  --primary-light: rgba(237, 183, 46, 0.14);
-  --primary-muted: rgba(237, 183, 46, 0.3);
-  /* Mực đậm viết TRÊN nền phấn vàng (≈11:1) — dùng cho text-primary-foreground. */
-  --primary-ink: #201704;
-  /* Trung tính nâu ấm cho variant secondary (nút, badge) — chữ trắng vẫn ≈8:1.
-     KHÔNG dùng làm màu chữ trên nền tối (dùng text-secondary/text-muted). */
-  --secondary: #4A443B;
-  --secondary-light: rgba(74, 68, 59, 0.4);
-  /* Lime marker: dùng làm NỀN nhấn nhá. Muốn chữ thì dùng --accent-ink
-     (lime nhạt, đọc được trên nền tối). */
-  --accent: #C7F000;
-  --accent-light: rgba(199, 240, 0, 0.15);
-  --accent-ink: #CDF463;
+  --primary: #0e7490;
+  --primary-hover: #0b5b72;
+  --primary-light: rgba(14, 116, 144, 0.1);
+  --primary-muted: rgba(14, 116, 144, 0.25);
+  /* Trắng viết trên nút teal — dùng cho text-primary-foreground. */
+  --primary-ink: #FFFFFF;
+  /* Xanh nhạt cho badge thứ cấp. */
+  --secondary: #e0f0fd;
+  --secondary-light: rgba(37, 99, 235, 0.12);
+  /* Xanh dương: nền nhấn (link, icon section, chip điểm). */
+  --accent: #2563eb;
+  --accent-light: rgba(37, 99, 235, 0.12);
+  --accent-ink: #1d4ed8;
   --neon-pink: #DB2777;
-  --neon-pink-light: rgba(219, 39, 119, 0.25);
+  --neon-pink-light: rgba(219, 39, 119, 0.12);
   /* Bản neon gốc, chỉ dùng cho quầng sáng / panel nền tối (đồng hồ LED). */
   --neon: #00F2FE;
-  --gold: #FFB800;
-  --gold-deep: #FF8800;
-  --success: #9FCE8D;
-  --success-light: rgba(159, 206, 141, 0.14);
-  --warning: #EDB72E;
-  --warning-light: rgba(237, 183, 46, 0.12);
-  --danger: #E58A7B;
-  --danger-light: rgba(229, 138, 123, 0.14);
-  --bg: #1A1714;
-  --surface: #221E1A;
-  --surface-hover: #2F2A24;
-  --surface-elevated: #2A2621;
-  --border: #3D3831;
-  --border-strong: #544E44;
-  /* Tương phản trên nền bảng #1A1714: kem ≈ 14:1, phụ ≈ 9:1, mờ ≈ 4.6:1 —
-     đủ AA, vẫn phân cấp được. */
-  --text: #F7F2E6;
-  --text-secondary: #D6CFBE;
-  --text-muted: #A0988C;
-  --focus-ring: rgba(237, 183, 46, 0.35);
-  /* Chỉ 2 mức bóng: phân cấp bằng surface + border, không bằng shadow.
-     Shadow đen mờ (nền tối không thấy shadow màu). */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --gold: #FFC531;
+  --gold-deep: #F5A800;
+  --success: #157A42;
+  --success-light: rgba(21, 122, 66, 0.12);
+  --warning: #B54708;
+  --warning-light: rgba(181, 71, 8, 0.1);
+  --danger: #D92D20;
+  --danger-light: rgba(217, 45, 32, 0.08);
+  --bg: #edf2f7;
+  --surface: #FFFFFF;
+  --surface-hover: #eef4f9;
+  --surface-elevated: #e6eef5;
+  --border: #E2E8F0;
+  --border-strong: #1E1B16;
+  /* Tương phản trên nền sáng: navy ≈ 14:1, phụ ≈ 7:1, mờ ≈ 4.6:1. */
+  --text: #0f2440;
+  --text-secondary: #3d5470;
+  --text-muted: #64748b;
+  --focus-ring: rgba(14, 116, 144, 0.4);
+  /* Bóng pop: mềm trung tính cho card thường. Card sticker dùng bóng lệch cứng
+     (class .pop-card), không dùng shadow token. */
+  --shadow-sm: 0 1px 2px rgba(20, 30, 50, 0.08);
+  --shadow-md: 0 8px 24px rgba(20, 30, 50, 0.08);
+  --shadow-lg: 0 12px 32px rgba(20, 30, 50, 0.1);
   --radius-sm: 8px;
   --radius-md: 10px;
   --radius-lg: 12px;
@@ -77,9 +72,9 @@
   --color-primary-hover: var(--primary-hover);
   --color-primary-light: var(--primary-light);
   --color-secondary: var(--secondary);
-  /* Trước đây foreground là #ffffff trên nền #A78BFA -> chỉ 2.7:1, gần
-     như không đọc được. Dùng navy đậm: 6.6:1. */
-  --color-secondary-foreground: #FFFFFF;
+  /* Hồng nhạt nên foreground phải là mực (≈8:1) — trắng trên hồng nhạt
+     gần như vô hình. Áp dụng cho nút/badge secondary. */
+  --color-secondary-foreground: #1E1B16;
   --color-secondary-light: var(--secondary-light);
   /* LƯU Ý: `text-muted` được dùng 76 chỗ trong code (tiêu đề bảng, nhãn,
      mô tả) và trước đây trỏ tới `--surface-hover` — tức CHỮ lại có màu
@@ -92,9 +87,8 @@
      badge winner). Muốn chữ màu lime thì dùng `text-accent-ink`. */
   --color-accent: var(--accent);
   --color-accent-light: var(--accent-light);
-  /* Nền lime sáng nên foreground phải là mực đậm (≈13:1) — không dùng trắng.
-     Giữ nguyên: dropdown/select focus dùng bg-accent + text-accent-foreground. */
-  --color-accent-foreground: #16200A;
+  /* Focus item trong dropdown/select: nền xanh + chữ trắng. */
+  --color-accent-foreground: #FFFFFF;
   /* Chữ/ icon muốn "vàng-lime" thì dùng token này để đạt AA trên nền giấy. */
   --color-accent-ink: var(--accent-ink);
   --color-neon-pink: var(--neon-pink);
@@ -122,13 +116,15 @@
   --color-text-secondary: var(--text-secondary);
   --color-text-muted: var(--text-muted);
   /* ── Bảng màu nâng cao cho code dùng tên màu quen thuộc ──
-     `text-sky` = phấn xanh trời #93B8DE (icon, focus, link phụ).
-     `text-violet` = phấn tím nhạt #B4A5D8 (nhãn phụ, kiệm dùng).
-     `text-amber` = phấn vàng #EDB72E (huy chương / "xuất sắc" / #1). */
-  --color-sky: #93B8DE;
-  --color-info: #93B8DE;
-  --color-violet: #B4A5D8;
-  --color-amber: #EDB72E;
+     `text-sky` = xanh dương đậm #175CD3 (icon, focus, link phụ).
+     `text-violet` = tím đậm #6941C6 (nhãn phụ, kiệm dùng).
+     `text-amber`/`bg-amber` = VÀNG TƯƠI #FFC531 — chỉ làm nền/chấm/shape,
+     KHÔNG làm chữ trên kem (1.6:1). Chữ vàng dùng `text-amber-ink`. */
+  --color-sky: #175CD3;
+  --color-info: #175CD3;
+  --color-violet: #6941C6;
+  --color-amber: #FFC531;
+  --color-amber-ink: #9A6200;
   --color-canvas: var(--bg);
   --font-sans: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
@@ -154,15 +150,15 @@ html {
   font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color-scheme: dark;
+  color-scheme: light;
 }
 
-/* Input/select/textarea native trên nền tối */
+/* Input/select/textarea native trên nền sáng */
 input,
 textarea,
 select,
 button {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 input::placeholder,
@@ -172,8 +168,12 @@ textarea::placeholder {
 }
 
 body {
-  /* Nền bảng đen phẳng — KHÔNG gradient trang trí (DESIGN-V2-BANG-DEN.md §3). */
+  /* Nền sáng xanh xám + quầng nhạt cố định kiểu bản prototype. */
   background-color: var(--bg);
+  background-image:
+    radial-gradient(700px 320px at 88% -60px, #d8ecf7 0%, transparent 60%),
+    radial-gradient(640px 300px at -80px 30%, #e6e1f8 0%, transparent 55%);
+  background-attachment: fixed;
   color: var(--text);
   margin: 0;
   min-height: 100vh;
@@ -729,11 +729,66 @@ select {
 
 /* ============ Nền app tối kiểu đấu trường ============ */
 
-/* Nền app: bảng đen phẳng. Bỏ 3 quầng radial-gradient cũ (anti AI-slop —
-   DESIGN-V2-BANG-DEN.md §3: gradient chỉ khi có semantic, không "cho đẹp"). */
+/* Nền app theo body (sáng + quầng nhạt). Giữ class để không phải sửa layout. */
 .bg-hello {
-  background: var(--bg);
+  background: transparent;
 }
+
+/* ============ Sticker Pop utilities (DESIGN-V3-POP.md §3) ============ */
+
+/* Card sticker: trắng + viền mực 2px + bóng lệch cứng. Chỉ dùng cho
+   hero/highlight — card thường dùng border mảnh + bóng mềm. */
+.pop-card {
+  background: var(--surface);
+  border: 2px solid var(--text);
+  border-radius: 20px;
+  box-shadow: 4px 4px 0 var(--text);
+}
+
+/* Sticker pill: viền mực, nền pastel, chữ mực. Không chữ trắng trên nền tươi. */
+.sticker {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 2px solid var(--text);
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  color: var(--text);
+  background: #FFE08A;
+  white-space: nowrap;
+}
+.sticker-tilt { rotate: -2deg; }
+.sticker-tilt-r { rotate: 2deg; }
+.sticker-pink { background: #FFC9D9; }
+.sticker-green { background: #B9E8C9; }
+.sticker-blue { background: #BCD6FF; }
+.sticker-purple { background: #D9C8FF; }
+.sticker-orange { background: #FFCFA8; }
+.sticker-white { background: #FFFFFF; }
+.sticker-ink { background: var(--text); color: var(--bg); }
+
+/* Huy chương hạng: #1 vàng, #2 bạc, #3 đồng — chữ mực. */
+.medal {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  border-radius: 50%;
+  border: 2px solid var(--text);
+  background: #FFFFFF;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text);
+}
+.medal-1 { background: #FFC531; }
+.medal-2 { background: #E8E2D4; }
+.medal-3 { background: #F0B27A; }
 
 /* ============ Welcome Scene: Robot idle animations ============ */
 

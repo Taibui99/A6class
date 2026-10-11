@@ -3,19 +3,16 @@
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
 
-import { Mascot, type MascotFace } from "@/components/mascot";
 import { cn } from "@/lib/utils";
 
 /**
  * Splash thuần vector — không dùng ảnh nào.
- * Nền aurora chuyển động + sao nhấp nháy + vòng quỹ đạo + linh vật robot
- * bay vào rồi vẫy tay, logo ánh sáng quét, thanh tiến trình thật.
+ * Nền navy + quầng teal/xanh + sao nhấp nháy + vòng quỹ đạo + mark A6 vàng,
+ * chữ quét sáng, thanh tiến trình thật. Cùng ngôn ngữ với bản prototype.
  */
 
 const RUN_MS = 1500;
 const FADE_MS = 400;
-
-const FACES: MascotFace[] = ["friendly", "happy", "wink", "love"];
 
 // Theo dõi trạng thái "đã hydration xong" mà không cần setState trong effect.
 // Trả false khi SSR/hydration, true ngay sau khi client mount — đây là cách
@@ -42,7 +39,6 @@ export function SplashScreen() {
   const reduced = useSyncExternalStore(subscribeReduced, getReduced, getServerSnapshot);
   const [stage, setStage] = useState<"run" | "fade" | "gone">("run");
   const [progress, setProgress] = useState(0);
-  const [face, setFace] = useState<MascotFace>("friendly");
   const startedAt = useRef<number>(0);
 
   // Splash hiện trên trang không phải trang chủ sau khi hydration xong.
@@ -81,18 +77,11 @@ export function SplashScreen() {
     };
     raf = requestAnimationFrame(tick);
 
-    // Đổi biểu cảm linh vật theo nhịp.
-    const faces = window.setInterval(
-      () => setFace((f) => FACES[(FACES.indexOf(f) + 1) % FACES.length]),
-      760,
-    );
-
     const t1 = window.setTimeout(() => setStage("fade"), RUN_MS);
     const t2 = window.setTimeout(() => setStage("gone"), RUN_MS + FADE_MS);
 
     return () => {
       cancelAnimationFrame(raf);
-      window.clearInterval(faces);
       window.clearTimeout(t1);
       window.clearTimeout(t2);
     };
@@ -123,8 +112,11 @@ export function SplashScreen() {
       role="status"
       aria-live="polite"
       aria-label="Đang tải A6Class"
+      style={{
+        background: "linear-gradient(160deg,#0d2540 0%,#0a182e 100%)",
+      }}
       className={cn(
-        "splash-portal fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-[var(--bg)]",
+        "splash-portal fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden",
         stage === "fade" && "splash-hide",
       )}
     >
@@ -135,7 +127,7 @@ export function SplashScreen() {
           style={{
             left: "8%",
             top: "-14%",
-            background: "radial-gradient(circle,#3B82F6,transparent 68%)",
+            background: "radial-gradient(circle,rgba(37,99,235,.5),transparent 68%)",
             opacity: 0.55,
           }}
         />
@@ -144,7 +136,7 @@ export function SplashScreen() {
           style={{
             right: "4%",
             top: "18%",
-            background: "radial-gradient(circle,#A855F7,transparent 68%)",
+            background: "radial-gradient(circle,rgba(14,116,144,.5),transparent 68%)",
             opacity: 0.42,
             animationDelay: "-4s",
           }}
@@ -154,7 +146,7 @@ export function SplashScreen() {
           style={{
             left: "26%",
             bottom: "-22%",
-            background: "radial-gradient(circle,#06B6D4,transparent 68%)",
+            background: "radial-gradient(circle,rgba(37,99,235,.35),transparent 68%)",
             opacity: 0.34,
             animationDelay: "-8s",
           }}
@@ -175,22 +167,9 @@ export function SplashScreen() {
           />
         ))}
 
-        {/* Lưới perspective */}
-        <div
-          className="absolute inset-x-0 bottom-0 h-1/2 opacity-[0.16]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(147,197,253,.55) 1px, transparent 1px), linear-gradient(90deg, rgba(147,197,253,.55) 1px, transparent 1px)",
-            backgroundSize: "46px 46px",
-            transform: "perspective(520px) rotateX(66deg)",
-            transformOrigin: "bottom",
-            maskImage: "linear-gradient(to top, #000, transparent 78%)",
-            WebkitMaskImage: "linear-gradient(to top, #000, transparent 78%)",
-          }}
-        />
       </div>
 
-      {/* ── Vòng quỹ đạo sau linh vật ──────────────────────── */}
+      {/* ── Vòng quỹ đạo sau mark ──────────────────────── */}
       <div
         aria-hidden
         className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
@@ -201,7 +180,7 @@ export function SplashScreen() {
             key={i}
             className="splash-ring absolute inset-0 rounded-full"
             style={{
-              border: `1px solid rgba(147,197,253,${0.3 - i * 0.07})`,
+              border: `1px solid rgba(255,255,255,${0.28 - i * 0.06})`,
               animationDuration: `${16 + i * 7}s`,
               animationDelay: `${-i * 5}s`,
               animationDirection: i % 2 === 0 ? "normal" : "reverse",
@@ -210,11 +189,48 @@ export function SplashScreen() {
         ))}
       </div>
 
-      {/* ── Linh vật ──────────────────────────────────────── */}
+      {/* ── Mark A6 vàng ─────────────────────────────── */}
       <div className="relative z-10 flex flex-col items-center">
         <div className="splash-mascot-in">
           <div className="splash-mascot-float">
-            <Mascot size={132} face={face} className="splash-mascot-wave" />
+            <svg
+              viewBox="6 4 78 70"
+              width="132"
+              height="132"
+              role="img"
+              aria-label="A6Class"
+              style={{ overflow: "visible" }}
+            >
+              <defs>
+                <linearGradient
+                  id="splashApex"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="100%"
+                >
+                  <stop offset="0%" stopColor="#FFD964" />
+                  <stop offset="55%" stopColor="#FFC531" />
+                  <stop offset="100%" stopColor="#F5A800" />
+                </linearGradient>
+              </defs>
+              <path
+                d="M 18,62 L 38,16 L 58,62 H 44 L 38,48 H 28"
+                stroke="url(#splashApex)"
+                strokeWidth="7"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+              />
+              <path
+                d="M 58,62 C 68,62 72,52 70,42 C 67,32 54,32 46,40 C 40,46 42,58 52,60 C 60,61 66,54 64,44"
+                stroke="url(#splashApex)"
+                strokeWidth="6.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+              />
+            </svg>
           </div>
           {/* Quầng sáng dưới chân */}
           <div
@@ -240,11 +256,11 @@ export function SplashScreen() {
               style={{
                 animationDelay: `${420 + i * 70}ms`,
                 background:
-                  "linear-gradient(180deg,#FFFFFF 30%,#93C5FD 72%,#3B82F6)",
+                  "linear-gradient(180deg,#FFFFFF 35%,#BAE6FD 75%,#38BDF8)",
                 WebkitBackgroundClip: "text",
                 backgroundClip: "text",
                 color: "transparent",
-                textShadow: "0 6px 26px rgba(59,130,246,.42)",
+                textShadow: "0 6px 26px rgba(56,189,248,.35)",
               }}
             >
               {ch}
@@ -257,7 +273,7 @@ export function SplashScreen() {
           />
         </h1>
 
-        <p className="splash-fade-in mt-1.5 text-[10px] font-bold uppercase tracking-[0.42em] text-sky-300/70 sm:text-xs">
+        <p className="splash-fade-in mt-1.5 text-[10px] font-bold uppercase tracking-[0.42em] text-white/60 sm:text-xs">
           Ngôi nhà số của lớp 12A6
         </p>
 
@@ -278,13 +294,13 @@ export function SplashScreen() {
               className="h-full rounded-full"
               style={{
                 width: `${shownProgress}%`,
-                background: "linear-gradient(90deg,#00F2FE,#4FACFE)",
-                boxShadow: "0 0 14px rgba(167,139,250,.7)",
+                background: "linear-gradient(90deg,#0e7490,#38bdf8)",
+                boxShadow: "0 0 14px rgba(56,189,248,.7)",
                 transition: "width 90ms linear",
               }}
             />
           </div>
-          <p className="mt-2.5 text-center text-[11px] font-semibold tabular-nums text-sky-200/70">
+          <p className="mt-2.5 text-center text-[11px] font-semibold tabular-nums text-white/60">
             Đang mở ngôi nhà của lớp… {shownProgress}%
           </p>
         </div>

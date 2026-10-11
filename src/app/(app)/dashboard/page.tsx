@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
+  Activity,
   ArrowRight,
   ListTodo,
   Megaphone,
@@ -11,11 +12,14 @@ import {
 
 import { getCurrentUser } from "@/lib/auth/current";
 import {
+  getDailyPoints,
   getDashboardSummary,
   getRecentActivities,
   getScoreboard,
   getTodayTeamDeltas,
 } from "@/lib/dashboard";
+import { getAbsentCount } from "@/lib/attendance/service";
+import { getTodaySubjects } from "@/lib/timetable/service";
 import { getClassTasks } from "@/lib/tasks/service";
 import { prisma } from "@/lib/prisma";
 import { cn, formatNumber, formatRelativeTime } from "@/lib/utils";
@@ -28,6 +32,7 @@ import {
 // bảng xếp hạng bịa sẽ khiến thầy cô tưởng lớp đã có điểm thi đua.
 // Bố cục theo DESIGN-REDESIGN.md §5.2: hero trạng thái lớp (P0) →
 // leaderboard là hero content (P1) → việc cần chốt (P2) → bảng tin (P4).
+// Phủ pop Gen-Z (DESIGN-V3-POP.md §4): hero vàng sticker, medal tròn, viền mực.
 
 type ClassTask = Awaited<ReturnType<typeof getClassTasks>>[number];
 
@@ -69,7 +74,7 @@ function taskUrgency(task: ClassTask, now: Date): 0 | 1 | 2 | 3 {
 function taskState(task: ClassTask, now: Date) {
   const urgency = taskUrgency(task, now);
   if (urgency === 0) return { dot: "bg-danger", label: "Quá hạn", labelColor: "text-danger" };
-  if (urgency === 1) return { dot: "bg-amber", label: "Hôm nay", labelColor: "text-amber" };
+  if (urgency === 1) return { dot: "bg-amber", label: "Hôm nay", labelColor: "text-amber-ink" };
   if (urgency === 3) return { dot: "bg-success", label: "Đã xong", labelColor: "text-success" };
   if (task.deadline) {
     const days = Math.max(
@@ -79,6 +84,24 @@ function taskState(task: ClassTask, now: Date) {
     return { dot: "bg-border-strong", label: `Còn ${days} ngày`, labelColor: "text-text-muted" };
   }
   return { dot: "bg-border-strong", label: "Trong tuần", labelColor: "text-text-muted" };
+}
+
+/** Đường cong mượt qua các điểm (Catmull-Rom → bezier) cho biểu đồ vùng. */
+function smoothPath(pts: [number, number][]): string {
+  const r1 = (n: number) => Math.round(n * 10) / 10;
+  let d = `M ${pts[0][0]} ${pts[0][1]}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[Math.max(0, i - 1)];
+    const p1 = pts[i];
+    const p2 = pts[i + 1];
+    const p3 = pts[Math.min(pts.length - 1, i + 2)];
+    const c1x = p1[0] + (p2[0] - p0[0]) / 6;
+    const c1y = p1[1] + (p2[1] - p0[1]) / 6;
+    const c2x = p2[0] - (p3[0] - p1[0]) / 6;
+    const c2y = p2[1] - (p3[1] - p1[1]) / 6;
+    d += ` C ${r1(c1x)} ${r1(c1y)} ${r1(c2x)} ${r1(c2y)} ${p2[0]} ${p2[1]}`;
+  }
+  return d;
 }
 
 function SectionHeader({
@@ -97,8 +120,8 @@ function SectionHeader({
   return (
     <header className="flex items-end justify-between gap-3">
       <div className="min-w-0">
-        <h2 className="flex items-center gap-2 text-base font-bold text-text">
-          <Icon className="size-4 shrink-0 text-text-muted" aria-hidden />
+        <h2 className="flex items-center gap-2 text-base font-extrabold tracking-tight text-text">
+          <Icon className="size-4 shrink-0 text-accent-ink" aria-hidden />
           {title}
         </h2>
         <p className="mt-0.5 text-xs text-text-muted">{subtitle}</p>
@@ -106,7 +129,7 @@ function SectionHeader({
       {linkLabel && href && (
         <Link
           href={href}
-          className="inline-flex shrink-0 items-center gap-1 text-xs font-bold text-primary transition-colors hover:underline"
+          className="inline-flex shrink-0 items-center gap-1 text-xs font-bold text-primary transition-colors hover:text-accent-ink hover:underline"
         >
           {linkLabel} <ArrowRight className="size-3.5" aria-hidden />
         </Link>
@@ -130,6 +153,12 @@ export default async function DashboardPage() {
   ]);
 
   const now = new Date();
+  const todayISOStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  const jsDay = now.getDay();
+  const todayLabel =
+    jsDay >= 1 && jsDay <= 6
+      ? ["T2", "T3", "T4", "T5", "T6", "T7"][jsDay - 1]
+      : "Chủ nhật";
   const hour = now.getHours();
   const greeting =
     hour < 12 ? "Chào buổi sáng" : hour < 18 ? "Chào buổi chiều" : "Chào buổi tối";
@@ -164,7 +193,7 @@ export default async function DashboardPage() {
 
   const classId = data?.classId ?? null;
 
-  const [scoreboard, activities, criteriaCount, deltas, myTaskIds, pointRows] =
+  const [scoreboard, activities, criteriaCount, deltas, myTaskIds, pointRows, dailyWeek, absentToday, todaySubjects] =
     classId
       ? await Promise.all([
           getScoreboard(classId),
@@ -182,6 +211,9 @@ export default async function DashboardPage() {
                 _sum: { amount: true },
               })
             : Promise.resolve([]),
+          getDailyPoints(classId),
+          getAbsentCount(classId, todayISOStr),
+          getTodaySubjects(classId, jsDay),
         ])
       : [
           { teams: [], students: [] },
@@ -190,6 +222,9 @@ export default async function DashboardPage() {
           {} as Record<string, number>,
           [] as { taskId: string }[],
           [] as unknown[],
+          [] as { key: string; label: string; total: number; isToday: boolean }[],
+          0,
+          [] as string[],
         ];
   const myTaskIdSet = new Set(myTaskIds.map((a) => a.taskId));
 
@@ -258,104 +293,143 @@ export default async function DashboardPage() {
 
   const announcements = data?.announcements ?? [];
 
+  // Hình học biểu đồ vùng 7 ngày (server-render SVG, không cần JS client).
+  const maxDay = Math.max(1, ...dailyWeek.map((d) => d.total));
+  const chartW = 320;
+  const chartBase = 142;
+  const chartX = (i: number) =>
+    14 + (i * (chartW - 28)) / Math.max(1, dailyWeek.length - 1);
+  const chartY = (v: number) => 12 + 120 * (1 - v / maxDay);
+  const chartPts = dailyWeek.map(
+    (d, i) => [chartX(i), chartY(d.total)] as [number, number]
+  );
+  const chartLine = dailyWeek.length > 1 ? smoothPath(chartPts) : "";
+  const chartArea = dailyWeek.length
+    ? `${chartLine} L ${chartX(dailyWeek.length - 1)} ${chartBase} L ${chartX(0)} ${chartBase} Z`
+    : "";
+
   return (
     <div className="space-y-6">
       {isTeacher && activityItems.length > 0 && (
         <TeacherActivityDialog activities={activityItems} />
       )}
 
-      {/* ── P0 · Hero trạng thái lớp (~300px, phẳng, không gradient) ── */}
-      <section className="rounded-2xl border border-border bg-surface px-5 py-7 sm:px-7 sm:py-8">
-        <p className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-text-muted">
+      {/* ── P0 · Hero trạng thái lớp — gradient teal→xanh kiểu bản prototype ── */}
+      <section className="rounded-[24px] bg-gradient-to-br from-[#0b5b72] via-[#0e7490] to-[#2563eb] px-5 py-7 text-white shadow-xl sm:px-7 sm:py-8">
+        <p className="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-white/70">
           <span>
             {classLabel} · {dateLabel}
           </span>
           {roleLabel && (
-            <span className="rounded-md bg-surface-hover px-2 py-0.5 text-[10px] font-extrabold tracking-normal text-text-secondary">
+            <span className="rounded-full border border-white/40 bg-white/15 px-2 py-0.5 text-[10px] font-extrabold tracking-normal text-white">
               {roleLabel}
             </span>
           )}
         </p>
 
-        <div className="mt-4 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+        <div className="mt-4 min-w-0">
           <div className="min-w-0">
-            <p className="text-sm text-text-secondary">
+            <p className="text-sm text-white/80">
               {greeting}, {firstName}.
             </p>
-            <h1 className="mt-1 text-xl font-extrabold tracking-tight text-text sm:text-2xl">
+            <h1 className="mt-1 text-xl font-extrabold tracking-tight text-white sm:text-2xl">
               {headline}
             </h1>
             <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-text-secondary">
               {studentCount > 0 && (
                 <>
-                  <span className="font-semibold text-text">{studentCount} bạn</span>
+                  <span className="font-semibold text-white">{studentCount} bạn</span>
                   <span aria-hidden>·</span>
                 </>
               )}
-              <span className="font-semibold text-text">{openTaskCount} việc</span>
+              <span className="font-semibold text-white">{openTaskCount} việc</span>
               <span aria-hidden>·</span>
               {topTeam ? (
-                <span className="font-semibold text-text">
+                <span className="font-semibold text-white">
                   #1 {topTeam.name}
                 </span>
               ) : (
                 <span>chưa có tổ</span>
               )}
+              {absentToday > 0 && (
+                <>
+                  <span aria-hidden>·</span>
+                  <span className="font-semibold text-white">
+                    vắng {absentToday} bạn
+                  </span>
+                </>
+              )}
             </p>
           </div>
 
-          {/* Số của vai trò — text thuần, không card con */}
+          {/* Số của vai trò — 4 thẻ gradient kiểu bản prototype */}
           {roleGroup === "teacher" ? (
-            <div className="flex gap-7 md:shrink-0 md:text-right">
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-wide text-text-muted">
+            <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+              <div className="rounded-2xl bg-gradient-to-br from-[#0284c7] to-[#38bdf8] p-4 text-white shadow">
+                <p className="text-[11px] font-bold uppercase tracking-wide text-white/75">
+                  Sĩ số
+                </p>
+                <p className="mt-0.5 text-xl font-extrabold tabular-nums">
+                  {studentCount}
+                </p>
+              </div>
+              <div className="rounded-2xl bg-gradient-to-br from-[#d97706] to-[#fbbf24] p-4 text-white shadow">
+                <p className="text-[11px] font-bold uppercase tracking-wide text-white/75">
                   Việc đã chốt
                 </p>
-                <p className="mt-0.5 text-xl font-extrabold tabular-nums text-text">
+                <p className="mt-0.5 text-xl font-extrabold tabular-nums">
                   {classTasks.filter((t) => t.status === DONE).length}/{classTasks.length}
                 </p>
               </div>
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-wide text-text-muted">
+              <div className="rounded-2xl bg-gradient-to-br from-[#7c3aed] to-[#a78bfa] p-4 text-white shadow">
+                <p className="text-[11px] font-bold uppercase tracking-wide text-white/75">
                   Bạn đã có điểm
                 </p>
-                <p className="mt-0.5 text-xl font-extrabold tabular-nums text-text">
+                <p className="mt-0.5 text-xl font-extrabold tabular-nums">
                   {pointRows.length}/{studentCount}
                 </p>
               </div>
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-wide text-text-muted">
+              <div className="rounded-2xl bg-gradient-to-br from-[#059669] to-[#34d399] p-4 text-white shadow">
+                <p className="text-[11px] font-bold uppercase tracking-wide text-white/75">
                   Tiêu chí
                 </p>
-                <p className="mt-0.5 text-xl font-extrabold tabular-nums text-text">
+                <p className="mt-0.5 text-xl font-extrabold tabular-nums">
                   {criteriaCount}
                 </p>
               </div>
             </div>
           ) : (
-            <div className="flex gap-7 md:shrink-0 md:text-right">
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-wide text-text-muted">
+            <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+              <div className="rounded-2xl bg-gradient-to-br from-[#0284c7] to-[#38bdf8] p-4 text-white shadow">
+                <p className="text-[11px] font-bold uppercase tracking-wide text-white/75">
                   Điểm của bạn
                 </p>
-                <p className="mt-0.5 text-xl font-extrabold tabular-nums text-text">
+                <p className="mt-0.5 text-xl font-extrabold tabular-nums">
                   {formatNumber(data?.totalPoints ?? 0)}
                 </p>
               </div>
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-wide text-text-muted">
+              <div className="rounded-2xl bg-gradient-to-br from-[#d97706] to-[#fbbf24] p-4 text-white shadow">
+                <p className="text-[11px] font-bold uppercase tracking-wide text-white/75">
                   Hạng cá nhân
                 </p>
-                <p className="mt-0.5 text-xl font-extrabold tabular-nums text-text">
+                <p className="mt-0.5 text-xl font-extrabold tabular-nums">
                   {data?.personalRank ? `#${data.personalRank}` : "—"}
                 </p>
               </div>
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-wide text-text-muted">
+              <div className="rounded-2xl bg-gradient-to-br from-[#7c3aed] to-[#a78bfa] p-4 text-white shadow">
+                <p className="text-[11px] font-bold uppercase tracking-wide text-white/75">
                   Tổ của bạn
                 </p>
-                <p className="mt-0.5 truncate text-xl font-extrabold text-text">
+                <p className="mt-0.5 truncate text-xl font-extrabold">
                   {data?.team?.name ?? "Chưa vào tổ"}
+                </p>
+              </div>
+              <div className="rounded-2xl bg-gradient-to-br from-[#059669] to-[#34d399] p-4 text-white shadow">
+                <p className="text-[11px] font-bold uppercase tracking-wide text-white/75">
+                  Việc chưa xong
+                </p>
+                <p className="mt-0.5 text-xl font-extrabold tabular-nums">
+                  {scopedTasks.filter((t) => t.status !== DONE).length}
                 </p>
               </div>
             </div>
@@ -363,16 +437,16 @@ export default async function DashboardPage() {
         </div>
 
         {/* Lối tắt — launchpad theo vai trò, không lặp lại nav bằng chữ */}
-        <div className="mt-5 flex flex-wrap gap-2 border-t border-border pt-4">
+        <div className="mt-5 flex flex-wrap gap-2.5 border-t border-white/20 pt-4">
           {ctas.map((cta) => (
             <Link
               key={cta.href + cta.label}
               href={cta.href}
               className={cn(
-                "inline-flex h-9 items-center rounded-lg px-4 text-sm font-bold transition-colors",
+                "inline-flex h-10 items-center rounded-2xl px-4 text-sm font-extrabold transition-all",
                 cta.primary
-                  ? "bg-primary text-primary-foreground hover:bg-primary-hover"
-                  : "border border-border bg-surface text-text hover:bg-surface-hover"
+                  ? "bg-white text-[#0b3b4d] shadow-lg hover:bg-white/90 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                  : "border border-white/50 bg-transparent text-white hover:bg-white/10"
               )}
             >
               {cta.label}
@@ -381,9 +455,34 @@ export default async function DashboardPage() {
         </div>
       </section>
 
+      {/* ── Dải tiết học hôm nay (giống demo) — chỉ hiện khi có TKB ── */}
+      {todaySubjects.some((s) => s) && (
+        <section
+          aria-label={`Tiết học hôm nay ${todayLabel}`}
+          className="rounded-2xl border border-border bg-surface px-5 py-4 shadow-md sm:px-6"
+        >
+          <div className="flex items-center gap-2 overflow-x-auto">
+            <span className="shrink-0 text-xs font-extrabold uppercase tracking-wide text-text-muted">
+              Hôm nay · {todayLabel}
+            </span>
+            {todaySubjects.map(
+              (s, i) =>
+                s && (
+                  <span
+                    key={i}
+                    className="shrink-0 rounded-xl bg-primary-light px-3 py-1.5 text-xs font-bold text-primary"
+                  >
+                    T{i + 1} · {s}
+                  </span>
+                )
+            )}
+          </div>
+        </section>
+      )}
+
       <div className="grid gap-6 lg:grid-cols-2">
         {/* ── P1 · Leaderboard là hero content ─────────────── */}
-        <section className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
+        <section className="rounded-[20px] border border-border bg-surface p-5 shadow-md sm:p-6">
           <SectionHeader
             icon={Trophy}
             title="Tổ nào đang dẫn?"
@@ -414,10 +513,8 @@ export default async function DashboardPage() {
                     >
                       <span
                         className={cn(
-                          "grid size-9 shrink-0 place-items-center rounded-lg font-extrabold tabular-nums",
-                          isTop
-                            ? "bg-accent-light text-lg text-accent-ink"
-                            : "bg-surface-hover text-sm text-text-secondary"
+                          "medal tabular-nums",
+                          isTop ? "medal-1 text-base" : "text-[13px]"
                         )}
                         aria-hidden
                       >
@@ -447,6 +544,17 @@ export default async function DashboardPage() {
                           <span aria-hidden>·</span>
                           <span>{team.memberCount} thành viên</span>
                         </p>
+                        <div
+                          className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-primary-light"
+                          aria-hidden
+                        >
+                          <div
+                            className="h-full rounded-full bg-gradient-to-r from-[#0e7490] to-[#2563eb]"
+                            style={{
+                              width: `${Math.max(4, Math.round((team.totalScore / (topTeam?.totalScore || 1)) * 100))}%`,
+                            }}
+                          />
+                        </div>
                       </div>
 
                       <p
@@ -488,7 +596,7 @@ export default async function DashboardPage() {
         </section>
 
         {/* ── P2 · Việc cần chốt — 3 việc, trạng thái thấy 0,5s ── */}
-        <section className="flex flex-col rounded-2xl border border-border bg-surface p-5 sm:p-6">
+        <section className="flex flex-col rounded-[20px] border border-border bg-surface p-5 shadow-md sm:p-6">
           <SectionHeader
             icon={ListTodo}
             title={
@@ -542,7 +650,7 @@ export default async function DashboardPage() {
                     </Link>
                     <Link
                       href="/feed"
-                      className="inline-flex h-9 items-center rounded-lg border border-border bg-surface px-4 text-sm font-bold text-text transition-colors hover:bg-surface-hover"
+                      className="inline-flex h-9 items-center rounded-2xl border-2 border-[#1E1B16] bg-white px-4 text-sm font-bold text-[#1E1B16] transition-colors hover:bg-surface-hover"
                     >
                       Bảng tin lớp
                     </Link>
@@ -564,7 +672,7 @@ export default async function DashboardPage() {
                     </Link>
                     <Link
                       href="/achievements"
-                      className="inline-flex h-9 items-center rounded-lg border border-border bg-surface px-4 text-sm font-bold text-text transition-colors hover:bg-surface-hover"
+                      className="inline-flex h-9 items-center rounded-2xl border-2 border-[#1E1B16] bg-white px-4 text-sm font-bold text-[#1E1B16] transition-colors hover:bg-surface-hover"
                     >
                       Bảng thành tích
                     </Link>
@@ -612,8 +720,88 @@ export default async function DashboardPage() {
         </section>
       </div>
 
+      {/* ── P3 · Nhịp thi đua 7 ngày + P4 · Bảng tin ─────────── */}
+      <div className="grid gap-6 lg:grid-cols-2">
+      <section className="rounded-[20px] border border-border bg-surface p-5 shadow-md sm:p-6">
+        <SectionHeader
+          icon={Activity}
+          title="Nhịp thi đua 7 ngày"
+          subtitle="Điểm cộng mỗi ngày"
+        />
+        <svg
+          viewBox="0 0 320 175"
+          className="mt-4 w-full"
+          role="img"
+          aria-label="Biểu đồ điểm thi đua 7 ngày gần nhất"
+        >
+          <defs>
+            <linearGradient id="dashArea" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#0e7490" stopOpacity="0.35" />
+              <stop offset="100%" stopColor="#0e7490" stopOpacity="0.03" />
+            </linearGradient>
+          </defs>
+          {[0.25, 0.5, 0.75].map((f) => (
+            <line
+              key={f}
+              x1="14"
+              y1={12 + 120 * (1 - f)}
+              x2={chartW - 14}
+              y2={12 + 120 * (1 - f)}
+              stroke="currentColor"
+              opacity="0.12"
+            />
+          ))}
+          {chartArea && <path d={chartArea} fill="url(#dashArea)" />}
+          {chartLine && (
+            <path
+              d={chartLine}
+              fill="none"
+              stroke="#0e7490"
+              strokeWidth="2.8"
+              strokeLinecap="round"
+            />
+          )}
+          {dailyWeek.map((d, i) => (
+            <g key={d.key}>
+              {d.total > 0 && (
+                <text
+                  x={chartX(i)}
+                  y={chartY(d.total) - 9}
+                  textAnchor="middle"
+                  fontSize="10"
+                  fontWeight="700"
+                  fill="currentColor"
+                  opacity="0.75"
+                >
+                  {d.total}
+                </text>
+              )}
+              <circle
+                cx={chartX(i)}
+                cy={chartY(d.total)}
+                r={d.isToday ? 5 : 3.6}
+                fill={d.isToday ? "#fbbf24" : "#ffffff"}
+                stroke={d.isToday ? "#b45309" : "#0e7490"}
+                strokeWidth="2.6"
+              />
+              <text
+                x={chartX(i)}
+                y="162"
+                textAnchor="middle"
+                fontSize="10.5"
+                fontWeight={d.isToday ? 800 : 600}
+                fill="currentColor"
+                opacity={d.isToday ? 1 : 0.55}
+              >
+                {d.label}
+              </text>
+            </g>
+          ))}
+        </svg>
+      </section>
+
       {/* ── P4 · Bảng tin — flatten, divider + timestamp ──────── */}
-      <section className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
+      <section className="rounded-[20px] border border-border bg-surface p-5 shadow-md sm:p-6">
         <SectionHeader
           icon={Megaphone}
           title={`Bảng tin ${classLabel}`}
@@ -631,7 +819,7 @@ export default async function DashboardPage() {
                 key={a.id}
                 className="flex gap-3 border-b border-border py-3.5 last:border-b-0"
               >
-                <Pin className="mt-0.5 size-4 shrink-0 text-text-muted" aria-hidden />
+                <Pin className="mt-0.5 size-4 shrink-0 text-accent-ink" aria-hidden />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold text-text">{a.title}</p>
                   {a.content && (
@@ -648,6 +836,7 @@ export default async function DashboardPage() {
           )}
         </ul>
       </section>
+      </div>
     </div>
   );
 }

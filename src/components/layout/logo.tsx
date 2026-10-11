@@ -7,9 +7,9 @@ const sizes = {
 } as const;
 
 /**
- * Logo A6Class bản "Bảng đen & Phấn": chữ A + số 6 vẽ bằng nét phấn vàng
- * phẳng #EDB72E, chữ "A6" kem phấn, chữ "CLASS" phấn vàng, chấm vàng gold.
- * Phẳng tuyệt đối (không gradient) để hợp theme bảng đen.
+ * Logo A6Class bản "Pop Gen-Z": chữ A + số 6 nét vàng kẹo, chữ "A6" ăn theo
+ * màu chữ cha (currentColor — nền sáng ra mực, nền tối ra kem), chữ "CLASS"
+ * hồng pop, chấm vàng. Vui nhưng phẳng.
  *
  * `id` cố định vì mọi bản sao đều vẽ cùng một gradient: trình duyệt lấy
  * định nghĩa đầu tiên, mà các bản sao giống hệt nhau nên không sai khác.
@@ -32,16 +32,16 @@ export function Logo({
     >
       <defs>
         <linearGradient id="a6apexGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#F5C943" />
-          <stop offset="55%" stopColor="#EDB72E" />
-          <stop offset="100%" stopColor="#D9A01F" />
+          <stop offset="0%" stopColor="#FFD964" />
+          <stop offset="55%" stopColor="#FFC531" />
+          <stop offset="100%" stopColor="#F5A800" />
         </linearGradient>
         <filter id="a6apexGlow" x="-20%" y="-20%" width="140%" height="140%">
           <feDropShadow
             dx="0"
             dy="4"
             stdDeviation="6"
-            floodColor="#EDB72E"
+            floodColor="#FFC531"
             floodOpacity="0.3"
           />
         </filter>
@@ -66,22 +66,22 @@ export function Logo({
         />
       </g>
 
-      {/* "A6" kem phấn #F7F2E6 để đọc được trên nền bảng đen (bản cũ dùng
-          navy #0B1220 — gần như tàng hình trên nền tối). Màu viết thẳng hex
-          để logo không phụ thuộc token ngoài — dùng được cả ngoài app. */}
+      {/* "A6" ăn theo màu chữ của cha (currentColor) để dùng được cả nền
+          sáng lẫn nền tối. Màu viết thẳng hex cho các phần còn lại để logo
+          không phụ thuộc token ngoài — dùng được cả ngoài app. */}
       <text
         x="96"
         y="48"
         fontFamily="'Be Vietnam Pro', 'Inter', sans-serif"
         fontWeight="900"
         fontSize="30"
-        fill="#F7F2E6"
+        fill="currentColor"
         letterSpacing="-1"
       >
         A6
-        <tspan fill="#EDB72E">CLASS</tspan>
+        <tspan fill="#FF5C8A">CLASS</tspan>
       </text>
-      <circle cx="242" cy="42" r="4" fill="#EDB72E" />
+      <circle cx="242" cy="42" r="4" fill="#FFC531" />
     </svg>
   );
 }

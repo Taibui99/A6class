@@ -37,7 +37,7 @@ export function PostComposer() {
     <form
       ref={formRef}
       onSubmit={submit}
-      className="rounded-2xl border border-border bg-surface px-4 py-3.5"
+      className="rounded-[20px] border-2 border-[#1E1B16] bg-white px-4 py-3.5 shadow-[4px_4px_0_#1E1B16]"
     >
       <textarea
         value={content}
@@ -75,7 +75,7 @@ export function PostComposer() {
           <button
             type="submit"
             disabled={pending || !trimmed}
-            className="inline-flex min-h-9 items-center gap-1.5 rounded-lg bg-primary px-4 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex min-h-9 items-center gap-1.5 rounded-xl bg-primary px-4 text-sm font-bold text-primary-foreground shadow-[3px_3px_0_#FF5C8A] transition-all hover:bg-primary-hover active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
           >
             {pending ? (
               <Loader2 aria-hidden className="size-4 animate-spin" />

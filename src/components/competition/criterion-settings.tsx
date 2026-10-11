@@ -27,7 +27,7 @@ type Group = {
   criteria: Criterion[];
 };
 
-const PANEL = "rounded-2xl bg-surface border border-border";
+const PANEL = "rounded-[20px] bg-surface border border-border shadow-md";
 const INITIAL: ActionState = { ok: true, message: "" };
 
 export default function CriterionSettings({
