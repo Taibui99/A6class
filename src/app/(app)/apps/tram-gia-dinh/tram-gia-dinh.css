@@ -1028,6 +1028,28 @@ select:focus {
   display: none !important;
 }
 
+/* Chiếu: 2 cột (đồng hồ gọn + nội dung rộng), đội thi ẩn hẳn khỏi màn
+   chiếu (vẫn còn ở màn điều khiển để bấm điểm), chữ phóng to hết cỡ. */
+.tgd.present .cols {
+  grid-template-columns: minmax(140px, 180px) minmax(0, 1fr);
+}
+.tgd.present #sideR {
+  display: none;
+}
+.tgd.present #clock {
+  font-size: calc(clamp(28px, 4vmin, 44px) * var(--u));
+  padding: 8px 4px;
+}
+.tgd.present #q {
+  font-size: calc(clamp(28px, 5.5vmin, 76px) * var(--u));
+}
+.tgd.present #info {
+  font-size: calc(clamp(24px, 4.6vmin, 64px) * var(--u));
+}
+.tgd.present .opt {
+  font-size: calc(clamp(20px, 3.4vmin, 40px) * var(--u));
+}
+
 /* ============ Phản hồi thao tác soạn (thấy ngay cái vừa đổi) ============ */
 
 /* Chấm tròn trạng thái lưu ở thanh tab: vàng nhấp nháy = đang lưu,
