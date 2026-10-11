@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { Slide, SlideType } from "@/lib/tram-gia-dinh/quiz";
 import { SEED_QUIZ } from "@/lib/tram-gia-dinh/quiz";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
@@ -34,8 +34,20 @@ export default function Editor({
   const [deleting, setDeleting] = useState<number | null>(null);
   const [confirmReset, setConfirmReset] = useState(false);
   const [importError, setImportError] = useState("");
+  const [flashIdx, setFlashIdx] = useState<number | null>(null);
+  const [dying, setDying] = useState<number | null>(null);
+  const flashTimer = useRef<number | null>(null);
+
+  // Thẻ nào vừa chạm thì sáng viền lên (chỉ đổi class thẻ cha nên
+  // input đang gõ không bị mất focus).
+  function flash(i: number) {
+    setFlashIdx(i);
+    if (flashTimer.current) window.clearTimeout(flashTimer.current);
+    flashTimer.current = window.setTimeout(() => setFlashIdx(null), 950);
+  }
 
   function addOf(t: SlideType) {
+    const at = quiz.length;
     mut((q) => {
       q.push({
         round: "Vòng mới",
@@ -51,6 +63,7 @@ export default function Editor({
       });
       setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 50);
     });
+    flash(at);
   }
 
   const counts = useMemo(() => {
@@ -165,7 +178,11 @@ export default function Editor({
       </div>
       <div id="list">
         {quiz.map((s, i) => (
-          <div className="card" key={i}>
+          <div
+            className={`card${flashIdx === i ? " flash" : ""}${dying === i ? " dying" : ""}`}
+            key={i}
+            onChangeCapture={() => flash(i)}
+          >
             <div className="cardhead">
               <button
                 className="iconbtn"
@@ -395,9 +412,13 @@ export default function Editor({
           const idx = deleting;
           setDeleting(null);
           setCollapsed({});
-          mut((q) => {
-            q.splice(idx, 1);
-          });
+          setDying(idx);
+          window.setTimeout(() => {
+            setDying(null);
+            mut((q) => {
+              q.splice(idx, 1);
+            });
+          }, 280);
         }}
         onCancel={() => setDeleting(null)}
       />

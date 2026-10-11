@@ -24,6 +24,7 @@ export default function TramGiaDinh({
   const [present, setPresent] = useState(false);
   const [quiz, setQuiz] = useState<Slide[]>(initialQuiz);
   const [savedAt, setSavedAt] = useState("");
+  const [saving, setSaving] = useState(false);
   const boxRef = useRef<HTMLDivElement>(null);
   const saveTimer = useRef<number | null>(null);
 
@@ -76,10 +77,11 @@ export default function TramGiaDinh({
   }
 
   // Soạn xong 1.2 giây thì lưu bản chung lên database (mọi thành viên
-  // trong lớp đều sửa được).
+  // trong lớp đều sửa được). Vừa gõ vừa hiện "Đang lưu", xong thì báo giờ.
   const update = useCallback(
     (q: Slide[]) => {
       setQuiz(q);
+      setSaving(true);
       if (saveTimer.current) window.clearTimeout(saveTimer.current);
       saveTimer.current = window.setTimeout(async () => {
         try {
@@ -87,10 +89,12 @@ export default function TramGiaDinh({
           if (res.ok) setSavedAt(res.message);
         } catch {
           /* lần gõ sau sẽ lưu lại */
+        } finally {
+          setSaving(false);
         }
       }, 1200);
     },
-    [classId, canEdit]
+    [classId]
   );
 
   useEffect(
@@ -132,9 +136,16 @@ export default function TramGiaDinh({
           </button>
         )}
         <span style={{ fontSize: 13, fontWeight: 800, color: "#55556e" }}>
-          {tab === "edit"
-            ? `Bản chung cả lớp — tự lưu thay đổi${savedAt ? ` · ${savedAt}` : ""}`
-            : `${quiz.length} slide · máy khác sửa thì tab này tự cập nhật`}
+          {tab === "edit" ? (
+            <span>
+              <span className={saving ? "savedot saving" : "savedot ok"} />
+              {saving
+                ? "Đang lưu bản chung…"
+                : `Tự lưu thay đổi${savedAt ? ` · ${savedAt}` : ""}`}
+            </span>
+          ) : (
+            `${quiz.length} slide · máy khác sửa thì tab này tự cập nhật`
+          )}
         </span>
       </div>
       {tab === "play" || !canEdit ? (

@@ -1014,3 +1014,69 @@ select:focus {
   font-family: inherit;
   box-shadow: 3px 3px 0 rgba(30, 27, 22, 0.9);
 }
+
+/* ============ Phản hồi thao tác soạn (thấy ngay cái vừa đổi) ============ */
+
+/* Chấm tròn trạng thái lưu ở thanh tab: vàng nhấp nháy = đang lưu,
+   xanh lá = đã lưu xong. */
+.savedot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: 1px;
+}
+.savedot.saving {
+  background: #ffc531;
+  animation: tgd-pulse 1s infinite;
+}
+.savedot.ok {
+  background: #1f9d55;
+}
+
+/* Thẻ câu vừa chạm vào sáng viền vàng rồi tắt dần (không mất focus
+   vì chỉ đổi class của thẻ cha, input bên trong không mount lại). */
+.tgd .card.flash {
+  animation: tgd-flash 0.9s ease;
+}
+@keyframes tgd-flash {
+  0% {
+    border-color: #b87900;
+    box-shadow: 0 0 0 3px #ffc531, 0 8px 24px rgba(120, 90, 30, 0.12);
+  }
+  100% {
+    border-color: #1e1b16;
+    box-shadow: 0 8px 24px rgba(120, 90, 30, 0.1);
+  }
+}
+
+/* Thẻ câu đang xóa: mờ + trượt rồi mới gỡ khỏi danh sách. */
+.tgd .card.dying {
+  animation: tgd-out 0.28s ease forwards;
+  pointer-events: none;
+}
+@keyframes tgd-out {
+  to {
+    opacity: 0;
+    transform: scale(0.97) translateX(24px);
+  }
+}
+
+/* Nút bấm có phản hồi nảy nhẹ khi nhấn. */
+.tgd .iconbtn,
+.tgd .fbtn {
+  transition: transform 0.1s ease;
+}
+.tgd .iconbtn:active,
+.tgd .fbtn:active {
+  transform: scale(0.92);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tgd .card.flash,
+  .tgd .card.dying,
+  .savedot.saving {
+    animation: none;
+  }
+}
