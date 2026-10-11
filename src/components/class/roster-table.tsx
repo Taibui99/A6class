@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { Loader2, Save, Trash2 } from "lucide-react";
 
 import {
@@ -10,6 +10,7 @@ import {
 } from "@/lib/classes/actions";
 import { roleLabel } from "@/lib/classes/roster";
 import { Button } from "@/components/ui/button";
+import { FormSelect } from "@/components/ui/form-select";
 import { Input } from "@/components/ui/input";
 
 type Student = {
@@ -35,6 +36,10 @@ function StudentRow({
   student: Student;
   teams: TeamOption[];
 }) {
+  const [teamId, setTeamId] = useState(student.teamId ?? "");
+  const [role, setRole] = useState(
+    EDITABLE_ROLES.includes(student.role) ? student.role : "STUDENT"
+  );
   const [updateState, updateAction, updating] = useActionState(
     updateStudentAction,
     { ok: false, message: "" } satisfies ActionState
@@ -75,19 +80,27 @@ function StudentRow({
           </select>
         </div>
 
+        <div className="w-32">
+          <FormSelect
+            name="teamId"
+            value={teamId}
+            onChange={setTeamId}
+            ariaLabel={`Tổ của ${student.user.fullName}`}
+            className="h-9 w-full text-sm"
+            emptyLabel="Chưa có tổ"
+            options={teams.map((t) => ({ value: t.id, label: t.name }))}
+          />
+        </div>
+
         <div className="w-36">
-          <select
+          <FormSelect
             name="role"
-            defaultValue={EDITABLE_ROLES.includes(student.role) ? student.role : "STUDENT"}
-            aria-label={`Chức vụ của ${student.user.fullName}`}
-            className="h-9 w-full rounded-lg border border-border bg-surface px-2.5 text-sm text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky"
-          >
-            {EDITABLE_ROLES.map((r) => (
-              <option key={r} value={r}>
-                {roleLabel(r)}
-              </option>
-            ))}
-          </select>
+            value={role}
+            onChange={setRole}
+            ariaLabel={`Chức vụ của ${student.user.fullName}`}
+            className="h-9 w-full text-sm"
+            options={EDITABLE_ROLES.map((r) => ({ value: r, label: roleLabel(r) }))}
+          />
         </div>
 
         <Button type="submit" size="sm" disabled={updating}>

@@ -1,17 +1,7 @@
 import { getCurrentUser } from "@/lib/auth/current";
 import { prisma } from "@/lib/prisma";
 import { getMyClass } from "@/lib/classes/service";
-
-export const TT_DAYS = [1, 2, 3, 4, 5, 6] as const;
-export const TT_DAY_LABEL: Record<number, string> = {
-  1: "T2",
-  2: "T3",
-  3: "T4",
-  4: "T5",
-  5: "T6",
-  6: "T7",
-};
-export const TT_PERIODS = [1, 2, 3, 4, 5] as const;
+import { TT_DAY_LABEL, TT_DAYS, TT_PERIODS } from "@/lib/timetable/constants";
 
 const SEED: [number, number, string][] = [
   [1, 1, "Chào cờ"],

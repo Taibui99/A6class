@@ -21,6 +21,8 @@ import {
 import type { TaskItem } from "@/lib/tasks/service";
 import { createTaskAction, deleteTaskAction, updateTaskStatusAction } from "@/lib/tasks/actions";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { FormSelect } from "@/components/ui/form-select";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -53,6 +55,9 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<TaskItem | null>(null);
+  const [formTeam, setFormTeam] = useState("Cả lớp");
+  const [formPriority, setFormPriority] = useState("MEDIUM");
 
   // Thống kê nhanh
   const totalCount = tasks.length;
@@ -90,10 +95,10 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
     });
   };
 
-  const handleDelete = (task: TaskItem) => {
-    if (!window.confirm(`Xóa việc "${task.title}"? Bài nộp kèm theo cũng mất theo.`)) {
-      return;
-    }
+  const handleDelete = () => {
+    const task = deleting;
+    if (!task) return;
+    setDeleting(null);
     // Ẩn ngay cho gọn, server xong thì toast báo.
     setTasks((prev) => prev.filter((t) => t.id !== task.id));
 
@@ -112,6 +117,16 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
           {toastMessage}
         </div>
       )}
+
+      <ConfirmDialog
+        open={deleting !== null}
+        title={deleting ? `Xóa việc "${deleting.title}"?` : "Xóa việc?"}
+        message="Bài nộp kèm theo cũng mất theo. Không hoàn tác được."
+        confirmLabel="Xóa"
+        danger
+        onConfirm={handleDelete}
+        onCancel={() => setDeleting(null)}
+      />
 
       {/* Header Banner */}
       <div className="relative overflow-hidden rounded-2xl border border-border bg-surface p-6 sm:p-8 shadow-sm">
@@ -208,19 +223,20 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
           <span className="text-xs font-bold text-text-muted flex items-center gap-1">
             <Users className="size-3.5" /> Phụ trách:
           </span>
-          <select
+          <FormSelect
             value={filterTeam}
-            onChange={(e) => setFilterTeam(e.target.value)}
-            aria-label="Lọc theo phụ trách"
-            className="rounded-xl border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-text focus-visible:outline-2 focus-visible:outline-sky"
-          >
-            <option value="ALL">Mọi đối tượng</option>
-            <option value="Tổ 1">Tổ 1</option>
-            <option value="Tổ 2">Tổ 2</option>
-            <option value="Tổ 3">Tổ 3</option>
-            <option value="Tổ 4">Tổ 4</option>
-            <option value="CLASS">Cả lớp</option>
-          </select>
+            onChange={setFilterTeam}
+            ariaLabel="Lọc theo phụ trách"
+            className="h-8 text-xs font-semibold"
+            options={[
+              { value: "ALL", label: "Mọi đối tượng" },
+              { value: "Tổ 1", label: "Tổ 1" },
+              { value: "Tổ 2", label: "Tổ 2" },
+              { value: "Tổ 3", label: "Tổ 3" },
+              { value: "Tổ 4", label: "Tổ 4" },
+              { value: "CLASS", label: "Cả lớp" },
+            ]}
+          />
         </div>
       </div>
 
@@ -367,7 +383,7 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
                   {userRole === "TEACHER" && (
                     <button
                       type="button"
-                      onClick={() => handleDelete(task)}
+                      onClick={() => setDeleting(task)}
                       aria-label={`Xóa việc ${task.title}`}
                       title="Xóa việc"
                       className="inline-flex items-center justify-center rounded-lg p-1.5 text-text-muted transition-colors hover:bg-danger/10 hover:text-danger"
@@ -453,33 +469,39 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label htmlFor="task-team-name" className="block font-bold text-text mb-1">Đối tượng phụ trách</label>
-                  <select
-                    id="task-team-name"
+                  <label className="block font-bold text-text mb-1">Đối tượng phụ trách</label>
+                  <FormSelect
                     name="teamName"
-                    className="h-10 w-full rounded-xl border border-border bg-surface px-3 text-xs font-semibold text-text focus-visible:outline-2 focus-visible:outline-sky"
-                  >
-                    <option value="Cả lớp">Cả lớp 12A6</option>
-                    <option value="Tổ 1">Tổ 1</option>
-                    <option value="Tổ 2">Tổ 2</option>
-                    <option value="Tổ 3">Tổ 3</option>
-                    <option value="Tổ 4">Tổ 4</option>
-                    <option value="Các Tổ trưởng">Các Tổ trưởng</option>
-                  </select>
+                    value={formTeam}
+                    onChange={setFormTeam}
+                    ariaLabel="Đối tượng phụ trách"
+                    className="h-10 w-full text-xs font-semibold"
+                    options={[
+                      { value: "Cả lớp", label: "Cả lớp 12A6" },
+                      { value: "Tổ 1", label: "Tổ 1" },
+                      { value: "Tổ 2", label: "Tổ 2" },
+                      { value: "Tổ 3", label: "Tổ 3" },
+                      { value: "Tổ 4", label: "Tổ 4" },
+                      { value: "Các Tổ trưởng", label: "Các Tổ trưởng" },
+                    ]}
+                  />
                 </div>
 
                 <div>
-                  <label htmlFor="task-priority" className="block font-bold text-text mb-1">Mức độ ưu tiên</label>
-                  <select
-                    id="task-priority"
+                  <label className="block font-bold text-text mb-1">Mức độ ưu tiên</label>
+                  <FormSelect
                     name="priority"
-                    className="h-10 w-full rounded-xl border border-border bg-surface px-3 text-xs font-semibold text-text focus-visible:outline-2 focus-visible:outline-sky"
-                  >
-                    <option value="URGENT">Khẩn cấp</option>
-                    <option value="HIGH">Quan trọng</option>
-                    <option value="MEDIUM">Thường</option>
-                    <option value="LOW">Nhẹ nhàng</option>
-                  </select>
+                    value={formPriority}
+                    onChange={setFormPriority}
+                    ariaLabel="Mức độ ưu tiên"
+                    className="h-10 w-full text-xs font-semibold"
+                    options={[
+                      { value: "URGENT", label: "Khẩn cấp" },
+                      { value: "HIGH", label: "Quan trọng" },
+                      { value: "MEDIUM", label: "Thường" },
+                      { value: "LOW", label: "Nhẹ nhàng" },
+                    ]}
+                  />
                 </div>
               </div>
 

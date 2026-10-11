@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
 import { seedSampleAction, setSubjectAction } from "@/lib/timetable/actions";
-import { TT_DAY_LABEL, TT_DAYS, TT_PERIODS } from "@/lib/timetable/service";
+import { TT_DAY_LABEL, TT_DAYS, TT_PERIODS } from "@/lib/timetable/constants";
 
 const DUMMY = { ok: true, message: "" };
 
