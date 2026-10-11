@@ -78,7 +78,20 @@ export async function updateTaskStatusAction(
 
   try {
     const existing = await prisma.task.findUnique({ where: { id: taskId } });
-    if (existing) {
+    if (!existing) {
+      return { ok: false, message: "Việc này không còn tồn tại." };
+    }
+    // Chặn người ngoài lớp: trước đây chỉ cần đăng nhập là đổi được
+    // trạng thái việc của lớp khác. Giáo viên luôn được phép.
+    if (user.role !== "TEACHER") {
+      const mem = await prisma.classMembership.findFirst({
+        where: { userId: user.id, classId: existing.classId },
+      });
+      if (!mem) {
+        return { ok: false, message: "Bạn chưa vào lớp nên không thao tác được." };
+      }
+    }
+    {
       await prisma.task.update({
         where: { id: taskId },
         data: { status: newStatus },
@@ -89,5 +102,34 @@ export async function updateTaskStatusAction(
     return { ok: true, message: "Đã cập nhật trạng thái hoạt động." };
   } catch {
     return { ok: true, message: "Đã cập nhật trạng thái hoạt động." };
+  }
+}
+
+/**
+ * Xóa việc (chỉ giáo viên). Xóa kèm phân công + bài nộp vì FK không cascade.
+ * Học sinh bấm nhầm cũng không mất gì — server chặn lại.
+ */
+export async function deleteTaskAction(taskId: string): Promise<TaskActionState> {
+  const user = await getCurrentUser();
+  if (!user) {
+    return { ok: false, message: "Bạn cần đăng nhập." };
+  }
+  if (user.role !== "TEACHER") {
+    return { ok: false, message: "Chỉ giáo viên mới xóa được việc." };
+  }
+
+  try {
+    const existing = await prisma.task.findUnique({ where: { id: taskId } });
+    if (!existing) {
+      return { ok: false, message: "Việc này không còn tồn tại." };
+    }
+    await prisma.taskAssignment.deleteMany({ where: { taskId } });
+    await prisma.taskSubmission.deleteMany({ where: { taskId } });
+    await prisma.task.delete({ where: { id: taskId } });
+    revalidatePath("/tasks");
+    revalidatePath("/dashboard");
+    return { ok: true, message: "Đã xóa việc." };
+  } catch {
+    return { ok: false, message: "Không xóa được, thử lại nhé." };
   }
 }

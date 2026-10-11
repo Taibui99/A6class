@@ -16,9 +16,10 @@ import {
   ChevronRight,
   ListTodo,
   TrendingUp,
+  Trash2,
 } from "lucide-react";
 import type { TaskItem } from "@/lib/tasks/service";
-import { createTaskAction, updateTaskStatusAction } from "@/lib/tasks/actions";
+import { createTaskAction, deleteTaskAction, updateTaskStatusAction } from "@/lib/tasks/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -86,6 +87,19 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
     startTransition(async () => {
       await updateTaskStatusAction(task.id, nextStatus as "TODO" | "IN_PROGRESS" | "COMPLETED");
       showToast(`Đã chuyển trạng thái sang "${nextStatus === "COMPLETED" ? "Đã xong 🎉" : "Đang làm"}"`);
+    });
+  };
+
+  const handleDelete = (task: TaskItem) => {
+    if (!window.confirm(`Xóa việc "${task.title}"? Bài nộp kèm theo cũng mất theo.`)) {
+      return;
+    }
+    // Ẩn ngay cho gọn, server xong thì toast báo.
+    setTasks((prev) => prev.filter((t) => t.id !== task.id));
+
+    startTransition(async () => {
+      const res = await deleteTaskAction(task.id);
+      showToast(res.message);
     });
   };
 
@@ -350,6 +364,17 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
                   <span className="text-[11px] font-semibold text-text-muted flex items-center gap-0.5">
                     {task.submissionCount > 0 ? `${task.submissionCount} nộp` : "Chưa nộp"}
                   </span>
+                  {userRole === "TEACHER" && (
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(task)}
+                      aria-label={`Xóa việc ${task.title}`}
+                      title="Xóa việc"
+                      className="inline-flex items-center justify-center rounded-lg p-1.5 text-text-muted transition-colors hover:bg-danger/10 hover:text-danger"
+                    >
+                      <Trash2 className="size-3.5" />
+                    </button>
+                  )}
                 </div>
               </div>
             );

@@ -35,7 +35,6 @@ export function TimetableGrid({
   }
 
   function commit(day: number, period: number, save: boolean) {
-    const key = `${day}-${period}`;
     setEditing(null);
     if (!save) return;
     const fd = new FormData();

@@ -12,6 +12,13 @@ const PROTECTED_PATHS = [
   "/messages",
   "/help",
   "/profile",
+  "/tasks",
+  "/members",
+  "/achievements",
+  "/attendance",
+  "/timetable",
+  "/notices",
+  "/onboarding",
 ];
 const AUTH_PATHS = ["/login", "/register"];
 
