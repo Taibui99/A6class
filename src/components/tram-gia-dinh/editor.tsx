@@ -1,15 +1,16 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import type { Slide, SlideType } from "@/lib/tram-gia-dinh/quiz";
 import { SEED_QUIZ } from "@/lib/tram-gia-dinh/quiz";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 const TYPES: Record<SlideType, string> = {
-  info: "📢 Thông báo",
-  one: "🔘 Trắc nghiệm 1 đáp án",
-  many: "☑️ Đúng/Sai nhiều ý",
-  fill: "✏️ Điền từ",
-  guess: "🖼 Nhìn hình đoán",
+  info: "Thông báo",
+  one: "Trắc nghiệm 1 đáp án",
+  many: "Đúng/Sai nhiều ý",
+  fill: "Điền từ",
+  guess: "Nhìn hình đoán",
 };
 
 function esc(s: string): string {
@@ -28,6 +29,29 @@ export default function Editor({
     fn(next);
     onChange(next);
   };
+
+  const [collapsed, setCollapsed] = useState<Record<number, boolean>>({});
+  const [deleting, setDeleting] = useState<number | null>(null);
+  const [confirmReset, setConfirmReset] = useState(false);
+  const [importError, setImportError] = useState("");
+
+  function addOf(t: SlideType) {
+    mut((q) => {
+      q.push({
+        round: "Vòng mới",
+        type: t,
+        text: t === "info" ? "Thông báo mới" : "Câu hỏi mới",
+        answers:
+          t === "info"
+            ? []
+            : [
+                { text: "Đáp án 1", correct: true },
+                { text: "Đáp án 2", correct: false },
+              ],
+      });
+      setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 50);
+    });
+  }
 
   const counts = useMemo(() => {
     const c: Partial<Record<SlideType, number>> = {};
@@ -67,6 +91,7 @@ export default function Editor({
   function importJSON(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
     if (!f) return;
+    setImportError("");
     const r = new FileReader();
     r.onload = () => {
       try {
@@ -74,15 +99,14 @@ export default function Editor({
         if (!Array.isArray(q)) throw new Error("bad");
         onChange(q as Slide[]);
       } catch {
-        alert("File không hợp lệ!");
+        setImportError("File không hợp lệ — cần file JSON mảng câu hỏi.");
       }
     };
     r.readAsText(f);
     e.target.value = "";
   }
   function resetDefault() {
-    if (!confirm("Tải lại bản gốc? Mọi sửa đổi sẽ mất!")) return;
-    onChange(JSON.parse(JSON.stringify(SEED_QUIZ)) as Slide[]);
+    setConfirmReset(true);
   }
 
   return (
@@ -121,15 +145,41 @@ export default function Editor({
         </div>
       </div>
       <div id="issues">
+        {importError && <div>⚠️ {importError}</div>}
         {issues.map((b, k) => (
           <div key={k}>⚠️ {b}</div>
         ))}
+      </div>
+      <div className="card">
+        <div className="cardhead">
+          <span className="num">+</span>
+          <span style={{ fontWeight: 900 }}>Thêm câu mới vào cuối</span>
+        </div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {(Object.keys(TYPES) as SlideType[]).map((t) => (
+            <button key={t} className="btn" onClick={() => addOf(t)}>
+              + {TYPES[t]}
+            </button>
+          ))}
+        </div>
       </div>
       <div id="list">
         {quiz.map((s, i) => (
           <div className="card" key={i}>
             <div className="cardhead">
+              <button
+                className="iconbtn"
+                title={collapsed[i] ? "Mở ra" : "Thu gọn"}
+                onClick={() => setCollapsed((c) => ({ ...c, [i]: !c[i] }))}
+              >
+                {collapsed[i] ? "▸" : "▾"}
+              </button>
               <span className="num">#{i + 1}</span>
+              {collapsed[i] ? (
+                <span style={{ fontWeight: 800, opacity: 0.75 }}>
+                  {(s.text || "").trim().slice(0, 52) || TYPES[s.type]}
+                </span>
+              ) : null}
               <select
                 value={s.type}
                 onChange={(e) =>
@@ -198,16 +248,13 @@ export default function Editor({
               <button
                 className="iconbtn"
                 title="Xóa"
-                onClick={() => {
-                  if (!confirm(`Xóa câu #${i + 1} không?`)) return;
-                  mut((q) => {
-                    q.splice(i, 1);
-                  });
-                }}
+                onClick={() => setDeleting(i)}
               >
                 ✕
               </button>
             </div>
+            {!collapsed[i] && (
+              <>
             <label>Câu hỏi / nội dung</label>
             <textarea
               rows={2}
@@ -333,35 +380,42 @@ export default function Editor({
                 )}
               </>
             )}
+            </>)}
           </div>
         ))}
       </div>
+      <ConfirmDialog
+        open={deleting !== null}
+        title={deleting !== null ? `Xóa câu #${deleting + 1}?` : "Xóa câu hỏi?"}
+        message="Câu hỏi mất khỏi bản chung của cả lớp."
+        confirmLabel="Xóa"
+        danger
+        onConfirm={() => {
+          if (deleting === null) return;
+          const idx = deleting;
+          setDeleting(null);
+          setCollapsed({});
+          mut((q) => {
+            q.splice(idx, 1);
+          });
+        }}
+        onCancel={() => setDeleting(null)}
+      />
+      <ConfirmDialog
+        open={confirmReset}
+        title="Tải lại bản gốc?"
+        message="Mọi sửa đổi của lớp sẽ mất, về lại 34 câu mặc định."
+        confirmLabel="Tải lại"
+        danger
+        onConfirm={() => {
+          setConfirmReset(false);
+          onChange(JSON.parse(JSON.stringify(SEED_QUIZ)) as Slide[]);
+        }}
+        onCancel={() => setConfirmReset(false)}
+      />
       <div id="addbar">
         {(Object.keys(TYPES) as SlideType[]).map((t) => (
-          <button
-            key={t}
-            className="btn"
-            onClick={() =>
-              mut((q) => {
-                q.push({
-                  round: "Vòng mới",
-                  type: t,
-                  text: t === "info" ? "Thông báo mới" : "Câu hỏi mới",
-                  answers:
-                    t === "info"
-                      ? []
-                      : [
-                          { text: "Đáp án 1", correct: true },
-                          { text: "Đáp án 2", correct: false },
-                        ],
-                });
-                setTimeout(
-                  () => window.scrollTo(0, document.body.scrollHeight),
-                  50,
-                );
-              })
-            }
-          >
+          <button key={t} className="btn" onClick={() => addOf(t)}>
             + {TYPES[t]}
           </button>
         ))}

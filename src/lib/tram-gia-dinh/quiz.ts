@@ -1,7 +1,21 @@
 export type SlideType = "info" | "one" | "many" | "fill" | "guess";
 export interface Answer { text: string; correct: boolean }
 export interface Slide { round: string; type: SlideType; text: string; answers: Answer[]; note?: string; img?: string }
-export const SHARED_KEY = "tram_gia_dinh_quiz";
+
+const SLIDE_TYPES: SlideType[] = ["info", "one", "many", "fill", "guess"];
+
+/** Kiểm tra mảng slide nhận từ DB/file có đúng dáng không. */
+export function isSlideArray(v: unknown): v is Slide[] {
+  if (!Array.isArray(v)) return false;
+  return v.every(
+    (s) =>
+      s &&
+      typeof s === "object" &&
+      SLIDE_TYPES.includes((s as Slide).type) &&
+      typeof (s as Slide).text === "string" &&
+      Array.isArray((s as Slide).answers)
+  );
+}
 export const SEED_QUIZ: Slide[] = [
   {
     "round": "Mở màn",

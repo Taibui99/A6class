@@ -1,8 +1,32 @@
+import { redirect } from "next/navigation";
 import { Clock, Trophy } from "lucide-react";
 
+import { getCurrentUser } from "@/lib/auth/current";
+import { getMyClass } from "@/lib/classes/service";
+import { prisma } from "@/lib/prisma";
+import { getQuiz } from "@/lib/game-quiz/service";
 import TramGiaDinh from "@/components/tram-gia-dinh/TramGiaDinh";
 
-export default function TramGiaDinhPage() {
+export default async function TramGiaDinhPage() {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+
+  // Lớp của giáo viên, hoặc lớp đầu tiên của học sinh.
+  let classId: string | null = null;
+  if (user.role === "TEACHER") {
+    classId = (await getMyClass())?.id ?? null;
+  } else {
+    const mem = await prisma.classMembership.findFirst({
+      where: { userId: user.id },
+      orderBy: { joinedAt: "asc" },
+      select: { classId: true },
+    });
+    classId = mem?.classId ?? null;
+  }
+  if (!classId) redirect("/class");
+
+  const quiz = await getQuiz(classId);
+
   return (
     <div className="space-y-4">
       <header>
@@ -16,7 +40,7 @@ export default function TramGiaDinhPage() {
         </p>
         <div className="mt-3 flex flex-wrap gap-2 text-xs font-bold">
           <span className="rounded-full bg-amber-100 px-3 py-1 text-amber-800">
-            34 slide
+            {quiz.length} slide
           </span>
           <span className="rounded-full bg-sky-100 px-3 py-1 text-sky-800">
             40 phút
@@ -33,7 +57,11 @@ export default function TramGiaDinhPage() {
         </div>
       </header>
 
-      <TramGiaDinh />
+      <TramGiaDinh
+        classId={classId}
+        initialQuiz={quiz}
+        canEdit={user.role === "TEACHER"}
+      />
 
       <p className="text-xs text-text-secondary">
         Mẹo chiếu lớp: bấm F (hoặc nút ⛶ Chiếu) để lên chế độ chiếu full màn hình không vướng khung web, Esc để thoát. A+/A- chỉnh cỡ chữ, M tắt mở nhạc nền.

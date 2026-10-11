@@ -85,6 +85,7 @@ model Class {
   reports            Report[]
   attendanceRecords  AttendanceRecord[]
   timetableSlots     TimetableSlot[]
+  gameQuiz           GameQuiz?
 }
 
 model ClassMembership {
@@ -671,4 +672,17 @@ model TimetableSlot {
 
   @@unique([classId, day, period])
   @@index([classId])
+}
+
+/// Bộ câu hỏi minigame Trạm Gia Đình của lớp — bản chung cho mọi máy.
+/// Giáo viên sửa trên máy nào, máy chiếu lớp thấy ngay.
+model GameQuiz {
+  id        String   @id @default(cuid())
+  classId   String   @unique
+  title     String   @default("Trạm Gia Đình")
+  slides    Json     @default("[]")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
 }
