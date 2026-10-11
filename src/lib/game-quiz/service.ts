@@ -17,13 +17,21 @@ export async function getQuiz(classId: string): Promise<Slide[]> {
 }
 
 async function mustBeMyClass(classId: string) {
+  // Mở cho mọi thành viên trong lớp cùng sửa (không riêng giáo viên).
+  // Vẫn chặn người ngoài lớp và lớp khác.
   const user = await getCurrentUser();
-  if (!user || user.role !== "TEACHER") {
-    throw new Error("Chỉ giáo viên mới sửa được bộ câu hỏi.");
+  if (!user) {
+    throw new Error("Bạn cần đăng nhập.");
   }
-  const klass = await getMyClass();
-  if (!klass || klass.id !== classId) {
-    throw new Error("Không đúng lớp phụ trách.");
+  const mem =
+    user.role === "TEACHER"
+      ? await getMyClass()
+      : await prisma.classMembership.findFirst({
+          where: { userId: user.id, classId },
+        });
+  const okId = user.role === "TEACHER" ? mem?.id === classId : !!mem;
+  if (!okId) {
+    throw new Error("Bạn chưa vào lớp nên không sửa được.");
   }
 }
 

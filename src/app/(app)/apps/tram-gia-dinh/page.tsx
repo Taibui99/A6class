@@ -60,7 +60,7 @@ export default async function TramGiaDinhPage() {
       <TramGiaDinh
         classId={classId}
         initialQuiz={quiz}
-        canEdit={user.role === "TEACHER"}
+        canEdit
       />
 
       <p className="text-xs text-text-secondary">

@@ -75,11 +75,11 @@ export default function TramGiaDinh({
     setPresent(false);
   }
 
-  // Soạn xong 1.2 giây thì lưu bản chung lên database.
+  // Soạn xong 1.2 giây thì lưu bản chung lên database (mọi thành viên
+  // trong lớp đều sửa được).
   const update = useCallback(
     (q: Slide[]) => {
       setQuiz(q);
-      if (!canEdit) return;
       if (saveTimer.current) window.clearTimeout(saveTimer.current);
       saveTimer.current = window.setTimeout(async () => {
         try {
