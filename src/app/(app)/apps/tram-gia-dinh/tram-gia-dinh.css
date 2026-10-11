@@ -1015,6 +1015,41 @@ select:focus {
   box-shadow: 3px 3px 0 rgba(30, 27, 22, 0.9);
 }
 
+/* Popup xác nhận cộng điểm (phím số 1–6 hoặc nút +): pill vàng trên
+   nền mực, hiện giữa-top, tự ẩn sau 1.4 giây (JS gỡ). */
+.tgd .score-pop {
+  position: fixed;
+  top: 54px;
+  left: 50%;
+  z-index: 96;
+  background: #1e1b16;
+  color: #ffc531;
+  border: 2px solid #ffc531;
+  border-radius: 999px;
+  padding: 8px 22px;
+  font-weight: 900;
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  animation: tgd-score-pop 0.3s ease;
+}
+@keyframes tgd-score-pop {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px) scale(0.8);
+  }
+  20% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
 /* ============ Chế độ chiếu: sân khấu sạch ============ */
 
 /* Khi chiếu, màn hình chỉ giữ: tiến trình, câu hỏi, đáp án, đồng hồ,

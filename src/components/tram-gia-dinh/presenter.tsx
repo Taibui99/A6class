@@ -76,6 +76,8 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
     load("tram_show_teams", ["Đội Cam", "Đội Xanh"]),
   );
   const [scores, setScores] = useState<number[]>(() => load("tram_show_scores", [0, 0]));
+  const [scorePop, setScorePop] = useState<{ k: number; pts: number; id: number } | null>(null);
+  const popTimer = useRef<number | null>(null);
   const [denom, setDenom] = useState(100);
   const [zoomLv, setZoomLv] = useState<number>(() => load("tram_zoom", 1));
   const autoFRef = useRef(1);
@@ -426,6 +428,11 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
       store("tram_show_scores", n);
       return n;
     });
+    // Popup xác nhận (cả khi bấm nút lẫn phím số): thay nội dung + chạy lại
+    // animation bằng key, tự ẩn sau 1.4 giây.
+    if (popTimer.current) window.clearTimeout(popTimer.current);
+    setScorePop({ k, pts: d * denom, id: Date.now() });
+    popTimer.current = window.setTimeout(() => setScorePop(null), 1400);
     sFlip();
   }
   function rename(k: number, v: string) {
@@ -434,6 +441,34 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
       n[k] = v.trim() || `Đội ${k + 1}`;
       store("tram_show_teams", n);
       return n;
+    });
+  }
+  function addTeam() {
+    setTeams((t) => {
+      if (t.length >= 6) return t;
+      let n = 1;
+      while (t.includes(`Đội ${n}`)) n++;
+      const next = [...t, `Đội ${n}`];
+      store("tram_show_teams", next);
+      setScores((sc) => {
+        const s = [...sc, 0];
+        store("tram_show_scores", s);
+        return s;
+      });
+      return next;
+    });
+  }
+  function removeTeam(k: number) {
+    setTeams((t) => {
+      if (t.length <= 2) return t;
+      const next = t.filter((_, i) => i !== k);
+      store("tram_show_teams", next);
+      setScores((sc) => {
+        const s = sc.filter((_, i) => i !== k);
+        store("tram_show_scores", s);
+        return s;
+      });
+      return next;
     });
   }
   function zoom(d: number) {
@@ -530,6 +565,13 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
       else if (e.key === " ") {
         e.preventDefault();
         smart();
+      } else if (/^[1-6]$/.test(e.key)) {
+        // Phím số 1–6: cộng điểm (mệnh giá hiện tại) cho đội tương ứng.
+        // Chỉ khi đã chấm (stage 2) để khỏi bấm nhầm, giống nút + trên bảng.
+        // (Dùng stage trực tiếp thay vì biến revealed vì rule compiler yêu cầu
+        //  giá trị phải khai báo trước effect.)
+        const k = Number(e.key) - 1;
+        if (stage === 2 && k < teams.length) addScore(k, 1);
       } else if (e.key === "t" || e.key === "T") timer();
       else if (e.key === "r" || e.key === "R") resetT();
       else if (e.key === "m" || e.key === "M") bgmToggle();
@@ -715,6 +757,11 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
       ))}
       <div id="bar" style={{ width: idx < 0 ? "0%" : `${((idx + 1) / quiz.length) * 100}%` }} />
       <div id="num">{idx < 0 ? `0 / ${quiz.length}` : `${idx + 1} / ${quiz.length}`}</div>
+      {scorePop && teams[scorePop.k] && (
+        <div key={scorePop.id} className="score-pop">
+          +{scorePop.pts} · {teams[scorePop.k]}
+        </div>
+      )}
       <div id="stage">
         <div id="cover" className={idx >= 0 ? "hidden" : ""}>
           <h1>
@@ -823,8 +870,34 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
                     {revealed && (
                       <button onClick={() => addScore(k, 1)}>+{denom}</button>
                     )}
+                    {teams.length > 2 && (
+                      <button
+                        title={`Xóa ${n}`}
+                        aria-label={`Xóa ${n}`}
+                        onClick={() => removeTeam(k)}
+                        style={{
+                          border: "none",
+                          background: "transparent",
+                          cursor: "pointer",
+                          fontWeight: 900,
+                          opacity: 0.55,
+                          padding: "2px 6px",
+                        }}
+                      >
+                        ✕
+                      </button>
+                    )}
                   </div>
                 ))}
+                {teams.length < 6 && (
+                  <button
+                    className="fbtn"
+                    style={{ width: "100%", marginTop: 2, fontSize: 14 }}
+                    onClick={addTeam}
+                  >
+                    + Thêm đội
+                  </button>
+                )}
               </div>
               <label className="present-hide" style={{ fontSize: 13, fontWeight: 900 }}>
                 Mệnh giá mỗi câu đúng:
