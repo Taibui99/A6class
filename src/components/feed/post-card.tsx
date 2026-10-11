@@ -27,6 +27,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 type SerializedPost = Omit<FeedPost, "comments"> & { comments: FeedComment[] };
 
@@ -102,6 +103,7 @@ export function PostCard({ post, currentUserId, canPin }: Props) {
   const [showComments, setShowComments] = useState(false);
   const [comment, setComment] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [lightbox, setLightbox] = useState<string | null>(null);
 
   const canDelete = post.authorId === currentUserId || canPin;
@@ -150,16 +152,16 @@ export function PostCard({ post, currentUserId, canPin }: Props) {
   function handlePin() {
     startTransition(async () => {
       const res = await togglePin(post.id);
-      if (res?.error) alert(res.error);
+      if (res?.error) setError(res.error);
       else router.refresh();
     });
   }
 
-  function handleDelete() {
-    if (!window.confirm("Xóa bài viết này?")) return;
+  function confirmDelete() {
+    setConfirmingDelete(false);
     startTransition(async () => {
       const res = await deletePost(post.id);
-      if (res?.error) alert(res.error);
+      if (res?.error) setError(res.error);
       else router.refresh();
     });
   }
@@ -236,8 +238,10 @@ export function PostCard({ post, currentUserId, canPin }: Props) {
               </DropdownMenuItem>
             )}
             {canDelete && (
-              <DropdownMenuItem variant="destructive" onClick={handleDelete}>
-                <Trash2 className="size-4" aria-hidden />
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={() => setConfirmingDelete(true)}
+              >                <Trash2 className="size-4" aria-hidden />
                 Xóa bài
               </DropdownMenuItem>
             )}
@@ -347,6 +351,15 @@ export function PostCard({ post, currentUserId, canPin }: Props) {
           </p>
         </div>
       )}
+      <ConfirmDialog
+        open={confirmingDelete}
+        title="Xóa bài viết này?"
+        message="Bài viết và toàn bộ bình luận sẽ mất vĩnh viễn."
+        confirmLabel="Xóa"
+        danger
+        onConfirm={confirmDelete}
+        onCancel={() => setConfirmingDelete(false)}
+      />
     </article>
   );
 }

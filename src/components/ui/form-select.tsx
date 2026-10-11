@@ -49,6 +49,7 @@ export function FormSelect({
       <Select
         value={shown}
         onValueChange={(v: string | null) => onChange(typeof v === "string" && v !== NONE ? v : "")}
+        disabled={disabled}
       >
         <SelectTrigger className={className} aria-label={ariaLabel}>
           <SelectValue placeholder={placeholder} />

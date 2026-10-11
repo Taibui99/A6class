@@ -5,7 +5,6 @@ import Link from "next/link";
 import {
   BarChart3,
   CalendarDays,
-  ChevronDown,
   Crown,
   Eye,
   EyeOff,
@@ -22,6 +21,7 @@ import {
   type ActionState,
 } from "@/lib/competition/actions";
 import type { CompetitionData } from "@/lib/competition/query";
+import { FormSelect } from "@/components/ui/form-select";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -259,28 +259,19 @@ function PeriodPicker({
 }) {
   return (
     <form action="" className="relative">
-      <select
-        name="period"
-        defaultValue={currentId ?? ""}
-        onChange={(e) => {
-          const v = e.currentTarget.value;
+      <FormSelect
+        value={currentId ?? ""}
+        onChange={(v) => {
           window.location.href = v ? `/competition?period=${v}` : "/competition";
         }}
-        aria-label="Chọn tuần"
-        className="h-9 appearance-none rounded-xl bg-surface-2 pl-3 pr-8 text-xs font-bold text-muted border border-border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky"
-      >
-        {periods.length === 0 && <option value="">Chưa có tuần nào</option>}
-        {periods.map((p) => (
-          <option key={p.id} value={p.id}>
-            {p.name}
-            {p.isActive ? " · đang chạy" : ""}
-            {p.publishedAt ? " · đã công bố" : ""}
-          </option>
-        ))}
-      </select>
-      <ChevronDown
-        aria-hidden
-        className="pointer-events-none absolute right-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted"
+        ariaLabel="Chọn tuần"
+        className="h-9 text-xs font-bold"
+        emptyLabel={periods.length === 0 ? "Chưa có tuần nào" : undefined}
+        disabled={periods.length === 0}
+        options={periods.map((p) => ({
+          value: p.id,
+          label: `${p.name}${p.isActive ? " · đang chạy" : ""}${p.publishedAt ? " · đã công bố" : ""}`,
+        }))}
       />
     </form>
   );
@@ -839,25 +830,18 @@ function GradeSelect({
   }
 
   return (
-    <select
-      defaultValue={grade}
+    <FormSelect
+      value={grade}
+      onChange={(v) => void commit(v)}
+      ariaLabel="Con điểm kiểm tra"
+      className="h-7 min-w-20 text-xs font-bold"
       disabled={busy}
-      aria-label="Con điểm kiểm tra"
-      onChange={(e) => void commit(e.target.value)}
-      className={cn(
-        "h-7 w-12 rounded-md border border-transparent bg-transparent text-center text-xs font-bold text-text",
-        "focus:border-sky focus:bg-canvas focus:outline-none",
-        !grade && "text-muted",
-        busy && "opacity-50",
-      )}
-    >
-      <option value="">—</option>
-      {criteria.map((c) => (
-        <option key={c.key} value={c.key.replace("DIEM_", "")}>
-          {c.key.replace("DIEM_", "")} (+{c.points})
-        </option>
-      ))}
-    </select>
+      emptyLabel="—"
+      options={criteria.map((c) => ({
+        value: c.key.replace("DIEM_", ""),
+        label: `${c.key.replace("DIEM_", "")} (+${c.points})`,
+      }))}
+    />
   );
 }
 

@@ -1,7 +1,7 @@
 import { getCurrentUser } from "@/lib/auth/current";
 import { prisma } from "@/lib/prisma";
 import { getMyClass } from "@/lib/classes/service";
-import { TT_DAY_LABEL, TT_DAYS, TT_PERIODS } from "@/lib/timetable/constants";
+import { TT_DAYS, TT_PERIODS } from "@/lib/timetable/constants";
 
 const SEED: [number, number, string][] = [
   [1, 1, "Chào cờ"],

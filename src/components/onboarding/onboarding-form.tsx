@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import { Loader2 } from "lucide-react";
 
 import { saveOnboardingAction } from "@/lib/onboarding/actions";
+import { FormSelect } from "@/components/ui/form-select";
 import type { OnboardingClass } from "@/lib/onboarding/service";
 
 const INIT = { ok: true, message: "" };
@@ -63,60 +64,43 @@ export function OnboardingForm({
       </div>
 
       <div>
-        <label
-          htmlFor="ob-class"
-          className="mb-1 block text-xs font-bold text-text-muted"
-        >
+        <span className="mb-1 block text-xs font-bold text-text-muted">
           Lớp của em
-        </label>
-        <select
-          id="ob-class"
+        </span>
+        <FormSelect
           name="classId"
-          required
           value={classId}
-          onChange={(e) => {
-            setClassId(e.target.value);
+          onChange={(cid) => {
+            setClassId(cid);
             setTeamId("");
           }}
-          className="h-11 w-full rounded-xl border border-border bg-surface px-3 text-sm text-text"
-        >
-          <option value="">— Chọn lớp —</option>
-          {classes.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name} · {c.schoolYear}
-            </option>
-          ))}
-        </select>
+          ariaLabel="Lớp của em"
+          className="h-11 w-full text-sm"
+          placeholder="— Chọn lớp —"
+          options={classes.map((c) => ({
+            value: c.id,
+            label: `${c.name} · ${c.schoolYear}`,
+          }))}
+        />
       </div>
 
       {klass && teams.length > 0 ? (
         <div>
-          <label
-            htmlFor="ob-team"
-            className="mb-1 block text-xs font-bold text-text-muted"
-          >
+          <span className="mb-1 block text-xs font-bold text-text-muted">
             Tổ của em
-          </label>
-          <select
-            id="ob-team"
+          </span>
+          <FormSelect
             name="teamId"
-            required
             value={teamId}
-            onChange={(e) => setTeamId(e.target.value)}
-            className="h-11 w-full rounded-xl border border-border bg-surface px-3 text-sm text-text"
-          >
-            <option value="">— Chọn tổ —</option>
-            {teams.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.name}
-              </option>
-            ))}
-          </select>
+            onChange={setTeamId}
+            ariaLabel="Tổ của em"
+            className="h-11 w-full text-sm"
+            placeholder="— Chọn tổ —"
+            options={teams.map((t) => ({ value: t.id, label: t.name }))}
+          />
         </div>
       ) : (
-        klass && (
-          <input type="hidden" name="teamId" value="" />
-        )
+        klass && <input type="hidden" name="teamId" value="" />
       )}
 
       {state.message && (
@@ -127,7 +111,7 @@ export function OnboardingForm({
 
       <button
         type="submit"
-        disabled={pending}
+        disabled={pending || !classId || (teams.length > 0 && !teamId)}
         className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-hover disabled:opacity-50"
       >
         {pending && <Loader2 aria-hidden="true" className="size-4 animate-spin" />}
