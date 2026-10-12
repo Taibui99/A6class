@@ -1,21 +1,16 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Crown,
   Search,
   Users,
-  Trophy,
   Sparkles,
-  X,
-  Medal,
   Flag,
 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
-import Link from "next/link";
 import { TiltCard } from "@/components/ui/tilt-card";
-import { formatRelativeTime } from "@/lib/utils";
 import type { MemberCard, MembersPageData } from "@/lib/members";
 
 const TEAM_FALLBACK = [
@@ -81,24 +76,18 @@ function MemberCard3D({
   teamIndex,
   maxScore,
   rank,
-  onOpen,
 }: {
   member: MemberCard;
   teamIndex: number;
   maxScore: number;
   rank: number | null;
-  onOpen: () => void;
 }) {
   const tone = teamTone(teamIndex);
   const ratio = member.score !== null && maxScore > 0 ? member.score / maxScore : null;
 
   return (
     <TiltCard className="vt-holo h-full rounded-2xl border border-border bg-surface">
-      <button
-        type="button"
-        onClick={onOpen}
-        className="relative flex h-full w-full flex-col items-center gap-3 overflow-hidden rounded-2xl p-5 text-center"
-      >
+      <div className="relative flex h-full w-full flex-col items-center gap-3 overflow-hidden rounded-2xl p-5 text-center">
         {/* Số áo mờ ở góc phải, kiểu thẻ cầu thủ */}
         <span
           aria-hidden
@@ -148,13 +137,13 @@ function MemberCard3D({
             </span>
           </div>
           <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-2">
-            <div
-              className="h-full rounded-full bg-primary"
-              style={{ width: `${ratio !== null ? Math.max(ratio * 100, 2) : 0}%` }}
-            />
+          <div
+            className="h-full rounded-full bg-primary"
+            style={{ width: `${ratio !== null ? Math.max(ratio * 100, 2) : 0}%` }}
+          />
           </div>
         </div>
-      </button>
+      </div>
     </TiltCard>
   );
 }
@@ -166,18 +155,6 @@ export function MembersDirectory({
 }) {
   const [search, setSearch] = useState("");
   const [selectedTeam, setSelectedTeam] = useState<string>("ALL");
-  const [selected, setSelected] = useState<MemberCard | null>(null);
-
-  useEffect(() => {
-    if (!selected) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setSelected(null);
-      }
-    };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [selected]);
 
   const officers = useMemo(
     () => data.members.filter((m) => m.role !== "STUDENT"),
@@ -292,11 +269,7 @@ export function MembersDirectory({
                   key={m.id}
                   className="vt-holo rounded-2xl border border-border bg-surface"
                 >
-                  <button
-                    type="button"
-                    onClick={() => setSelected(m)}
-                    className="flex w-full items-center gap-3 rounded-2xl p-4 text-left"
-                  >
+                  <div className="flex w-full items-center gap-3 rounded-2xl p-4 text-left">
                     <HoloAvatar name={m.fullName} src={m.avatarUrl} size={48} />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-bold text-text">
@@ -311,7 +284,7 @@ export function MembersDirectory({
                         </p>
                       ) : null}
                     </div>
-                  </button>
+                  </div>
                 </TiltCard>
               );
             })}
@@ -413,144 +386,14 @@ export function MembersDirectory({
       ) : (
         <div className="cv-auto grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filtered.map((m) => (
-            <MemberCard3D
-              key={m.id}
-              member={m}
-              teamIndex={m.teamId ? (teamIndexOf.get(m.teamId) ?? 0) : 0}
-              maxScore={maxScore}
-              rank={ranks.get(m.id) ?? null}
-              onOpen={() => setSelected(m)}
-            />
+              <MemberCard3D
+                key={m.id}
+                member={m}
+                teamIndex={m.teamId ? (teamIndexOf.get(m.teamId) ?? 0) : 0}
+                maxScore={maxScore}
+                rank={ranks.get(m.id) ?? null}
+              />
           ))}
-        </div>
-      )}
-
-      {selected && (
-        <div
-          className="fixed inset-0 z-50 flex overflow-y-auto bg-black/80 p-4"
-          onClick={() => setSelected(null)}
-        >
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-label={`Hồ sơ ${selected.fullName}`}
-            onClick={(e) => e.stopPropagation()}
-            className="relative m-auto max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl border border-border bg-surface p-6 shadow-lg"
-          >
-            <button
-              type="button"
-              onClick={() => setSelected(null)}
-              aria-label="Đóng"
-              className="absolute right-4 top-4 rounded-lg p-1 text-text-muted hover:bg-surface-hover hover:text-text"
-            >
-              <X className="size-4" />
-            </button>
-
-            <div className="flex items-center gap-4">
-              <HoloAvatar name={selected.fullName} src={selected.avatarUrl} size={64} />
-              <div className="min-w-0">
-                <h2 className="truncate text-lg font-black text-text">
-                  {selected.fullName}
-                </h2>
-                <p className="text-sm text-accent-ink">{selected.roleLabel}</p>
-                <p className="mt-0.5 text-xs text-text-muted">
-                  {selected.hasAccount
-                    ? selected.lastLoginAt
-                      ? `Đã vào web · ${formatRelativeTime(new Date(selected.lastLoginAt))}`
-                      : "Đã có tài khoản · chưa đăng nhập lần nào"
-                    : "Danh sách Excel · chưa có tài khoản"}
-                </p>
-              </div>
-            </div>
-
-            {/* Hồ sơ rút gọn: chỉ hiện dòng có dữ liệu + nút hành động theo
-                vai trò. Học sinh trống thì dẫn đi xếp tổ/chấm điểm thay vì
-                khoe 3 dòng "chưa có gì". */}
-            <dl className="mt-6 space-y-3 text-sm">
-              {selected.teamName ? (
-                <div className="flex items-center justify-between border-b border-border pb-2">
-                  <dt className="flex items-center gap-2 text-text-muted">
-                    <Flag className="size-3.5" /> Tổ
-                  </dt>
-                  <dd className="font-bold text-text">{selected.teamName}</dd>
-                </div>
-              ) : (
-                selected.role !== "TEACHER" && (
-                  <div className="flex items-center justify-between border-b border-border pb-2">
-                    <dt className="flex items-center gap-2 text-text-muted">
-                      <Flag className="size-3.5" /> Tổ
-                    </dt>
-                    <dd>
-                      <Link
-                        href="/class"
-                        className="font-bold text-primary hover:underline"
-                      >
-                        Xếp vào tổ →
-                      </Link>
-                    </dd>
-                  </div>
-                )
-              )}
-              {selected.role !== "TEACHER" && (
-                <div className="flex items-center justify-between border-b border-border pb-2">
-                  <dt className="flex items-center gap-2 text-text-muted">
-                    <Trophy className="size-3.5" /> Điểm thi đua
-                  </dt>
-                  <dd className="vt-led font-bold">
-                    {selected.score !== null ? (
-                      selected.score
-                    ) : (
-                      <Link href="/competition" className="hover:underline">
-                        Chấm điểm ngay →
-                      </Link>
-                    )}
-                  </dd>
-                </div>
-              )}
-              {selected.marks !== null && (
-                <div className="flex items-center justify-between">
-                  <dt className="flex items-center gap-2 text-text-muted">
-                    <Medal className="size-3.5" /> Số ghi nhận
-                  </dt>
-                  <dd className="font-bold text-text">{selected.marks}</dd>
-                </div>
-              )}
-            </dl>
-
-            <div className="mt-5 flex flex-wrap gap-2">
-              {selected.role !== "TEACHER" ? (
-                <>
-                  <Link
-                    href="/competition"
-                    className="inline-flex h-9 flex-1 items-center justify-center rounded-xl bg-primary px-3 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-hover"
-                  >
-                    Chấm điểm
-                  </Link>
-                  <Link
-                    href="/tasks"
-                    className="inline-flex h-9 flex-1 items-center justify-center rounded-xl border border-border bg-surface px-3 text-sm font-bold text-text transition-colors hover:bg-surface-hover"
-                  >
-                    Giao việc
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <Link
-                    href="/tasks"
-                    className="inline-flex h-9 flex-1 items-center justify-center rounded-xl bg-primary px-3 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-hover"
-                  >
-                    Giao việc
-                  </Link>
-                  <Link
-                    href="/class"
-                    className="inline-flex h-9 flex-1 items-center justify-center rounded-xl border border-border bg-surface px-3 text-sm font-bold text-text transition-colors hover:bg-surface-hover"
-                  >
-                    Nhập danh sách
-                  </Link>
-                </>
-              )}
-            </div>
-          </div>
         </div>
       )}
 
