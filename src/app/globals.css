@@ -247,14 +247,18 @@ select {
 
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
+    to { opacity: 1; transform: none; }
     }
 
     /* Chuyển trang có cảm giác mượt: fade + trượt lên nhẹ. Chỉ dùng
-       opacity + transform nên GPU tự lo, không tốn main-thread như blur. */
+       opacity + transform nên GPU tự lo, không tốn main-thread như blur.
+       Frame cuối PHẢI là `transform: none` (thay vì translateY(0)) —
+       nếu không khung trang giữ transform vô hình, biến thành khung chứa
+       cho mọi popup fixed khiến modal căn nhầm vào cả trang dài thay vì
+       màn hình, phải cuộn mới thấy. */
     @keyframes pageEnter {
     from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
+    to { opacity: 1; transform: none; }
     }
     .animate-page-enter {
     animation: pageEnter 360ms cubic-bezier(.2,.8,.2,1) both;
@@ -262,12 +266,12 @@ select {
     
     @keyframes slideIn {
   from { opacity: 0; transform: translateX(-8px); }
-  to { opacity: 1; transform: translateX(0); }
+  to { opacity: 1; transform: none; }
 }
 
 @keyframes scaleIn {
   from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+  to { opacity: 1; transform: none; }
 }
 
 .animate-fade-in {
