@@ -984,6 +984,143 @@ select {
   pointer-events: none;
 }
 
+/* ============ Auth sống động (chỉ transform/opacity) ============ */
+
+.auth-orb-1 {
+  width: 62vmin;
+  height: 62vmin;
+  left: -16vmin;
+  top: -20vmin;
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.4), transparent 68%);
+  animation: auth-drift-1 11s ease-in-out infinite;
+}
+.auth-orb-2 {
+  width: 58vmin;
+  height: 58vmin;
+  right: -14vmin;
+  bottom: -22vmin;
+  background: radial-gradient(circle, rgba(14, 116, 144, 0.45), transparent 68%);
+  animation: auth-drift-2 13s ease-in-out infinite;
+}
+@keyframes auth-drift-1 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(46px, 34px) scale(1.14);
+  }
+}
+@keyframes auth-drift-2 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1.1);
+  }
+  50% {
+    transform: translate(-42px, -30px) scale(1);
+  }
+}
+.auth-ring {
+  left: 50%;
+  top: 50%;
+  width: 112vmin;
+  height: 112vmin;
+  margin-left: -56vmin;
+  margin-top: -56vmin;
+  border: 2px dashed rgba(255, 255, 255, 0.09);
+  border-radius: 50%;
+  animation: auth-spin 46s linear infinite;
+}
+@keyframes auth-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.auth-star {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+  animation: auth-twinkle 3s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes auth-twinkle {
+  0%,
+  100% {
+    opacity: 0.12;
+    transform: scale(0.7);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+}
+.auth-rise {
+  opacity: 0;
+  animation: auth-rise 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+@keyframes auth-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+.auth-panel-glow {
+  position: absolute;
+  width: 130%;
+  height: 46%;
+  left: -15%;
+  top: -12%;
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 255, 255, 0.14),
+    transparent
+  );
+  animation: auth-drift-1 9s ease-in-out infinite;
+  pointer-events: none;
+}
+.auth-chip {
+  position: absolute;
+  background: #ffc531;
+  color: #1a1200;
+  font-size: 12px;
+  font-weight: 800;
+  border-radius: 999px;
+  padding: 5px 13px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  transform: rotate(-4deg);
+  animation: auth-float 3.6s ease-in-out infinite;
+  white-space: nowrap;
+}
+.auth-mascot {
+  animation: auth-float 3.8s ease-in-out infinite;
+}
+@keyframes auth-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(2deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-orb-1,
+  .auth-orb-2,
+  .auth-ring,
+  .auth-star,
+  .auth-chip,
+  .auth-mascot,
+  .auth-panel-glow {
+    animation: none !important;
+  }
+  .auth-rise {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
 /* Người dùng bật "giảm chuyển động" thì tắt hết hiệu ứng bay lắc,
    nhưng vẫn giữ màu neon — màu không gây chóng mắt. */
 @media (prefers-reduced-motion: reduce) {
