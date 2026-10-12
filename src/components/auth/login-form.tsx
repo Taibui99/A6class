@@ -61,7 +61,7 @@ export function LoginForm({ redirect }: { redirect: string | null }) {
           autoComplete="email"
           required
           placeholder="email@school.edu.vn"
-          className="mt-1.5"
+          className="mt-1.5 h-11 rounded-xl"
         />
       </div>
 
@@ -77,7 +77,7 @@ export function LoginForm({ redirect }: { redirect: string | null }) {
             autoComplete="current-password"
             required
             placeholder="••••••••"
-            className="pr-10"
+            className="h-11 rounded-xl pr-10"
           />
           <button
             type="button"

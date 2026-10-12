@@ -67,7 +67,7 @@ export function RegisterForm() {
           autoComplete="name"
           required
           placeholder="Nguyễn Văn A"
-          className="mt-1.5"
+          className="mt-1.5 h-11 rounded-xl"
         />
       </div>
 
@@ -80,7 +80,7 @@ export function RegisterForm() {
           autoComplete="email"
           required
           placeholder="email@school.edu.vn"
-          className="mt-1.5"
+          className="mt-1.5 h-11 rounded-xl"
         />
       </div>
 
@@ -95,7 +95,7 @@ export function RegisterForm() {
             required
             minLength={6}
             placeholder="Ít nhất 6 ký tự"
-            className="pr-10"
+            className="h-11 rounded-xl pr-10"
           />
           <button
             type="button"
