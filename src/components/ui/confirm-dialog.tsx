@@ -41,7 +41,7 @@ export function ConfirmDialog({
 
   return (
     <div
-      className="fixed inset-0 z-[90] flex items-center justify-center bg-black/60 p-4"
+      className="fixed inset-0 z-[90] flex overflow-y-auto bg-black/60 p-4"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onCancel();
       }}
@@ -49,7 +49,7 @@ export function ConfirmDialog({
       aria-modal="true"
       aria-label={title}
     >
-      <div className="w-full max-w-sm rounded-2xl border border-border bg-surface p-5 shadow-xl">
+      <div className="m-auto max-h-[calc(100dvh-2rem)] w-full max-w-sm overflow-y-auto rounded-2xl border border-border bg-surface p-5 shadow-xl">
         <div className="flex items-start gap-3">
           <span
             aria-hidden

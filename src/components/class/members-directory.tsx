@@ -427,7 +427,7 @@ export function MembersDirectory({
 
       {selected && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+          className="fixed inset-0 z-50 flex overflow-y-auto bg-black/80 p-4"
           onClick={() => setSelected(null)}
         >
           <div
@@ -435,7 +435,7 @@ export function MembersDirectory({
             aria-modal="true"
             aria-label={`Hồ sơ ${selected.fullName}`}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-md overflow-hidden rounded-2xl border border-border bg-surface p-6 shadow-lg"
+            className="relative m-auto max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl border border-border bg-surface p-6 shadow-lg"
           >
             <button
               type="button"

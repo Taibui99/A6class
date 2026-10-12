@@ -401,8 +401,8 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
 
       {/* Modal Tạo Hoạt Động Mới */}
       {showCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 animate-in fade-in">
-          <div className="w-full max-w-lg rounded-2xl bg-surface p-6 border border-border shadow-lg space-y-5">
+        <div className="fixed inset-0 z-50 flex overflow-y-auto bg-black/80 p-4 animate-in fade-in">
+          <div className="m-auto max-h-[calc(100dvh-2rem)] w-full max-w-lg overflow-y-auto rounded-2xl bg-surface p-6 border border-border shadow-lg space-y-5">
             <div className="flex items-center justify-between border-b border-border pb-4">
               <div>
                 <h3 className="text-lg font-bold text-text">Giao việc / Thêm hoạt động mới</h3>
