@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { TiltCard } from "@/components/ui/tilt-card";
+import { formatRelativeTime } from "@/lib/utils";
 import type { MemberCard, MembersPageData } from "@/lib/members";
 
 const TEAM_FALLBACK = [
@@ -452,6 +453,13 @@ export function MembersDirectory({
                   {selected.fullName}
                 </h2>
                 <p className="text-sm text-accent-ink">{selected.roleLabel}</p>
+                <p className="mt-0.5 text-xs text-text-muted">
+                  {selected.hasAccount
+                    ? selected.lastLoginAt
+                      ? `Đã vào web · ${formatRelativeTime(new Date(selected.lastLoginAt))}`
+                      : "Đã có tài khoản · chưa đăng nhập lần nào"
+                    : "Danh sách Excel · chưa có tài khoản"}
+                </p>
               </div>
             </div>
 

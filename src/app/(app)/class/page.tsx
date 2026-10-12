@@ -147,7 +147,16 @@ export default async function ClassPage() {
           description="Sửa tên, đổi tổ hoặc đổi chức vụ cho từng người."
         >
           <RosterTable
-            students={roster?.memberships ?? []}
+            // Date trong DB phải thành chuỗi trước khi qua client component.
+            students={(roster?.memberships ?? []).map((m) => ({
+              ...m,
+              user: {
+                ...m.user,
+                lastLoginAt: m.user.lastLoginAt
+                  ? new Date(m.user.lastLoginAt).toISOString()
+                  : null,
+              },
+            }))}
             teams={(roster?.teams ?? []).map((t) => ({ id: t.id, name: t.name }))}
           />
         </Section>

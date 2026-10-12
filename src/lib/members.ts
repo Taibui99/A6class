@@ -3,7 +3,7 @@ import "server-only";
 import type { MemberRole } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
-import { roleLabel } from "@/lib/classes/roster";
+import { isPlaceholderEmail, roleLabel } from "@/lib/classes/roster";
 import { scoreStudents } from "@/lib/competition/scoring";
 
 export type MemberCard = {
@@ -15,6 +15,10 @@ export type MemberCard = {
   teamId: string | null;
   teamName: string | null;
   teamColor: string | null;
+  /** Tài khoản đăng nhập thật (false = dòng nhập từ Excel, chưa ai vào). */
+  hasAccount: boolean;
+  /** Lần cuối vào web, null = chưa bao giờ. */
+  lastLoginAt: string | null;
   /** Điểm thi đua tích luỹ cả năm. `null` khi chưa có kỳ thi nào. */
   score: number | null;
   /** Số ghi nhận đã nhận trong kỳ đang chạy. */
@@ -73,7 +77,7 @@ export async function getMembersPageData(classId: string): Promise<MembersPageDa
           role: true,
           teamId: true,
           user: {
-            select: { id: true, fullName: true, avatarUrl: true },
+            select: { id: true, fullName: true, avatarUrl: true, email: true, lastLoginAt: true },
           },
         },
       },
@@ -129,6 +133,10 @@ export async function getMembersPageData(classId: string): Promise<MembersPageDa
       teamColor: team?.color ?? null,
       score: score?.net ?? null,
       marks: score?.marks ?? null,
+      hasAccount: !isPlaceholderEmail(m.user.email),
+      lastLoginAt: m.user.lastLoginAt
+        ? new Date(m.user.lastLoginAt).toISOString()
+        : null,
     };
   });
 

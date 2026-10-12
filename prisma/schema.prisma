@@ -22,6 +22,8 @@ model User {
   role        UserRole   @default(STUDENT)
   status      UserStatus @default(ACTIVE)
   createdAt   DateTime   @default(now())
+  /// Lần cuối vào web (phân biệt tài khoản thật với dòng nhập từ Excel).
+  lastLoginAt DateTime?
   updatedAt   DateTime   @updatedAt
 
   memberships         ClassMembership[]

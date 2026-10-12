@@ -37,6 +37,7 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
         fullName: true,
         avatarUrl: true,
         role: true,
+        lastLoginAt: true,
         memberships: {
           take: 1,
           select: {
@@ -52,6 +53,19 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
       base.role = profile.role;
       base.defaultClassName = profile.memberships[0]?.class?.name ?? null;
       base.className = profile.memberships[0]?.class?.name ?? null;
+      // Chạm lastLoginAt tối đa 1 lần/ngày (fire-and-forget, không chờ)
+      // để biết ai đã vào web thật, ai chỉ là dòng nhập từ Excel.
+      const last = profile.lastLoginAt
+        ? new Date(profile.lastLoginAt).getTime()
+        : 0;
+      if (!last || Date.now() - last > 24 * 60 * 60 * 1000) {
+        void prisma.user
+          .update({
+            where: { id: profile.id },
+            data: { lastLoginAt: new Date() },
+          })
+          .catch(() => {});
+      }
     } else {
       // Đăng nhập bằng Google: tài khoản mới chưa có hồ sơ trong DB vì
       // không đi qua form đăng ký. Tự tạo hồ sơ (mặc định là học sinh,
@@ -62,7 +76,7 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
 
       const created = await prisma.user
         .create({
-          data: { email: authUser.email, fullName, avatarUrl },
+          data: { email: authUser.email, fullName, avatarUrl, lastLoginAt: new Date() },
           select: {
             id: true,
             fullName: true,

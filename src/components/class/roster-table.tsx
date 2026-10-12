@@ -8,7 +8,8 @@ import {
   updateStudentAction,
   type ActionState,
 } from "@/lib/classes/actions";
-import { roleLabel } from "@/lib/classes/roster";
+import { isPlaceholderEmail, roleLabel } from "@/lib/classes/roster";
+import { formatRelativeTime } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { FormSelect } from "@/components/ui/form-select";
 import { Input } from "@/components/ui/input";
@@ -17,7 +18,7 @@ type Student = {
   id: string;
   role: string;
   teamId: string | null;
-  user: { id: string; fullName: string; email: string };
+  user: { id: string; fullName: string; email: string; lastLoginAt: string | null };
 };
 
 type TeamOption = { id: string; name: string };
@@ -101,6 +102,19 @@ function StudentRow({
 
       <div className="mt-2 flex flex-wrap items-center gap-2">
         <span className="text-xs text-text-muted">{student.user.email}</span>
+        {isPlaceholderEmail(student.user.email) ? (
+          <span className="rounded-full bg-amber/15 px-2 py-0.5 text-[11px] font-bold text-amber-ink">
+            Excel · chưa có tài khoản
+          </span>
+        ) : student.user.lastLoginAt ? (
+          <span className="rounded-full bg-success/15 px-2 py-0.5 text-[11px] font-bold text-success">
+            Đã vào web · {formatRelativeTime(new Date(student.user.lastLoginAt))}
+          </span>
+        ) : (
+          <span className="rounded-full bg-surface-hover px-2 py-0.5 text-[11px] font-bold text-text-muted">
+            Chưa đăng nhập
+          </span>
+        )}
         <form action={removeAction}>
           <input type="hidden" name="membershipId" value={student.id} />
           <Button

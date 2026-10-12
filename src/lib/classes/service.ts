@@ -72,7 +72,7 @@ export async function getClassRoster(classId: string) {
           id: true,
           role: true,
           teamId: true,
-          user: { select: { id: true, fullName: true, email: true } },
+          user: { select: { id: true, fullName: true, email: true, lastLoginAt: true } },
         },
       },
     },
