@@ -65,22 +65,6 @@ function StudentRow({
         </div>
 
         <div className="w-32">
-          <select
-            name="teamId"
-            defaultValue={student.teamId ?? ""}
-            aria-label={`Tổ của ${student.user.fullName}`}
-            className="h-9 w-full rounded-lg border border-border bg-surface px-2.5 text-sm text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky"
-          >
-            <option value="">Chưa có tổ</option>
-            {teams.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="w-32">
           <FormSelect
             name="teamId"
             value={teamId}

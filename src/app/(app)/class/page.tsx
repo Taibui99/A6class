@@ -119,7 +119,16 @@ export default async function ClassPage() {
           title="Nhập danh sách học sinh"
           description="Dán từ Excel hoặc Google Sheets. Nhập lại nhiều lần được — học sinh trùng email sẽ được cập nhật chứ không tạo bản sao."
         >
-          <RosterImport classId={klass.id} />
+          <RosterImport
+            classId={klass.id}
+            className={klass.name}
+            students={(roster?.memberships ?? []).map((m) => ({
+              user: m.user,
+              teamId: m.teamId,
+              role: m.role,
+            }))}
+            teams={(roster?.teams ?? []).map((t) => ({ id: t.id, name: t.name }))}
+          />
         </Section>
 
         <Section

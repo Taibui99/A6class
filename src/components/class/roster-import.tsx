@@ -1,9 +1,10 @@
 "use client";
 
 import { useActionState, useRef, useState } from "react";
-import { Loader2, TriangleAlert, Upload, FileUp } from "lucide-react";
+import { Download, Loader2, TriangleAlert, Upload, FileUp } from "lucide-react";
 
 import { importRosterAction, type ActionState } from "@/lib/classes/actions";
+import { isPlaceholderEmail, roleLabel } from "@/lib/classes/roster";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -33,7 +34,21 @@ function rowsToText(rows: string[][]): string {
     .join("\n");
 }
 
-export function RosterImport({ classId }: { classId: string }) {
+export function RosterImport({
+  classId,
+  className,
+  students,
+  teams,
+}: {
+  classId: string;
+  className: string;
+  students: {
+    user: { fullName: string; email: string };
+    teamId: string | null;
+    role: string;
+  }[];
+  teams: { id: string; name: string }[];
+}) {
   const [state, formAction, pending] = useActionState(
     importRosterAction,
     initialState
@@ -42,9 +57,38 @@ export function RosterImport({ classId }: { classId: string }) {
   const [fileName, setFileName] = useState("");
   const [fileError, setFileError] = useState("");
   const [reading, setReading] = useState(false);
+  const [makingTemplate, setMakingTemplate] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const lineCount = text.split(/\r?\n/).filter((l) => l.trim()).length;
+
+  // Tải mẫu Excel đã đổ sẵn danh sách hiện tại — sửa trong Excel rồi
+  // nhập lại bằng nút Chọn file, khớp theo tên nên không sợ trùng.
+  async function downloadTemplate() {
+    setMakingTemplate(true);
+    try {
+      const XLSX = await import("xlsx");
+      const teamById = new Map(teams.map((t) => [t.id, t.name]));
+      const aoa: string[][] = [
+        ["Họ tên", "Email", "Tổ", "Chức vụ"],
+        ...students.map((s) => [
+          s.user.fullName,
+          isPlaceholderEmail(s.user.email) ? "" : s.user.email,
+          (s.teamId && teamById.get(s.teamId)) || "",
+          roleLabel(s.role),
+        ]),
+      ];
+      while (aoa.length < 11) aoa.push(["", "", "", ""]);
+      const ws = XLSX.utils.aoa_to_sheet(aoa);
+      ws["!cols"] = [{ wch: 24 }, { wch: 30 }, { wch: 10 }, { wch: 14 }];
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Danh sach");
+      const safe = (className || "lop").replace(/[\\/:*?"<>|]/g, "").trim() || "lop";
+      XLSX.writeFile(wb, `danh-sach-${safe}.xlsx`);
+    } finally {
+      setMakingTemplate(false);
+    }
+  }
 
   async function onPickFile(file: File | undefined) {
     if (!file) return;
@@ -137,6 +181,17 @@ export function RosterImport({ classId }: { classId: string }) {
         >
           <FileUp aria-hidden="true" className="size-4" />
           {reading ? "Đang đọc file…" : "Chọn file Excel/CSV"}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          disabled={makingTemplate}
+          onClick={downloadTemplate}
+        >
+          <Download aria-hidden="true" className="size-4" />
+          {makingTemplate
+            ? "Đang tạo…"
+            : `Tải mẫu Excel${students.length ? ` (${students.length} em)` : ""}`}
         </Button>
         {fileName && (
           <span className="text-xs font-semibold text-text-secondary">
