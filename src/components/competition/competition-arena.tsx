@@ -266,6 +266,7 @@ function PeriodPicker({
         }}
         ariaLabel="Chọn tuần"
         className="h-9 text-xs font-bold"
+        placeholder="Chọn tuần"
         emptyLabel={periods.length === 0 ? "Chưa có tuần nào" : undefined}
         disabled={periods.length === 0}
         options={periods.map((p) => ({

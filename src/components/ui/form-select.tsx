@@ -17,6 +17,10 @@ const NONE = "__none__";
  * Select đẹp (dùng Base UI) thay cho <select> mặc định của trình duyệt.
  * Có hidden input đi kèm nên vẫn submit form server-action bình thường.
  * Bỏ `name` khi chỉ lọc/chuyển trang tại chỗ (không submit form).
+ *
+ * Label hiển thị được tự resolve từ options (không trông chờ store của
+ * Base UI) — value lạ mà lọt vào cũng chỉ hiện placeholder, không bao giờ
+ * lộ raw ID ra màn hình.
  */
 export function FormSelect({
   name,
@@ -39,27 +43,30 @@ export function FormSelect({
   className?: string;
   ariaLabel?: string;
 }) {
-  const items: SelectOption[] = emptyLabel
+  const mapped = (emptyLabel
     ? [{ value: "", label: emptyLabel }, ...options]
-    : options;
+    : options
+  ).map((o) => ({ ...o, key: o.value === "" ? NONE : o.value }));
   const shown = value === "" ? NONE : value;
+  const current = mapped.find((o) => o.key === shown);
 
   return (
     <>
       <Select
         value={shown}
-        onValueChange={(v: string | null) => onChange(typeof v === "string" && v !== NONE ? v : "")}
+        onValueChange={(v: string | null) =>
+          onChange(typeof v === "string" && v !== NONE ? v : "")
+        }
         disabled={disabled}
       >
         <SelectTrigger className={className} aria-label={ariaLabel}>
-          <SelectValue placeholder={placeholder} />
+          <SelectValue placeholder={placeholder}>
+            {current?.label ?? placeholder ?? ""}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
-          {items.map((o) => (
-            <SelectItem
-              key={o.value === "" ? NONE : o.value}
-              value={o.value === "" ? NONE : o.value}
-            >
+          {mapped.map((o) => (
+            <SelectItem key={o.key} value={o.key}>
               {o.label}
             </SelectItem>
           ))}
