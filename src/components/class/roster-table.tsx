@@ -27,6 +27,8 @@ const EDITABLE_ROLES = [
   "TEAM_LEADER",
   "TEAM_VICE_LEADER",
   "CLASS_MONITOR",
+  "CLASS_VICE_MONITOR",
+  "TEACHER",
 ];
 
 function StudentRow({

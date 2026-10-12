@@ -50,7 +50,12 @@ export async function getDayRecords(
 
 async function mustBeMyClass(classId: string) {
   const user = await getCurrentUser();
-  if (!user || user.role !== "TEACHER") {
+  if (!user) {
+    throw new Error("Bạn cần đăng nhập.");
+  }
+  // Admin đi mọi lớp; giáo viên đúng lớp mình; còn lại phải có tên trong lớp.
+  if (user.role === "ADMIN") return;
+  if (user.role !== "TEACHER") {
     throw new Error("Chỉ giáo viên mới điểm danh được.");
   }
   const klass = await getMyClass();

@@ -1,5 +1,6 @@
 ﻿import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth/current";
+import { isStaff } from "@/lib/auth/roles";
 import { parseRoster } from "@/lib/classes/roster";
 import { isPlaceholderEmail } from "@/lib/classes/roster";
 import { findUniqueMemberByName } from "@/lib/classes/roster-match";
@@ -21,7 +22,7 @@ export class ClassError extends Error {}
 async function requireTeacher() {
   const user = await getCurrentUser();
   if (!user) throw new ClassError("Chưa đăng nhập.");
-  if (user.role !== "TEACHER") {
+  if (!isStaff(user.role)) {
     throw new ClassError("Chỉ giáo viên mới được quản lý dữ liệu lớp.");
   }
   return user;

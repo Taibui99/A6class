@@ -21,6 +21,7 @@ import {
 import type { TaskItem } from "@/lib/tasks/service";
 import { createTaskAction, deleteTaskAction, updateTaskStatusAction } from "@/lib/tasks/actions";
 import { Button } from "@/components/ui/button";
+import { isStaff } from "@/lib/auth/roles";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { FormSelect } from "@/components/ui/form-select";
 import { Input } from "@/components/ui/input";
@@ -380,7 +381,7 @@ export function TaskManager({ tasks: initialTasks, userRole }: Props) {
                   <span className="text-[11px] font-semibold text-text-muted flex items-center gap-0.5">
                     {task.submissionCount > 0 ? `${task.submissionCount} nộp` : "Chưa nộp"}
                   </span>
-                  {userRole === "TEACHER" && (
+                  {isStaff(userRole) && (
                     <button
                       type="button"
                       onClick={() => setDeleting(task)}

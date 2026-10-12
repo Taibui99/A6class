@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { getCurrentUser } from "@/lib/auth/current";
+import { isStaff } from "@/lib/auth/roles";
 import { getMyClass } from "@/lib/classes/service";
 import { getSlots } from "@/lib/timetable/service";
 import { TimetableGrid } from "@/components/timetable/timetable-grid";
@@ -20,7 +21,7 @@ export default async function TimetablePage() {
   if (!klass) redirect("/class");
 
   const slots = await getSlots(klass.id);
-  const canEdit = user.role === "TEACHER";
+  const canEdit = isStaff(user.role);
 
   return (
     <div className="space-y-6">

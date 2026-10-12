@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 
 import { cn, getInitials } from "@/lib/utils";
+import { isStaff } from "@/lib/auth/roles";
 import {
   createComment,
   deletePost,
@@ -179,7 +180,7 @@ export function PostCard({ post, currentUserId, canPin }: Props) {
         <span
           className={cn(
             "grid size-10 shrink-0 select-none place-items-center rounded-full border-2 text-sm font-extrabold",
-            post.authorRole === "TEACHER"
+            post.authorRole === "TEACHER" || post.authorRole === "ADMIN"
               ? "border-[#FF5C8A] bg-primary text-primary-foreground"
               : "border-[#1E1B16] bg-surface-hover text-text-secondary"
           )}
@@ -191,9 +192,9 @@ export function PostCard({ post, currentUserId, canPin }: Props) {
         <div className="min-w-0 flex-1">
           <p className="flex flex-wrap items-center gap-x-2 gap-y-1 truncate text-sm font-semibold text-text">
             {post.authorName}
-            {post.authorRole === "TEACHER" && (
+            {isStaff(post.authorRole) && (
               <span className="rounded-full border border-[#1E1B16] bg-[#FFE08A] px-2 py-px text-[10px] font-extrabold uppercase tracking-wide text-[#1E1B16]">
-                Giáo viên
+                {post.authorRole === "ADMIN" ? "Quản trị" : "Giáo viên"}
               </span>
             )}
           </p>

@@ -17,12 +17,12 @@ export async function getQuiz(classId: string): Promise<Slide[]> {
 }
 
 async function mustBeMyClass(classId: string) {
-  // Mở cho mọi thành viên trong lớp cùng sửa (không riêng giáo viên).
-  // Vẫn chặn người ngoài lớp và lớp khác.
   const user = await getCurrentUser();
   if (!user) {
     throw new Error("Bạn cần đăng nhập.");
   }
+  // Admin đi mọi lớp; còn lại phải có tên trong đúng lớp đó.
+  if (user.role === "ADMIN") return;
   const mem =
     user.role === "TEACHER"
       ? await getMyClass()

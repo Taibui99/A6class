@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { getCurrentUser } from "@/lib/auth/current";
+import { isStaff } from "@/lib/auth/roles";
 import { getOnboardingState } from "@/lib/onboarding/service";
 import { OnboardingForm } from "@/components/onboarding/onboarding-form";
 
@@ -18,7 +19,7 @@ export const dynamic = "force-dynamic";
 export default async function OnboardingPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
-  if (user.role === "TEACHER") redirect("/dashboard");
+  if (isStaff(user.role)) redirect("/dashboard");
 
   const state = await getOnboardingState(user.id);
   if (!state.needed) redirect("/dashboard");

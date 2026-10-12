@@ -1,4 +1,4 @@
-export type UserRole = "TEACHER" | "STUDENT";
+export type UserRole = "TEACHER" | "STUDENT" | "ADMIN";
 
 export type MemberRole =
   | "TEACHER"
@@ -8,7 +8,8 @@ export type MemberRole =
   | "LABOR_VICE_MONITOR"
   | "TEAM_LEADER"
   | "TEAM_VICE_LEADER"
-  | "STUDENT";
+  | "STUDENT"
+  | "CLASS_VICE_MONITOR";
 
 export type TaskStatus =
   | "TODO"

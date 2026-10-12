@@ -8,6 +8,7 @@ import { RosterImport } from "@/components/class/roster-import";
 import { RosterTable } from "@/components/class/roster-table";
 import { TeamManager } from "@/components/class/team-manager";
 import { getCurrentUser } from "@/lib/auth/current";
+import { isStaff } from "@/lib/auth/roles";
 import * as service from "@/lib/classes/service";
 
 export const metadata: Metadata = {
@@ -48,7 +49,7 @@ export default async function ClassPage() {
     );
   }
 
-  if (user.role !== "TEACHER") {
+  if (!isStaff(user.role)) {
     return (
       <main id="main-content" className="mx-auto w-full max-w-4xl px-4 py-12">
         <div className="rounded-2xl bg-surface p-6 border border-border">

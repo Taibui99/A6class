@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 import { getCurrentUser } from "@/lib/auth/current";
+import { isStaff } from "@/lib/auth/roles";
 import { getActiveEvent, type EventSummary } from "@/lib/events";
 import { getClassName, getFeed, getUserClassId } from "@/lib/feed";
 import { HOME_PATH } from "@/lib/home";
@@ -108,7 +109,7 @@ export default async function FeedPage() {
                     key={post.id}
                     post={post}
                     currentUserId={user.id}
-                    canPin={user.role === "TEACHER"}
+                    canPin={isStaff(user.role)}
                   />
                 ))}
               </div>

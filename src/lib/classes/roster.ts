@@ -8,7 +8,9 @@ export type RosterRole =
   | "STUDENT"
   | "TEAM_LEADER"
   | "TEAM_VICE_LEADER"
-  | "CLASS_MONITOR";
+  | "CLASS_MONITOR"
+  | "CLASS_VICE_MONITOR"
+  | "TEACHER";
 
 export type ParsedRosterRow = {
   fullName: string;
@@ -60,12 +62,18 @@ const ROLE_WORDS: Record<string, RosterRole> = {
   cm: "CLASS_MONITOR",
   lt: "CLASS_MONITOR",
   "lớp trưởng": "CLASS_MONITOR",
+  lp: "CLASS_VICE_MONITOR",
+  "lớp phó": "CLASS_VICE_MONITOR",
+  gv: "TEACHER",
+  "giáo viên": "TEACHER",
 };
 
 export function roleLabel(role: string): string {
   switch (role) {
     case "TEACHER":
       return "Giáo viên";
+    case "CLASS_VICE_MONITOR":
+      return "Lớp phó";
     case "TEAM_LEADER":
       return "Tổ trưởng";
     case "TEAM_VICE_LEADER":

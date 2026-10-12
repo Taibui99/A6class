@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { LogOut, Loader2, GraduationCap } from "lucide-react";
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { isStaff } from "@/lib/auth/roles";
 import { Button } from "@/components/ui/button";
 import { signOut } from "@/lib/auth/actions";
 import { getInitials } from "@/lib/utils";
@@ -29,7 +30,7 @@ export function UserMenu({
     });
   }
 
-  const isTeacher = user.role === "TEACHER";
+  const isTeacher = isStaff(user.role);
 
   if (variant === "mobile") {
     return (
@@ -70,7 +71,11 @@ export function UserMenu({
           <p className="truncate text-sm font-semibold text-text">{user.fullName}</p>
           <p className="flex items-center gap-1 text-xs font-medium text-text-secondary">
             <GraduationCap aria-hidden="true" className="size-3.5" />
-            {isTeacher ? "Giáo viên" : "Học sinh"}
+            {user.role === "ADMIN"
+              ? "Quản trị viên"
+              : isTeacher
+                ? "Giáo viên"
+                : "Học sinh"}
             {user.className ? ` · ${user.className}` : ""}
           </p>
         </div>

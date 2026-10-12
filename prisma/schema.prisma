@@ -50,6 +50,7 @@ model User {
 enum UserRole {
   TEACHER
   STUDENT
+  ADMIN
 }
 
 enum UserStatus {
@@ -112,6 +113,7 @@ enum MemberRole {
   TEAM_LEADER
   TEAM_VICE_LEADER
   STUDENT
+  CLASS_VICE_MONITOR
 }
 
 // ============================================

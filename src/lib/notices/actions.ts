@@ -3,13 +3,14 @@
 import { revalidatePath } from "next/cache";
 
 import { getCurrentUser } from "@/lib/auth/current";
+import { isStaff } from "@/lib/auth/roles";
 import { prisma } from "@/lib/prisma";
 import { getMyClass } from "@/lib/classes/service";
 import type { ActionState } from "@/lib/classes/actions";
 
 async function mustTeacher() {
   const user = await getCurrentUser();
-  if (!user || user.role !== "TEACHER") {
+  if (!user || !isStaff(user.role)) {
     throw new Error("Chỉ giáo viên mới đăng được.");
   }
   const klass = await getMyClass();

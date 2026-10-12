@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth/current";
+import { isStaff } from "@/lib/auth/roles";
 import { getUserClassId } from "@/lib/feed";
 
 type ActionResult = { ok?: boolean; error?: string };
@@ -106,7 +107,7 @@ export async function deletePost(postId: string): Promise<ActionResult> {
       select: { id: true, authorId: true },
     });
     if (!post) return fail("Bài viết không tồn tại.");
-    if (post.authorId !== user.id && user.role !== "TEACHER")
+    if (post.authorId !== user.id && !isStaff(user.role))
       return fail("Bạn không có quyền xóa bài này.");
 
     await prisma.post.delete({ where: { id: post.id } });
@@ -123,7 +124,7 @@ export async function togglePin(postId: string): Promise<ActionResult> {
   try {
     const user = await getCurrentUser();
     if (!user) return fail("Bạn cần đăng nhập.");
-    if (user.role !== "TEACHER") return fail("Chỉ giáo viên mới ghim bài được.");
+    if (!isStaff(user.role)) return fail("Chỉ giáo viên mới ghim bài được.");
     const classId = await getUserClassId(user.id);
     if (!classId) return fail("Bạn chưa vào lớp nào.");
 

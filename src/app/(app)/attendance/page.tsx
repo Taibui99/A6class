@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { getCurrentUser } from "@/lib/auth/current";
+import { isStaff } from "@/lib/auth/roles";
 import { getMyClass } from "@/lib/classes/service";
 import { getAttendanceRoster, getDayRecords, todayISO } from "@/lib/attendance/service";
 import { AttendanceBoard } from "@/components/attendance/attendance-board";
@@ -28,7 +29,7 @@ export default async function AttendancePage({
   const klass = await getMyClass();
   if (!klass) redirect("/class");
 
-  if (user.role !== "TEACHER") {
+  if (!isStaff(user.role)) {
     return (
       <main id="main-content" className="mx-auto w-full max-w-4xl px-4 py-12">
         <div className="rounded-2xl border border-border bg-surface p-6">

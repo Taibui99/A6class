@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { getCurrentUser } from "@/lib/auth/current";
+import { isStaff } from "@/lib/auth/roles";
 import { getMyClass } from "@/lib/classes/service";
 import { prisma } from "@/lib/prisma";
 import { deleteNoticeAction } from "@/lib/notices/actions";
@@ -30,7 +31,7 @@ export default async function NoticesPage() {
     orderBy: [{ isPinned: "desc" }, { createdAt: "desc" }],
   });
 
-  const isTeacher = user.role === "TEACHER";
+  const isTeacher = isStaff(user.role);
 
   return (
     <div className="space-y-6">

@@ -1,4 +1,5 @@
 import { getCurrentUser } from "@/lib/auth/current";
+import { isStaff } from "@/lib/auth/roles";
 import { prisma } from "@/lib/prisma";
 import { getMyClass } from "@/lib/classes/service";
 import { TT_DAYS, TT_PERIODS } from "@/lib/timetable/constants";
@@ -63,7 +64,11 @@ export async function getTodaySubjects(classId: string, jsDay: number): Promise<
 
 async function mustBeMyClass(classId: string) {
   const user = await getCurrentUser();
-  if (!user || user.role !== "TEACHER") {
+  if (!user) {
+    throw new Error("Bạn cần đăng nhập.");
+  }
+  if (user.role === "ADMIN") return;
+  if (!isStaff(user.role)) {
     throw new Error("Chỉ giáo viên mới sửa thời khóa biểu được.");
   }
   const klass = await getMyClass();

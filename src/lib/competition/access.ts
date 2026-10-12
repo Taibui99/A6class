@@ -1,8 +1,11 @@
 import type { MemberRole, UserRole } from "@prisma/client";
 
+import { isStaff } from "@/lib/auth/roles";
+
 /** Các chức vụ được tính là "cán sự" (được nhập điểm). */
 export const OFFICER_ROLES: MemberRole[] = [
   "CLASS_MONITOR",
+  "CLASS_VICE_MONITOR",
   "ACADEMIC_VICE_MONITOR",
   "ACTIVITY_VICE_MONITOR",
   "LABOR_VICE_MONITOR",
@@ -43,13 +46,15 @@ export function resolveCompetitionAccess(input: {
   allTeamIds: readonly string[];
   isPublished: boolean;
 }): CompetitionAccess {
-  const isTeacher = input.userRole === "TEACHER";
+  const isTeacher = isStaff(input.userRole);
   const role = input.memberRole ?? null;
   const teamId = input.teamId ?? null;
 
-  // Lớp trưởng là ngoại lệ: xem và sửa toàn lớp.
-  const seesAllTeams = isTeacher || role === "CLASS_MONITOR" || input.isPublished;
-  const canEditAll = isTeacher || role === "CLASS_MONITOR";
+  // Lớp trưởng là ngoại lệ: xem và sửa toàn lớp. Lớp phó chung ngang quyền.
+  const seesAllTeams =
+    isTeacher || role === "CLASS_MONITOR" || role === "CLASS_VICE_MONITOR" || input.isPublished;
+  const canEditAll =
+    isTeacher || role === "CLASS_MONITOR" || role === "CLASS_VICE_MONITOR";
   const canRecord = isTeacher || (role !== null && OFFICER_ROLES.includes(role));
 
   const visibleTeamIds = seesAllTeams

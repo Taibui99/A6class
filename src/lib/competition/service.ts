@@ -6,6 +6,7 @@ import { COMPETITION_CLASS } from "@/lib/competition/config";
 import { periodLabel, startOfWeek } from "@/lib/competition/scoring";
 import { auth } from "@/lib/auth/server";
 import { getCurrentUser } from "@/lib/auth/current";
+import { isStaff } from "@/lib/auth/roles";
 import { prisma } from "@/lib/prisma";
 
 const MAX_COUNT = 50;
@@ -77,7 +78,7 @@ export async function getAccessForPeriod(
   if (!user) throw new CompetitionError("Không tìm thấy tài khoản của bạn.");
 
   const membership = user.memberships[0];
-  if (!membership && user.role !== "TEACHER") {
+  if (!membership && !isStaff(user.role)) {
     throw new CompetitionError("Bạn chưa thuộc lớp nào. Hãy nhờ giáo viên thêm bạn vào lớp.");
   }
 

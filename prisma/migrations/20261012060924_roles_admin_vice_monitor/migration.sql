@@ -1,0 +1,5 @@
+-- AlterEnum
+ALTER TYPE "MemberRole" ADD VALUE 'CLASS_VICE_MONITOR';
+
+-- AlterEnum
+ALTER TYPE "UserRole" ADD VALUE 'ADMIN';

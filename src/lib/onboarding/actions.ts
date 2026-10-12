@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 
 import { getCurrentUser } from "@/lib/auth/current";
+import { isStaff } from "@/lib/auth/roles";
 import { saveOnboarding } from "@/lib/onboarding/service";
 import type { ActionState } from "@/lib/classes/actions";
 
@@ -14,7 +15,7 @@ export async function saveOnboardingAction(
   if (!user) {
     return { ok: false, message: "Bạn cần đăng nhập." };
   }
-  if (user.role === "TEACHER") redirect("/dashboard");
+  if (isStaff(user.role)) redirect("/dashboard");
   try {
     await saveOnboarding({
       userId: user.id,

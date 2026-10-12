@@ -1,6 +1,7 @@
 import { cache } from "react";
 
 import { prisma } from "@/lib/prisma";
+import { isStaff } from "@/lib/auth/roles";
 
 export type OnboardingClass = {
   id: string;
@@ -34,7 +35,7 @@ export const getOnboardingState = cache(
       where: { id: userId },
       select: { fullName: true, role: true },
     });
-    if (!user || user.role === "TEACHER") {
+    if (!user || isStaff(user.role)) {
       return { ...blank, needed: false, fullName: user?.fullName ?? "" };
     }
 

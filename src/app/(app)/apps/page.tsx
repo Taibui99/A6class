@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import { getCurrentUser } from "@/lib/auth/current";
+import { isStaff } from "@/lib/auth/roles";
 import { getHubOverview, getHubStats } from "@/lib/hub";
 import { getUserClassId } from "@/lib/feed";
 import { getActiveEvent } from "@/lib/events";
@@ -203,7 +204,7 @@ export default async function HubPage() {
               Xin chào, {user.fullName ?? "bạn"}
             </h2>
             <p className="mt-2 max-w-prose text-sm leading-relaxed text-text-secondary">
-              {user.role === "TEACHER" ? (
+              {isStaff(user.role) ? (
                 <>
                   Bạn chưa có lớp nào. Mở{" "}
                   <Link href="/class" className="font-bold text-sky hover:underline">
@@ -225,7 +226,7 @@ export default async function HubPage() {
           Kho công cụ
         </h2>
 
-        {user.role === "TEACHER" ? (
+        {isStaff(user.role) ? (
           <Link
             href="/class"
             className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-surface p-4 transition hover:bg-surface-hover"

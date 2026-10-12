@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { GraduationCap, Mail, Medal, Trophy, Users } from "lucide-react";
 
 import { getCurrentUser } from "@/lib/auth/current";
+import { isStaff } from "@/lib/auth/roles";
 import { getDashboardSummary } from "@/lib/dashboard";
 import { formatNumber, getInitials } from "@/lib/utils";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -12,7 +13,7 @@ export default async function ProfilePage() {
   if (!user) redirect("/login");
 
   const data = await getDashboardSummary(user.id);
-  const isTeacher = user.role === "TEACHER";
+  const isTeacher = isStaff(user.role);
 
   return (
     <div className="mx-auto max-w-xl space-y-6">
@@ -47,7 +48,11 @@ export default async function ProfilePage() {
           <h2 className="mt-3 text-lg font-bold text-text">{user.fullName}</h2>
           <p className="mt-1 flex items-center gap-1.5 text-xs font-medium text-text-secondary">
             <GraduationCap aria-hidden="true" className="size-4" />
-            {isTeacher ? "Giáo viên" : "Học sinh"}
+            {user.role === "ADMIN"
+              ? "Quản trị viên"
+              : isTeacher
+                ? "Giáo viên"
+                : "Học sinh"}
             {data?.className ? ` · ${data.className}` : ""}
           </p>
         </div>

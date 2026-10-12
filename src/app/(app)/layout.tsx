@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { getCurrentUser } from "@/lib/auth/current";
+import { isStaff } from "@/lib/auth/roles";
 import { getOnboardingState } from "@/lib/onboarding/service";
 import { Brand } from "@/components/layout/brand";
 import { UserMenu } from "@/components/layout/user-menu";
@@ -16,10 +17,10 @@ export default async function AppLayout({
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
-  const isTeacher = user.role === "TEACHER";
+  const isTeacher = isStaff(user.role);
 
   // Học sinh mới (đặc biệt là đăng nhập Google lần đầu) phải ghi rõ họ tên
-  // và tổ trước khi vào app. Giáo viên bỏ qua.
+  // và tổ trước khi vào app. Giáo viên và admin bỏ qua.
   if (!isTeacher) {
     const { needed } = await getOnboardingState(user.id);
     if (needed) redirect("/onboarding");

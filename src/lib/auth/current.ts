@@ -8,7 +8,7 @@ export type CurrentUser = {
   email: string;
   fullName: string;
   avatarUrl: string | null;
-  role: "TEACHER" | "STUDENT";
+  role: "TEACHER" | "STUDENT" | "ADMIN";
   defaultClassName: string | null;
   className: string | null;
 };

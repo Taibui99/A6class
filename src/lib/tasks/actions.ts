@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth/current";
+import { isStaff } from "@/lib/auth/roles";
 
 export type TaskActionState = {
   ok: boolean;
@@ -83,7 +84,7 @@ export async function updateTaskStatusAction(
     }
     // Chặn người ngoài lớp: trước đây chỉ cần đăng nhập là đổi được
     // trạng thái việc của lớp khác. Giáo viên luôn được phép.
-    if (user.role !== "TEACHER") {
+    if (!isStaff(user.role)) {
       const mem = await prisma.classMembership.findFirst({
         where: { userId: user.id, classId: existing.classId },
       });
@@ -114,7 +115,7 @@ export async function deleteTaskAction(taskId: string): Promise<TaskActionState>
   if (!user) {
     return { ok: false, message: "Bạn cần đăng nhập." };
   }
-  if (user.role !== "TEACHER") {
+  if (!isStaff(user.role)) {
     return { ok: false, message: "Chỉ giáo viên mới xóa được việc." };
   }
 

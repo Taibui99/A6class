@@ -13,7 +13,7 @@ export type FeedPost = {
   id: string;
   authorId: string;
   authorName: string;
-  authorRole: "TEACHER" | "STUDENT";
+  authorRole: "TEACHER" | "STUDENT" | "ADMIN";
   content: string;
   imageUrls: string[];
   isPinned: boolean;

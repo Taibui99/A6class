@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { Clock, Trophy } from "lucide-react";
 
 import { getCurrentUser } from "@/lib/auth/current";
+import { isStaff } from "@/lib/auth/roles";
 import { getMyClass } from "@/lib/classes/service";
 import { prisma } from "@/lib/prisma";
 import { getQuiz } from "@/lib/game-quiz/service";
@@ -11,9 +12,9 @@ export default async function TramGiaDinhPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
-  // Lớp của giáo viên, hoặc lớp đầu tiên của học sinh.
+  // Lớp của giáo viên (admin cũng vậy), hoặc lớp đầu tiên của học sinh.
   let classId: string | null = null;
-  if (user.role === "TEACHER") {
+  if (isStaff(user.role)) {
     classId = (await getMyClass())?.id ?? null;
   } else {
     const mem = await prisma.classMembership.findFirst({

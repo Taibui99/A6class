@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import { getCurrentUser } from "@/lib/auth/current";
+import { isStaff } from "@/lib/auth/roles";
 import {
   getDailyPoints,
   getDashboardSummary,
@@ -43,7 +44,9 @@ const DONE = "COMPLETED";
 // phó tổ) / student — mỗi nhóm có stats, lối tắt và việc khác nhau.
 const ROLE_LABEL: Record<string, string> = {
   TEACHER: "Giáo viên",
+  ADMIN: "Quản trị viên",
   CLASS_MONITOR: "Lớp trưởng",
+  CLASS_VICE_MONITOR: "Lớp phó",
   ACADEMIC_VICE_MONITOR: "PHT",
   ACTIVITY_VICE_MONITOR: "TQ",
   LABOR_VICE_MONITOR: "LĐ",
@@ -54,6 +57,7 @@ const ROLE_LABEL: Record<string, string> = {
 
 const MONITOR_ROLES = new Set([
   "CLASS_MONITOR",
+  "CLASS_VICE_MONITOR",
   "ACADEMIC_VICE_MONITOR",
   "ACTIVITY_VICE_MONITOR",
   "LABOR_VICE_MONITOR",
@@ -172,7 +176,7 @@ export default async function DashboardPage() {
   }).format(now);
   const dateLabel = `${weekday.charAt(0).toUpperCase()}${weekday.slice(1)} ${dayMonth}`;
 
-  const isTeacher = user.role === "TEACHER";
+  const isTeacher = isStaff(user.role);
   const memberRole = membership?.role ?? null;
   const myTeamId = membership?.teamId ?? null;
 
@@ -183,11 +187,14 @@ export default async function DashboardPage() {
       : memberRole && LEADER_ROLES.has(memberRole)
         ? "leader"
         : "student";
-  const roleLabel = isTeacher
-    ? ROLE_LABEL.TEACHER
-    : memberRole
-      ? (ROLE_LABEL[memberRole] ?? null)
-      : null;
+  const roleLabel =
+    user.role === "ADMIN"
+      ? ROLE_LABEL.ADMIN
+      : isTeacher
+        ? ROLE_LABEL.TEACHER
+        : memberRole
+          ? (ROLE_LABEL[memberRole] ?? null)
+          : null;
   // Trưởng/phó tổ và học sinh chỉ thấy việc của mình/tổ mình trên dashboard.
   const scopedToMyTeam = roleGroup === "leader" || roleGroup === "student";
 
