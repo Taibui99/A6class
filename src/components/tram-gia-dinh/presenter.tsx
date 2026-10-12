@@ -25,6 +25,7 @@ import {
   ttsStop,
   verdictSpeech,
 } from "@/lib/tram-gia-dinh/speech";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 const TRACKS = [
   {
@@ -97,6 +98,7 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
   const [gridOpen, setGridOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [winOpen, setWinOpen] = useState(false);
+  const [confirmResetScores, setConfirmResetScores] = useState(false);
   const [newsHtml, setNewsHtml] = useState("Bấm ▶ BẮT ĐẦU để chơi!");
   const [newsHot, setNewsHot] = useState(false);
   const [imgOk, setImgOk] = useState(true);
@@ -470,6 +472,11 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
       });
       return next;
     });
+  }
+  function resetScores() {
+    const n = teams.map(() => 0);
+    setScores(n);
+    store("tram_show_scores", n);
   }
   function zoom(d: number) {
     setZoomLv((z) => {
@@ -898,7 +905,26 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
                     + Thêm đội
                   </button>
                 )}
+                <button
+                  className="fbtn"
+                  style={{ width: "100%", marginTop: 6, fontSize: 14 }}
+                  onClick={() => setConfirmResetScores(true)}
+                >
+                  ↺ Reset điểm
+                </button>
               </div>
+              <ConfirmDialog
+                open={confirmResetScores}
+                title="Reset điểm các đội?"
+                message="Điểm mọi đội về 0. Không hoàn tác được."
+                confirmLabel="Reset"
+                danger
+                onConfirm={() => {
+                  setConfirmResetScores(false);
+                  resetScores();
+                }}
+                onCancel={() => setConfirmResetScores(false)}
+              />
               <label className="present-hide" style={{ fontSize: 13, fontWeight: 900 }}>
                 Mệnh giá mỗi câu đúng:
               </label>
