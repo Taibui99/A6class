@@ -381,7 +381,7 @@ export function MatchBoard({
         ))}
       </div>
 
-      <div className="relative mx-auto w-full max-w-5xl px-3 py-5 sm:px-5">
+      <div className="match-fit">
         <p className="match-eyebrow">Game · Nối khái niệm</p>
         <div className="mt-1 flex flex-wrap items-center gap-2">
           <h1 className="min-w-0 flex-1 text-xl font-extrabold tracking-tight text-white sm:text-2xl">
@@ -406,7 +406,7 @@ export function MatchBoard({
         </div>
 
         {!clean && (
-          <div className="mt-3 flex flex-wrap gap-2">
+          <div className="match-controls">
             <button type="button" className="match-btn" onClick={() => {
               setPoolOrder(shuffledCopy(poolOrder));
               persist();
@@ -448,6 +448,8 @@ export function MatchBoard({
           </div>
         )}
 
+        <div className="match-main">
+        <div className="match-pairs">
         <div className="match-board">
           {pairs.map((p, i) => {
             const placed = placements[String(i)];
@@ -510,7 +512,8 @@ export function MatchBoard({
             );
           })}
         </div>
-
+        </div>
+        <div className="match-pool-side">
         <div
           className="match-pool"
           onDragOver={(e) => e.preventDefault()}
@@ -558,6 +561,8 @@ export function MatchBoard({
               <span className="match-empty">Hết mảnh ghép — bấm vào ô đã ghép để trả về kho.</span>
             )}
           </div>
+          </div>
+        </div>
         </div>
       </div>
 
