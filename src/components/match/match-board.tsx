@@ -4,6 +4,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Link2,
   Lock,
+  Maximize,
+  Minimize,
   RotateCcw,
   Shuffle,
   Trophy,
@@ -110,6 +112,15 @@ export function MatchBoard({
       localStorage.getItem("match-muted") === "1"
   );
   const [copied, setCopied] = useState(false);
+  const [isFull, setIsFull] = useState(false);
+  const [zoom, setZoom] = useState(() => {
+    if (typeof window === "undefined") return 1.15;
+    try {
+      const v = parseFloat(localStorage.getItem("match-zoom") ?? "");
+      if (v >= 0.8 && v <= 1.6) return v;
+    } catch {}
+    return 1.15;
+  });
   const [finalTime, setFinalTime] = useState<number | null>(null);
   const [confirmReset, setConfirmReset] = useState(false);
   const [confirmReveal, setConfirmReveal] = useState(false);
@@ -279,6 +290,39 @@ export function MatchBoard({
     persist();
   }
 
+  function toggleFull() {
+    try {
+      if (!document.fullscreenElement) {
+        void document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        void document.exitFullscreen();
+      }
+    } catch {}
+  }
+
+  function changeZoom(d: number) {
+    const nz = Math.min(1.6, Math.max(0.8, +(zoom + d).toFixed(2)));
+    setZoom(nz);
+    try {
+      localStorage.setItem("match-zoom", String(nz));
+    } catch {}
+  }
+
+  useEffect(() => {
+    const h = () => setIsFull(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange", h);
+    return () => document.removeEventListener("fullscreenchange", h);
+  }, []);
+
+  useEffect(() => {
+    const h = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA")) return;
+      if (e.key === "f" || e.key === "F") toggleFull();
+    };
+    document.addEventListener("keydown", h);
+    return () => document.removeEventListener("keydown", h);
+  }, []);
   function copyLink(sach: boolean) {
     const url = `${window.location.origin}/p/${code}${sach ? "?sach=1" : ""}`;
     try {
@@ -320,7 +364,7 @@ export function MatchBoard({
   );
 
   return (
-    <div className="match-root">
+    <div className="match-root" style={{ zoom }}>
       <div aria-hidden className="match-bits">
         {bits.map((b, i) => (
           <span
@@ -347,6 +391,15 @@ export function MatchBoard({
             Đúng {correctCount}/{n}
           </span>
           <span className="match-timer">{fmtTime(won && finalTime !== null ? finalTime : elapsed)}</span>
+          <button
+            type="button"
+            className="match-btn"
+            onClick={toggleFull}
+            aria-label={isFull ? "Thoát toàn màn hình" : "Toàn màn hình"}
+            title="Toàn màn hình (F)"
+          >
+            {isFull ? <Minimize aria-hidden className="size-4" /> : <Maximize aria-hidden className="size-4" />}
+          </button>
         </div>
         <div className="match-progress">
           <i style={{ width: `${n ? Math.round((correctCount / n) * 100) : 0}%` }} />
@@ -379,6 +432,12 @@ export function MatchBoard({
               aria-label={muted ? "Bật tiếng" : "Tắt tiếng"}
             >
               {muted ? <VolumeX aria-hidden className="size-4" /> : <Volume2 aria-hidden className="size-4" />}
+            </button>
+            <button type="button" className="match-btn" onClick={() => changeZoom(-0.1)} aria-label="Chữ nhỏ lại" title="Chữ nhỏ lại">
+              A-
+            </button>
+            <button type="button" className="match-btn" onClick={() => changeZoom(0.1)} aria-label="Chữ to ra" title="Chữ to ra">
+              A+
             </button>
             <button type="button" className="match-btn" onClick={() => copyLink(false)}>
               <Link2 aria-hidden className="size-4" /> {copied ? "Đã chép!" : "Chép link chơi"}
