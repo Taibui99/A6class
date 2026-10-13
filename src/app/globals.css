@@ -1203,6 +1203,12 @@ select {
   border-color: #ffc531;
   color: #1a1200;
 }
+.match-timer.low {
+  background: #f87171;
+  border-color: #f87171;
+  color: #1a1200;
+  animation: tgd-pulse 1s infinite;
+}
 .match-progress {
   height: 10px;
   margin-top: 10px;

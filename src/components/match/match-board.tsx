@@ -7,6 +7,7 @@ import {
   Maximize,
   Minimize,
   RotateCcw,
+  TimerOff,
   Volume2,
   VolumeX,
 } from "lucide-react";
@@ -52,6 +53,12 @@ function beep(
   } catch {
     /* trình duyệt chặn audio thì thôi */
   }
+}
+
+function fmtTime(sec: number) {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${m}:${String(s).padStart(2, "0")}`;
 }
 
 function shuffledCopy<T>(arr: T[]): T[] {
@@ -100,6 +107,11 @@ export function MatchBoard({
   );
   const [confirmReset, setConfirmReset] = useState(false);
   const [isFull, setIsFull] = useState(false);
+  // Mỗi lượt 60 giây: bắt đầu từ lượt ghép đầu, hết giờ khóa bảng.
+  const [timeLeft, setTimeLeft] = useState(60);
+  const [timerOn, setTimerOn] = useState(false);
+  const timeUp = timerOn && timeLeft <= 0;
+  const timeUpRef = useRef(false);
 
   const saveTimer = useRef<number | null>(null);
   const audioRef = useRef<AudioContext | null>(null);
@@ -135,6 +147,23 @@ export function MatchBoard({
     return () => window.clearInterval(id);
   }, [code, updatedAt]);
 
+  // Đếm ngược 60 giây mỗi lượt. Hết giờ thì khóa bảng + kêu 1 tiếng.
+  useEffect(() => {
+    if (!timerOn || timeUp) return;
+    const id = window.setInterval(() => {
+      setTimeLeft((t) => (t > 0 ? t - 1 : t));
+    }, 1000);
+    return () => window.clearInterval(id);
+  }, [timerOn, timeUp]);
+
+  useEffect(() => {
+    if (timeUp && !timeUpRef.current) {
+      timeUpRef.current = true;
+      beep(audioRef, muted, 150, 0.4, 0, "sawtooth", 0.12);
+    }
+    if (!timeUp) timeUpRef.current = false;
+  }, [timeUp, muted]);
+
   function persist() {
     if (saveTimer.current) window.clearTimeout(saveTimer.current);
     saveTimer.current = window.setTimeout(async () => {
@@ -148,9 +177,10 @@ export function MatchBoard({
   }
 
   function place(contentIdx: number, slotIdx: number) {
-    if (locked.includes(slotIdx)) return;
+    if (timeUp || locked.includes(slotIdx)) return;
     const cur = placements[String(slotIdx)];
     if (cur === contentIdx) return;
+    if (!timerOn) setTimerOn(true);
     const next = { ...placements };
     for (const [s, c] of Object.entries(next)) {
       if (c === contentIdx) delete next[s];
@@ -164,6 +194,7 @@ export function MatchBoard({
   }
 
   function returnToPool(contentIdx: number) {
+    if (timeUp) return;
     setPlacements((prev) => {
       const nx = { ...prev };
       for (const [s, c] of Object.entries(nx)) {
@@ -234,6 +265,8 @@ export function MatchBoard({
     setMoves(0);
     setSelected(null);
     setShakeSlots([]);
+    setTimeLeft(60);
+    setTimerOn(false);
     setPoolOrder(shuffledCopy(poolOrder));
     persist();
   }
@@ -313,6 +346,9 @@ export function MatchBoard({
           </h1>
           <span className="match-score">
             Đúng {correctCount}/{n}
+          </span>
+          <span className={`match-timer${timeLeft <= 10 ? " low" : ""}`}>
+            {fmtTime(timeLeft)}
           </span>
           <button
             type="button"
@@ -464,6 +500,21 @@ export function MatchBoard({
         </div>
       </div>
       </div>
+
+      {timeUp && (
+        <div className="match-win" role="status">
+          <div className="match-win-card">
+            <TimerOff aria-hidden className="match-win-cup" />
+            <h2>Hết giờ!</h2>
+            <p>
+              Ghép đúng {correctCount}/{n} cặp
+            </p>
+            <button type="button" className="match-btn big" onClick={() => doReplay()}>
+              <RotateCcw aria-hidden className="size-4" /> Chơi lại
+            </button>
+          </div>
+        </div>
+      )}
 
       <ConfirmDialog
         open={confirmReset}
