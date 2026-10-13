@@ -2,13 +2,11 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  Link2,
+  Check,
   Lock,
   Maximize,
   Minimize,
   RotateCcw,
-  Shuffle,
-  Trophy,
   Volume2,
   VolumeX,
 } from "lucide-react";
@@ -56,17 +54,6 @@ function beep(
   }
 }
 
-function fmtTime(sec: number) {
-  const m = Math.floor(sec / 60);
-  const s = sec % 60;
-  return `${m}:${String(s).padStart(2, "0")}`;
-}
-
-/** Lấy giờ hệ thống / trộn mảng ngoài component để lint purity hài lòng. */
-function nowMs(): number {
-  return Date.now();
-}
-
 function shuffledCopy<T>(arr: T[]): T[] {
   const order = [...arr];
   for (let i = order.length - 1; i > 0; i--) {
@@ -78,8 +65,8 @@ function shuffledCopy<T>(arr: T[]): T[] {
 
 /**
  * Bảng ghép cặp: trái khái niệm cố định, phải ô trống, dưới là kho.
- * Kéo-thả (chuột) + bấm-chọn-rồi-bấm-ô (cảm ứng). Ghép đúng khóa xanh
- * ngay, sai rung đỏ rồi trả về kho. Mọi lượt đều lưu DB + máy khác poll theo.
+ * Kéo-thả (chuột) + bấm-chọn-rồi-bấm-ô (cảm ứng). Ghép xong hết rồi bấm
+ * Chấm: đúng khóa xanh, sai rung đỏ rồi trả về kho.
  */
 export function MatchBoard({
   code,
@@ -101,30 +88,18 @@ export function MatchBoard({
   const [locked, setLocked] = useState<number[]>(initial.locked);
   const [poolOrder, setPoolOrder] = useState<number[]>(initial.poolOrder);
   const [moves, setMoves] = useState(initial.moves);
-  const [startedAt, setStartedAt] = useState<number | null>(initial.startedAt);
+  const [startedAt] = useState<number | null>(initial.startedAt);
   const [updatedAt, setUpdatedAt] = useState(initialUpdatedAt);
   const [selected, setSelected] = useState<number | null>(null);
-  const [shakeSlot, setShakeSlot] = useState<number | null>(null);
+  const [shakeSlots, setShakeSlots] = useState<number[]>([]);
   const [dragSlot, setDragSlot] = useState<number | null>(null);
   const [muted, setMuted] = useState(
     () =>
       typeof window !== "undefined" &&
       localStorage.getItem("match-muted") === "1"
   );
-  const [copied, setCopied] = useState(false);
-  const [isFull, setIsFull] = useState(false);
-  const [zoom, setZoom] = useState(() => {
-    if (typeof window === "undefined") return 1.15;
-    try {
-      const v = parseFloat(localStorage.getItem("match-zoom") ?? "");
-      if (v >= 0.8 && v <= 1.6) return v;
-    } catch {}
-    return 1.15;
-  });
-  const [finalTime, setFinalTime] = useState<number | null>(null);
   const [confirmReset, setConfirmReset] = useState(false);
-  const [confirmReveal, setConfirmReveal] = useState(false);
-  const [now, setNow] = useState(() => Date.now());
+  const [isFull, setIsFull] = useState(false);
 
   const saveTimer = useRef<number | null>(null);
   const audioRef = useRef<AudioContext | null>(null);
@@ -136,14 +111,7 @@ export function MatchBoard({
     snapRef.current = { placements, locked, poolOrder, moves, startedAt };
   });
 
-  useEffect(() => {
-    const id = window.setInterval(() => setNow(Date.now()), 1000);
-    return () => window.clearInterval(id);
-  }, []);
-
   const correctCount = locked.length;
-  const won = n > 0 && locked.length === n;
-  const elapsed = startedAt ? Math.max(0, Math.floor((now - startedAt) / 1000)) : 0;
 
   // Máy khác thao tác → tab này tự cập nhật (bỏ qua lúc đang kéo).
   useEffect(() => {
@@ -156,8 +124,8 @@ export function MatchBoard({
           setLocked(fresh.state.locked);
           setPoolOrder(fresh.state.poolOrder);
           setMoves(fresh.state.moves);
-          setStartedAt(fresh.state.startedAt);
           setSelected(null);
+          setShakeSlots([]);
           setUpdatedAt(fresh.updatedAt);
         }
       } catch {
@@ -179,56 +147,23 @@ export function MatchBoard({
     }, 800);
   }
 
-  function tick() {
-    if (startedAt == null) setStartedAt(nowMs());
-  }
-
   function place(contentIdx: number, slotIdx: number) {
     if (locked.includes(slotIdx)) return;
     const cur = placements[String(slotIdx)];
     if (cur === contentIdx) return;
-    tick();
     const next = { ...placements };
     for (const [s, c] of Object.entries(next)) {
       if (c === contentIdx) delete next[s];
     }
     next[String(slotIdx)] = contentIdx;
-    const nMoves = moves + 1;
     setPlacements(next);
-    setMoves(nMoves);
+    setMoves(moves + 1);
     setSelected(null);
-    if (contentIdx === slotIdx) {
-      const nLocked = [...locked, slotIdx];
-      setLocked(nLocked);
-      beep(audioRef, muted, 523, 0.1);
-      beep(audioRef, muted, 659, 0.1, 0.09);
-      beep(audioRef, muted, 784, 0.16, 0.18);
-      if (nLocked.length === n) {
-        const end = nowMs();
-        setFinalTime(startedAt ? Math.max(0, Math.floor((end - startedAt) / 1000)) : 0);
-        [523, 659, 784, 1047, 784, 1047].forEach((f, i) =>
-          beep(audioRef, muted, f, 0.14, i * 0.11)
-        );
-      }
-    } else {
-      beep(audioRef, muted, 150, 0.22, 0, "sawtooth", 0.11);
-      setShakeSlot(slotIdx);
-      window.setTimeout(() => {
-        setShakeSlot(null);
-        setPlacements((prev) => {
-          if (prev[String(slotIdx)] !== contentIdx) return prev;
-          const nx = { ...prev };
-          delete nx[String(slotIdx)];
-          return nx;
-        });
-        persist();
-      }, 650);
-    }
+    beep(audioRef, muted, 620, 0.06);
     persist();
   }
 
   function returnToPool(contentIdx: number) {
-    tick();
     setPlacements((prev) => {
       const nx = { ...prev };
       for (const [s, c] of Object.entries(nx)) {
@@ -258,35 +193,48 @@ export function MatchBoard({
     }
   }
 
+  function checkAll() {
+    const newly: number[] = [];
+    const wrong: number[] = [];
+    for (const [s, c] of Object.entries(placements)) {
+      const sIdx = Number(s);
+      if (locked.includes(sIdx)) continue;
+      if (c === sIdx) newly.push(sIdx);
+      else wrong.push(sIdx);
+    }
+    if (newly.length === 0 && wrong.length === 0) {
+      beep(audioRef, muted, 620, 0.06);
+      return;
+    }
+    if (newly.length > 0) {
+      setLocked((prev) => [...prev, ...newly]);
+      beep(audioRef, muted, 523, 0.1);
+      beep(audioRef, muted, 659, 0.1, 0.09);
+      beep(audioRef, muted, 784, 0.16, 0.18);
+    }
+    if (wrong.length > 0) {
+      beep(audioRef, muted, 150, 0.22, 0, "sawtooth", 0.11);
+      setShakeSlots(wrong);
+      window.setTimeout(() => {
+        setShakeSlots([]);
+        setPlacements((prev) => {
+          const nx = { ...prev };
+          for (const idx of wrong) delete nx[String(idx)];
+          return nx;
+        });
+        persist();
+      }, 650);
+    }
+    persist();
+  }
+
   function doReplay() {
     setPlacements({});
     setLocked([]);
     setMoves(0);
-    setStartedAt(null);
-    setFinalTime(null);
     setSelected(null);
+    setShakeSlots([]);
     setPoolOrder(shuffledCopy(poolOrder));
-    persist();
-  }
-
-  function doReveal() {
-    tick();
-    const all: Record<string, number> = {};
-    const lk: number[] = [];
-    for (let i = 0; i < n; i++) {
-      all[String(i)] = i;
-      lk.push(i);
-    }
-    setPlacements(all);
-    setLocked(lk);
-    setSelected(null);
-    {
-      const end = nowMs();
-      setFinalTime(startedAt ? Math.max(0, Math.floor((end - startedAt) / 1000)) : 0);
-      [523, 659, 784, 1047, 784, 1047].forEach((f, i) =>
-        beep(audioRef, muted, f, 0.14, i * 0.11)
-      );
-    }
     persist();
   }
 
@@ -300,11 +248,11 @@ export function MatchBoard({
     } catch {}
   }
 
-  function changeZoom(d: number) {
-    const nz = Math.min(1.6, Math.max(0.8, +(zoom + d).toFixed(2)));
-    setZoom(nz);
+  function toggleMute() {
+    const nv = !muted;
+    setMuted(nv);
     try {
-      localStorage.setItem("match-zoom", String(nz));
+      localStorage.setItem("match-muted", nv ? "1" : "0");
     } catch {}
   }
 
@@ -323,16 +271,6 @@ export function MatchBoard({
     document.addEventListener("keydown", h);
     return () => document.removeEventListener("keydown", h);
   }, []);
-  function copyLink(sach: boolean) {
-    const url = `${window.location.origin}/p/${code}${sach ? "?sach=1" : ""}`;
-    try {
-      void navigator.clipboard?.writeText(url);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1800);
-    } catch {
-      /* clipboard bị chặn thì thôi */
-    }
-  }
 
   const placedSet = new Set(Object.values(placements));
   const unplaced = poolOrder.filter((c) => !placedSet.has(c));
@@ -349,22 +287,8 @@ export function MatchBoard({
     []
   );
 
-  const confetti = useMemo(
-    () =>
-      won
-        ? Array.from({ length: 42 }, (_, i) => ({
-            left: (i * 47) % 100,
-            delay: ((i * 13) % 10) / 10,
-            dur: 2.4 + ((i * 29) % 20) / 10,
-            color: ["#FFC531", "#FF5C8A", "#38bdf8", "#34d399", "#a78bfa"][i % 5],
-            w: 7 + ((i * 17) % 6),
-          }))
-        : [],
-    [won]
-  );
-
   return (
-    <div className="match-root" style={{ zoom }}>
+    <div className="match-root">
       <div aria-hidden className="match-bits">
         {bits.map((b, i) => (
           <span
@@ -390,7 +314,14 @@ export function MatchBoard({
           <span className="match-score">
             Đúng {correctCount}/{n}
           </span>
-          <span className="match-timer">{fmtTime(won && finalTime !== null ? finalTime : elapsed)}</span>
+          <button
+            type="button"
+            className="match-btn"
+            onClick={toggleMute}
+            aria-label={muted ? "Bật tiếng" : "Tắt tiếng"}
+          >
+            {muted ? <VolumeX aria-hidden className="size-4" /> : <Volume2 aria-hidden className="size-4" />}
+          </button>
           <button
             type="button"
             className="match-btn"
@@ -407,43 +338,11 @@ export function MatchBoard({
 
         {!clean && (
           <div className="match-controls">
-            <button type="button" className="match-btn" onClick={() => {
-              setPoolOrder(shuffledCopy(poolOrder));
-              persist();
-            }}>
-              <Shuffle aria-hidden className="size-4" /> Trộn kho
-            </button>
-            <button type="button" className="match-btn" onClick={() => setConfirmReveal(true)}>
-              Hiện đáp án
+            <button type="button" className="match-btn go" onClick={checkAll}>
+              <Check aria-hidden className="size-4" /> Chấm
             </button>
             <button type="button" className="match-btn" onClick={() => setConfirmReset(true)}>
               <RotateCcw aria-hidden className="size-4" /> Chơi lại
-            </button>
-            <button
-              type="button"
-              className="match-btn"
-              onClick={() => {
-                const nv = !muted;
-                setMuted(nv);
-                try {
-                  localStorage.setItem("match-muted", nv ? "1" : "0");
-                } catch {}
-              }}
-              aria-label={muted ? "Bật tiếng" : "Tắt tiếng"}
-            >
-              {muted ? <VolumeX aria-hidden className="size-4" /> : <Volume2 aria-hidden className="size-4" />}
-            </button>
-            <button type="button" className="match-btn" onClick={() => changeZoom(-0.1)} aria-label="Chữ nhỏ lại" title="Chữ nhỏ lại">
-              A-
-            </button>
-            <button type="button" className="match-btn" onClick={() => changeZoom(0.1)} aria-label="Chữ to ra" title="Chữ to ra">
-              A+
-            </button>
-            <button type="button" className="match-btn" onClick={() => copyLink(false)}>
-              <Link2 aria-hidden className="size-4" /> {copied ? "Đã chép!" : "Chép link chơi"}
-            </button>
-            <button type="button" className="match-btn" onClick={() => copyLink(true)}>
-              Link chiếu
             </button>
           </div>
         )}
@@ -454,7 +353,7 @@ export function MatchBoard({
           {pairs.map((p, i) => {
             const placed = placements[String(i)];
             const isLocked = locked.includes(i);
-            const isShake = shakeSlot === i;
+            const isShake = shakeSlots.includes(i);
             return (
               <div key={i} className="match-row">
                 <div className="match-concept">{p.concept}</div>
@@ -557,44 +456,14 @@ export function MatchBoard({
                 {pairs[c]?.content ?? ""}
               </button>
             ))}
-            {unplaced.length === 0 && !won && (
+            {unplaced.length === 0 && (
               <span className="match-empty">Hết mảnh ghép — bấm vào ô đã ghép để trả về kho.</span>
             )}
-          </div>
           </div>
         </div>
         </div>
       </div>
-
-      {won && (
-        <div className="match-win" role="status">
-          <div aria-hidden className="match-confetti">
-            {confetti.map((f, i) => (
-              <span
-                key={i}
-                style={{
-                  left: `${f.left}%`,
-                  width: f.w,
-                  height: f.w * 0.6,
-                  background: f.color,
-                  animationDelay: `${f.delay}s`,
-                  animationDuration: `${f.dur}s`,
-                }}
-              />
-            ))}
-          </div>
-          <div className="match-win-card">
-            <Trophy aria-hidden className="match-win-cup" />
-            <h2>Tuyệt vời!</h2>
-            <p>
-              Ghép đúng cả {n} cặp · {fmtTime(finalTime ?? elapsed)} · {moves} lượt ghép
-            </p>
-            <button type="button" className="match-btn big" onClick={() => doReplay()}>
-              <RotateCcw aria-hidden className="size-4" /> Chơi lại
-            </button>
-          </div>
-        </div>
-      )}
+      </div>
 
       <ConfirmDialog
         open={confirmReset}
@@ -606,17 +475,6 @@ export function MatchBoard({
           doReplay();
         }}
         onCancel={() => setConfirmReset(false)}
-      />
-      <ConfirmDialog
-        open={confirmReveal}
-        title="Hiện toàn bộ đáp án?"
-        message="Mọi ô sẽ tự điền đúng. Dùng khi chữa bài."
-        confirmLabel="Hiện đáp án"
-        onConfirm={() => {
-          setConfirmReveal(false);
-          doReveal();
-        }}
-        onCancel={() => setConfirmReveal(false)}
       />
     </div>
   );

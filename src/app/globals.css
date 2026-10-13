@@ -1239,6 +1239,11 @@ select {
 .match-btn:active {
   transform: scale(0.95);
 }
+.match-btn.go {
+  background: #ffc531;
+  border-color: #ffc531;
+  color: #1a1200;
+}
 .match-btn.big {
   font-size: 1rem;
   padding: 12px 26px;
