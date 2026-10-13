@@ -1257,6 +1257,14 @@ select {
   border-color: #ffc531;
   color: #1a1200;
 }
+.match-idle-hint {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.65);
+}
+.match-idle-hint b {
+  color: #ffc531;
+}
 .match-board {
   flex: 1;
   min-height: 0;
@@ -1270,7 +1278,7 @@ select {
   gap: 10px;
   align-items: stretch;
   flex: 1 1 0;
-  min-height: 84px;
+  min-height: 0;
 }
 /* Bố cục vừa 1 màn hình: cột trái cặp câu hỏi co giãn, cột phải kho
    mảnh tự cuộn, chữ co theo chiều cao viewport nên máy chiếu to hay
@@ -1323,6 +1331,7 @@ select {
   display: flex;
   align-items: center;
   min-height: 0;
+  overflow-y: auto;
   border: 2px dashed rgba(255, 255, 255, 0.35);
   border-radius: 14px;
   padding: 10px 14px;
@@ -1368,7 +1377,9 @@ select {
   align-items: center;
   gap: 6px;
   width: 100%;
+  min-width: 0;
   cursor: grab;
+  overflow-wrap: anywhere;
 }
 .match-lock {
   width: 16px;

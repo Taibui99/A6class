@@ -177,10 +177,9 @@ export function MatchBoard({
   }
 
   function place(contentIdx: number, slotIdx: number) {
-    if (timeUp || locked.includes(slotIdx)) return;
+    if (!timerOn || timeUp || locked.includes(slotIdx)) return;
     const cur = placements[String(slotIdx)];
     if (cur === contentIdx) return;
-    if (!timerOn) setTimerOn(true);
     const next = { ...placements };
     for (const [s, c] of Object.entries(next)) {
       if (c === contentIdx) delete next[s];
@@ -193,8 +192,15 @@ export function MatchBoard({
     persist();
   }
 
+  function startRound() {
+    setTimeLeft(60);
+    setTimerOn(true);
+    beep(audioRef, muted, 659, 0.12);
+    beep(audioRef, muted, 784, 0.16, 0.1);
+  }
+
   function returnToPool(contentIdx: number) {
-    if (timeUp) return;
+    if (!timerOn || timeUp) return;
     setPlacements((prev) => {
       const nx = { ...prev };
       for (const [s, c] of Object.entries(nx)) {
@@ -298,12 +304,17 @@ export function MatchBoard({
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement | null;
-      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA")) return;
+      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "BUTTON")) return;
       if (e.key === "f" || e.key === "F") toggleFull();
+      if (e.key === " ") {
+        e.preventDefault();
+        if (!timerOn && !timeUp) startRound();
+      }
     };
     document.addEventListener("keydown", h);
     return () => document.removeEventListener("keydown", h);
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timerOn, timeUp]);
 
   const placedSet = new Set(Object.values(placements));
   const unplaced = poolOrder.filter((c) => !placedSet.has(c));
@@ -372,6 +383,13 @@ export function MatchBoard({
           <i style={{ width: `${n ? Math.round((correctCount / n) * 100) : 0}%` }} />
         </div>
 
+        {!timerOn && !timeUp && (
+          <div className="match-controls">
+            <button type="button" className="match-btn go big" onClick={startRound} title="Bắt đầu tính giờ (Space)">
+              ▶ Bắt đầu 60 giây
+            </button>
+          </div>
+        )}
         {!clean && (
           <div className="match-controls">
             <button type="button" className="match-btn go" onClick={checkAll}>
@@ -381,6 +399,11 @@ export function MatchBoard({
               <RotateCcw aria-hidden className="size-4" /> Chơi lại
             </button>
           </div>
+        )}
+        {!timerOn && !timeUp && (
+          <p className="match-idle-hint">
+            Bảng đang khóa — bấm <b>Bắt đầu</b> (hoặc phím Space) để mở màn 60 giây.
+          </p>
         )}
 
         <div className="match-main">
