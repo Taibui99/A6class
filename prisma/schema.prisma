@@ -678,6 +678,18 @@ model TimetableSlot {
   @@index([classId])
 }
 
+/// Phòng game ghép cặp (link khách, không cần đăng nhập).
+/// Giáo viên tạo 1 lần, cả lớp mở link cùng chơi, máy chiếu poll theo.
+model GameRoom {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  title     String   @default("Ghép cặp")
+  pairs     Json     @default("[]")
+  state     Json     @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 /// Bộ câu hỏi minigame Trạm Gia Đình của lớp — bản chung cho mọi máy.
 /// Giáo viên sửa trên máy nào, máy chiếu lớp thấy ngay.
 model GameQuiz {

@@ -181,6 +181,15 @@ export function internalTools(): InternalTool[] {
       external: false,
     },
     {
+      id: "match",
+      name: "Game ghép cặp",
+      summary: "Nối khái niệm – nội dung, link khách không cần đăng nhập",
+      href: "/p/new",
+      icon: "trophy",
+      accent: "violet",
+      external: false,
+    },
+    {
       id: "tram-gia-dinh",
       name: "Trạm Gia Đình",
       summary: "Gameshow 40 phút: trắc nghiệm, đúng/sai, tình huống + soạn đề",
