@@ -44,7 +44,7 @@ const TRACKS = [
 const WIN_URL =
   "https://upload.wikimedia.org/wikipedia/commons/1/13/Kevin_MacLeod_-_Winner_Winner.ogg";
 const LETTERS = ["A", "B", "C", "D"];
-const FLOATS = ["⚛️", "•", "λ", "π", "ω", "ħ", "F", "E", "m", "v"];
+const FLOATS = ["⚛️", "•", "λ", "π", "ω", "ħ", "F", "E", "v", "a"];
 const LADDER = [
   100000, 200000, 300000, 500000, 1000000,
   2000000, 3000000, 5000000, 10000000, 20000000,
@@ -834,10 +834,10 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
       <div id="stage">
         <div id="cover" className={idx >= 0 ? "hidden" : ""}>
           <h1>
-            AI LÀ TRIỆU PHÚ <span>VẬT LÍ 12</span>
+            VUA VẬT LÍ <span>12</span>
           </h1>
           <p>
-            Kiểm tra bài cũ · 15 mốc giải thưởng · Quyền trợ giúp: 50:50 · Hỏi cả lớp · Gợi ý
+            Kiểm tra bài cũ · 15 mốc · 50:50 · Hỏi cả lớp · Gợi ý
           </p>
           <button className="go" onClick={startShow}>
             ▶ BẮT ĐẦU

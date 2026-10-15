@@ -32,10 +32,10 @@ export default async function TramGiaDinhPage() {
     <div className="space-y-4">
       <header>
         <h1 className="text-xl font-extrabold tracking-tight text-text sm:text-2xl">
-          Ai là Triệu Phú Vật lí
+          Vua Vật lí
         </h1>
         <p className="mt-0.5 text-sm text-text-secondary">
-          Gameshow kiểm tra bài cũ Vật lí 12 kiểu &quot;Ai là triệu phú&quot;:
+          Gameshow kiểm tra bài cũ Vật lí 12 kiểu &quot;Vua Vật lí&quot;:
           mỗi câu đúng leo một mốc thưởng, có 3 quyền trợ giúp. Câu hỏi soạn
           chung giữa trình chiếu và soạn đề, lưu theo lớp.
         </p>
