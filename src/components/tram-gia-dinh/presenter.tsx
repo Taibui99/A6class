@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { MouseEvent as ReactMouseEvent } from "react";
 import type { Slide } from "@/lib/tram-gia-dinh/quiz";
 import {
   ac,
@@ -79,7 +78,6 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
   const [idx, setIdx] = useState(-1);
   const [stage, setStage] = useState<0 | 1 | 2>(0);
   const [picks, setPicks] = useState<number[]>([]);
-  const [ds, setDs] = useState<Record<number, boolean>>({});
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [timerOn, setTimerOn] = useState(false);
   const [teams, setTeams] = useState<string[]>(() =>
@@ -281,7 +279,6 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
     setIdx(Math.max(-1, Math.min(q.length - 1, n)));
     setStage(0);
     setPicks([]);
-    setDs({});
     setImgOk(true);
     setTimerOn(false);
     setTimeLeft(null);
@@ -315,19 +312,11 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
     const n = s.answers.length;
     for (let k = 0; k < n; k++)
       setTimeout(() => tone(700 + k * 120, 0.09, "triangle", 0, 0.3), k * 200);
-    const mine = { picks: [...picks], ds: { ...ds } };
+    const mine = { picks: [...picks] };
     setTimeout(
       () => {
         if (s.type === "many") {
-          const keys = Object.keys(mine.ds);
-          const all =
-            keys.length > 0 &&
-            s.answers.every((a, k) => mine.ds[k] === a.correct);
-          if (keys.length === 0) return;
-          if (all) {
-            sRight();
-            burst();
-          } else sWrong();
+          burst();
         } else if (s.type === "fill" || s.type === "guess") {
           sRight();
           burst();
@@ -368,12 +357,6 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
   function pickOne(k: number) {
     if (stage !== 0) return;
     setPicks((p) => (p.includes(k) ? p.filter((x) => x !== k) : [...p, k]));
-    sFlip();
-  }
-  function dsPick(e: ReactMouseEvent, k: number, v: boolean) {
-    e.stopPropagation();
-    if (stage !== 0) return;
-    setDs((d) => ({ ...d, [k]: v }));
     sFlip();
   }
 
@@ -667,13 +650,11 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
     if (!s || s.type === "info") return null;
     if (s.type === "many") {
       return (s.answers || []).map((a, k) => {
-        const mine = ds[k];
         if (stage === 2) {
-          const ok = mine === a.correct;
           return (
             <div
               key={k}
-              className={`opt dsrow pop ${mine === undefined ? "dim" : ok ? "ok" : "no"}`}
+              className="opt dsrow pop"
               style={{ animationDelay: `${k * 200}ms` }}
             >
               <span className="k">{LETTERS[k] || k + 1}</span>
@@ -681,36 +662,13 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
               <span className={`verdict ${a.correct ? "vt" : "vf"}`}>
                 {a.correct ? "ĐÚNG" : "SAI"}
               </span>
-              {mine === undefined ? (
-                <span className="mine">chưa chọn</span>
-              ) : ok ? (
-                <span className="mine good">chọn đúng ✓</span>
-              ) : (
-                <span className="mine bad">chọn sai ✗</span>
-              )}
             </div>
           );
         }
         return (
-          <div key={k} className={`opt dsrow${stage === 1 ? " lock" : ""}`}>
+          <div key={k} className="opt dsrow">
             <span className="k">{LETTERS[k] || k + 1}</span>
             <span>{a.text}</span>
-            <span className="dsbtns">
-              <button
-                className={`dsbtn dd${ds[k] === true ? " on" : ""}`}
-                disabled={stage === 1}
-                onClick={(e) => dsPick(e, k, true)}
-              >
-                ĐÚNG
-              </button>
-              <button
-                className={`dsbtn ds${ds[k] === false ? " on" : ""}`}
-                disabled={stage === 1}
-                onClick={(e) => dsPick(e, k, false)}
-              >
-                SAI
-              </button>
-            </span>
           </div>
         );
       });
@@ -884,7 +842,7 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
                 <div className="tag">
                   {s.round}
                   {s.type === "many" ? (
-                    <> · <b>mỗi ý chọn ĐÚNG hay SAI</b></>
+                    <> · <b>bấm Chấm để hiện đáp án Đúng/Sai</b></>
                   ) : s.type === "one" ? (
                     <> · <b>chọn 1 đáp án</b></>
                   ) : s.type === "fill" ? (
@@ -1248,7 +1206,7 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
         <div>
           <b>🎮 CHỌN → CHỐT → CHẤM</b>
           <br />
-          1️⃣ Bấm chọn đáp án (câu Đúng/Sai: chọn ĐÚNG hay SAI từng ý)
+            1️⃣ Bấm chọn đáp án (câu Đúng/Sai: bấm ✅ Chấm để hiện đáp án)
           <br />
           2️⃣ Muốn gây cấn thì bấm <b>🔒 Chốt</b> (tùy chọn — bỏ qua vẫn chấm
           được)
