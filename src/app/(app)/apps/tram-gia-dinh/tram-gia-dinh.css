@@ -623,3 +623,269 @@
 .tgd .hidden {
   display: none !important;
 }
+
+/* ============ TRANG SOẠN NỘI DUNG (editor) ============ */
+.tgd header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(5, 8, 22, 0.94);
+  color: #f8fafc;
+  padding: 12px 18px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  border-bottom: 1px solid rgba(56, 189, 248, 0.5);
+}
+.tgd header h1 {
+  font-size: 18px;
+  margin: 0;
+  flex: 1;
+  min-width: 220px;
+}
+.tgd header h1 small {
+  color: #38bdf8;
+}
+.tgd .btn {
+  border: 1px solid rgba(56, 189, 248, 0.7);
+  border-radius: 12px;
+  padding: 8px 16px;
+  font-weight: 800;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: inherit;
+  background: radial-gradient(140% 140% at 50% 0%, rgba(56, 189, 248, 0.26) 0%, rgba(15, 23, 42, 0.92) 100%);
+  color: #e0f2fe;
+}
+.tgd .btn.go {
+  background: radial-gradient(140% 140% at 50% 0%, rgba(14, 165, 233, 0.52) 0%, rgba(15, 23, 42, 0.96) 100%);
+}
+.tgd .btn.sun {
+  background: radial-gradient(140% 140% at 50% 0%, rgba(250, 204, 21, 0.42) 0%, rgba(15, 23, 42, 0.94) 100%);
+  color: #fef3c7;
+}
+.tgd .btn.sky {
+  background: radial-gradient(140% 140% at 50% 0%, rgba(14, 165, 233, 0.42) 0%, rgba(15, 23, 42, 0.94) 100%);
+}
+.tgd .btn.danger {
+  background: radial-gradient(140% 140% at 50% 0%, rgba(248, 113, 113, 0.42) 0%, rgba(15, 23, 42, 0.94) 100%);
+  color: #fee2e2;
+}
+.tgd .btn.ghost {
+  background: transparent;
+  color: #e0f2fe;
+  border-color: rgba(56, 189, 248, 0.35);
+}
+.tgd #saved {
+  font-size: 13px;
+  color: #7dd3fc;
+  font-weight: 700;
+}
+.tgd main {
+  max-width: 1020px;
+  margin: 0 auto;
+  padding: 18px 14px 110px;
+}
+.tgd #stats {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.tgd .stat {
+  background: radial-gradient(160% 160% at 50% 0%, rgba(56, 189, 248, 0.22) 0%, rgba(15, 23, 42, 0.9) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.55);
+  border-radius: 14px;
+  padding: 8px 16px;
+  font-weight: 800;
+  color: #e0f2fe;
+  box-shadow: 0 0 20px rgba(37, 99, 235, 0.22);
+}
+.tgd .stat small {
+  display: block;
+  font-size: 12px;
+  color: rgba(203, 213, 245, 0.75);
+}
+.tgd #issues {
+  background: radial-gradient(160% 160% at 50% 0%, rgba(250, 204, 21, 0.24) 0%, rgba(15, 23, 42, 0.9) 100%);
+  border: 1px solid rgba(250, 204, 21, 0.7);
+  border-radius: 14px;
+  padding: 10px 16px;
+  margin-bottom: 14px;
+  font-weight: 700;
+  color: #fef3c7;
+}
+.tgd #issues:empty {
+  display: none;
+}
+.tgd .card {
+  background: radial-gradient(160% 160% at 50% 0%, rgba(56, 189, 248, 0.16) 0%, rgba(15, 23, 42, 0.92) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  border-radius: 20px;
+  padding: 16px;
+  margin-bottom: 14px;
+  color: #e0f2fe;
+  box-shadow: 0 0 26px rgba(37, 99, 235, 0.2);
+}
+.tgd .cardhead {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.tgd .num {
+  background: radial-gradient(120% 120% at 50% 0%, rgba(56, 189, 248, 0.5) 0%, rgba(15, 23, 42, 0.95) 100%);
+  color: #e0f2fe;
+  border-radius: 12px;
+  font-weight: 800;
+  padding: 4px 14px;
+  font-size: 15px;
+  font-family: "DM Mono", monospace;
+}
+.tgd .cardhead input[type="text"] {
+  flex: 1;
+  min-width: 140px;
+}
+.tgd .cardhead select {
+  width: auto;
+}
+.tgd .iconbtn {
+  border: 1px solid rgba(56, 189, 248, 0.6);
+  background: radial-gradient(140% 140% at 50% 0%, rgba(56, 189, 248, 0.22) 0%, rgba(15, 23, 42, 0.9) 100%);
+  color: #e0f2fe;
+  border-radius: 10px;
+  font-weight: 800;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.tgd input[type="text"],
+.tgd textarea,
+.tgd select {
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  color: #e0f2fe;
+  border-radius: 12px;
+  padding: 9px 12px;
+  font-size: 15px;
+  width: 100%;
+  font-family: inherit;
+}
+.tgd input[type="text"]:focus,
+.tgd textarea:focus,
+.tgd select:focus {
+  outline: none;
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.28);
+}
+.tgd textarea {
+  resize: vertical;
+  min-height: 56px;
+  font-weight: 600;
+}
+.tgd label {
+  font-size: 13px;
+  color: rgba(203, 213, 245, 0.85);
+  font-weight: 800;
+}
+.tgd .ansrow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+}
+.tgd .ansrow input[type="text"] {
+  flex: 1;
+}
+.tgd .ansrow input[type="checkbox"],
+.tgd .ansrow input[type="radio"] {
+  width: 26px;
+  height: 26px;
+  accent-color: #38bdf8;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.tgd .imgprev {
+  max-height: 120px;
+  border-radius: 12px;
+  border: 1px solid rgba(56, 189, 248, 0.6);
+  margin-top: 8px;
+  display: block;
+}
+.tgd .row2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 8px;
+}
+@media (max-width: 700px) {
+  .tgd .row2 {
+    grid-template-columns: 1fr;
+  }
+}
+.tgd #addbar {
+  position: sticky;
+  bottom: 0;
+  background: rgba(5, 8, 22, 0.94);
+  border-top: 1px solid rgba(56, 189, 248, 0.5);
+  padding: 12px;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.tgd .card.flash {
+  animation: tgd-flash 0.9s ease;
+}
+@keyframes tgd-flash {
+  0% {
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.6), 0 0 26px rgba(37, 99, 235, 0.3);
+  }
+  100% {
+    border-color: rgba(56, 189, 248, 0.5);
+    box-shadow: 0 0 26px rgba(37, 99, 235, 0.2);
+  }
+}
+.tgd .card.dying {
+  animation: tgd-out 0.28s ease forwards;
+  pointer-events: none;
+}
+@keyframes tgd-out {
+  to {
+    opacity: 0;
+    transform: scale(0.97) translateX(24px);
+  }
+}
+.savedot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: 1px;
+}
+.savedot.saving {
+  background: #fbbf24;
+  animation: tgd-pulse 1s infinite;
+}
+.savedot.ok {
+  background: #22c55e;
+}
+.tgd .iconbtn,
+.tgd .fbtn {
+  transition: transform 0.1s ease;
+}
+.tgd .iconbtn:active,
+.tgd .fbtn:active {
+  transform: scale(0.94);
+}
+@media (prefers-reduced-motion: reduce) {
+  .tgd .card.flash,
+  .tgd .card.dying,
+  .savedot.saving {
+    animation: none;
+  }
+}
