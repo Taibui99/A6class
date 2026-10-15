@@ -191,8 +191,8 @@ export function internalTools(): InternalTool[] {
     },
     {
       id: "tram-gia-dinh",
-      name: "Trạm Gia Đình",
-      summary: "Gameshow 40 phút: trắc nghiệm, đúng/sai, tình huống + soạn đề",
+      name: "Ai là Triệu Phú Vật lí",
+      summary: "Gameshow 20 phút kiểm tra bài cũ Vật lí 12 · tự soạn đề, chơi cả lớp",
       href: "/apps/tram-gia-dinh",
       icon: "trophy",
       accent: "amber",

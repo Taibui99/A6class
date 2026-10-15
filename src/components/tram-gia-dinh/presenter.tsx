@@ -44,7 +44,16 @@ const TRACKS = [
 const WIN_URL =
   "https://upload.wikimedia.org/wikipedia/commons/1/13/Kevin_MacLeod_-_Winner_Winner.ogg";
 const LETTERS = ["A", "B", "C", "D"];
-const FLOATS = ["🏠", "⭐", "❤️", "📚", "🎉", "🌈"];
+const FLOATS = ["⚛️", "🧲", "💡", "🔬", "🌡️", "🪐"];
+const LADDER = [
+  100000, 200000, 300000, 500000, 1000000,
+  2000000, 3000000, 5000000, 10000000, 20000000,
+  30000000, 50000000, 70000000, 100000000, 150000000,
+];
+const SAFE_MILESTONES = [4, 9, 14]; // mốc an toàn (0-based): 1tr · 10tr · 150tr
+function money(n: number): string {
+  return n.toLocaleString("vi-VN") + "đ";
+}
 
 interface Burst { id: number; e: string; left: string; top: string }
 
@@ -92,18 +101,24 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
     () => load<string>("tram_autoread", "1") !== "0",
   );
   const [autoAnn, setAutoAnn] = useState(() => load<string>("tram_autoann", "1") !== "0");
-  const [sessTotal, setSessTotal] = useState(40 * 60);
+  const [sessTotal, setSessTotal] = useState(20 * 60);
   const [sessLeft, setSessLeft] = useState<number | null>(null);
   const [sessOn, setSessOn] = useState(false);
   const [gridOpen, setGridOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [winOpen, setWinOpen] = useState(false);
   const [confirmResetScores, setConfirmResetScores] = useState(false);
-  const [newsHtml, setNewsHtml] = useState("Bấm ▶ BẮT ĐẦU để chơi!");
+  const [newsHtml, setNewsHtml] = useState("Bấm ▶ BẮT ĐẦU để chơi! Mỗi câu đúng leo 1 mốc 🪜");
   const [newsHot, setNewsHot] = useState(false);
   const [imgOk, setImgOk] = useState(true);
   const [unlocked, setUnlocked] = useState(false);
   const [bursts, setBursts] = useState<Burst[]>([]);
+  const [hiddenOpts, setHiddenOpts] = useState<number[]>([]);
+  const [lfFifty, setLfFifty] = useState(false);
+  const [lfHint, setLfHint] = useState(false);
+  const [lfPoll, setLfPoll] = useState(false);
+  const [hintOpen, setHintOpen] = useState(false);
+  const [pollLeft, setPollLeft] = useState<number | null>(null);
 
   const bgmRef = useRef<HTMLAudioElement>(null);
   const winRef = useRef<HTMLAudioElement>(null);
@@ -272,6 +287,12 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
     setTimeLeft(null);
     timeRef.current = null;
     setWinOpen(false);
+    setHiddenOpts([]);
+    setLfFifty(false);
+    setLfHint(false);
+    setLfPoll(false);
+    setHintOpen(false);
+    setPollLeft(null);
     ttsStop();
     ttsFresh.current = true;
   }
@@ -607,6 +628,40 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
   const revealed = stage === 2;
   const maxScore = scores.length ? Math.max(...scores) : 0;
   const winners = teams.filter((_, k) => (scores[k] || 0) === maxScore);
+  // Số thứ tự câu hỏi (bỏ qua slide thông báo) → vị trí trên thang điểm.
+  const qNo = idx < 0 ? -1 : quiz.slice(0, idx + 1).filter((x) => x.type !== "info").length - 1;
+  const canFifty = !!s && s.type === "one" && stage === 0 && !lfFifty;
+
+  function useFifty() {
+    const sl = quizRef.current[idx];
+    if (!sl || sl.type !== "one" || lfFifty || stage !== 0) return;
+    const wrong = sl.answers
+      .map((a, k) => (a.correct ? -1 : k))
+      .filter((k) => k >= 0);
+    const drop = wrong.sort(() => Math.random() - 0.5).slice(0, 2);
+    setHiddenOpts(drop);
+    setLfFifty(true);
+    sFlip();
+  }
+  function usePoll() {
+    if (lfPoll) return;
+    setLfPoll(true);
+    setPollLeft(20);
+    sFlip();
+  }
+  function useHint() {
+    const sl = quizRef.current[idx];
+    if (!sl || lfHint || !sl.note) return;
+    setLfHint(true);
+    setHintOpen(true);
+    sFlip();
+  }
+
+  useEffect(() => {
+    if (pollLeft === null || pollLeft <= 0) return;
+    const id = setInterval(() => setPollLeft((t) => (t === null ? null : t - 1)), 1000);
+    return () => clearInterval(id);
+  }, [pollLeft]);
 
   function renderOpts() {
     if (!s || s.type === "info") return null;
@@ -735,8 +790,14 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
       return (
         <button
           key={k}
-          className={`opt${picks.includes(k) ? " pick" : ""}${stage === 1 ? " lock" : ""}`}
-          onClick={() => pickOne(k)}
+          className={`opt${picks.includes(k) ? " pick" : ""}${stage === 1 ? " lock" : ""}${
+            s.type === "one" && hiddenOpts.includes(k) ? " gone" : ""
+          }`}
+          onClick={() => {
+            if (s.type === "one" && hiddenOpts.includes(k)) return;
+            pickOne(k);
+          }}
+          disabled={s.type === "one" && hiddenOpts.includes(k)}
         >
           <span className="k">{LETTERS[k] || k + 1}</span>
           <span>{a.text}</span>
@@ -772,11 +833,11 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
       <div id="stage">
         <div id="cover" className={idx >= 0 ? "hidden" : ""}>
           <h1>
-            🏠 TRẠM <span>GIA ĐÌNH</span>
+            ⚛️ AI LÀ TRIỆU PHÚ <span>VẬT LÍ</span>
           </h1>
           <p>
-            Thử thách về tính trách nhiệm đối với gia đình · 4 vòng · đội nhiều
-            điểm nhất thắng
+            Kiểm tra bài cũ Vật lí 12 · chinh phục thang 15 mốc thưởng · cả lớp
+            cùng chơi
           </p>
           <button className="go" onClick={startShow}>
             ▶ BẮT ĐẦU
@@ -810,7 +871,7 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
                     : `${Math.floor(Math.max(0, sessLeft) / 60)}:${String(Math.max(0, sessLeft) % 60).padStart(2, "0")}`}
                 </div>
                 <div className="tbtns">
-                  {[35, 40, 45].map((m) => (
+                  {[15, 20, 25].map((m) => (
                     <button key={m} onClick={() => sessSet(m)}>
                       {m}&apos;
                     </button>
@@ -858,9 +919,60 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
                 />
               )}
               {s && s.type === "info" && <div id="info">{s.text}</div>}
+              {s && s.type !== "info" && (
+                <div id="lifelines">
+                  <button
+                    className={`fbtn lf${canFifty ? "" : " off"}`}
+                    disabled={!canFifty}
+                    onClick={useFifty}
+                    title="Loại 2 đáp án sai"
+                  >
+                    ✂️ 50:50
+                  </button>
+                  <button
+                    className={`fbtn lf${lfPoll ? " off" : ""}`}
+                    disabled={lfPoll}
+                    onClick={usePoll}
+                    title="Hỏi ý kiến cả lớp (20 giây)"
+                  >
+                    📣 Hỏi cả lớp
+                  </button>
+                  <button
+                    className={`fbtn lf${!s.note || lfHint ? " off" : ""}`}
+                    disabled={!s.note || lfHint}
+                    onClick={useHint}
+                    title="Xem gợi ý công thức"
+                  >
+                    💡 Gợi ý
+                  </button>
+                </div>
+              )}
+              {hintOpen && s && s.note && (
+                <div className="funote" onClick={() => setHintOpen(false)}>
+                  💡 {s.note}
+                </div>
+              )}
               <div id="opts">{renderOpts()}</div>
             </div>
             <div className="side" id="sideR">
+              <div className="ladderWrap">
+                <h4>💰 Thang điểm · 15 mốc</h4>
+                <ol className="ladder">
+                  {Array.from({ length: LADDER.length }, (_, k) => k)
+                    .reverse()
+                    .map((k) => (
+                      <li
+                        key={k}
+                        className={`${k === qNo ? "cur" : ""}${
+                          SAFE_MILESTONES.includes(k) ? " safe" : ""
+                        }${k < qNo ? " done" : ""}`}
+                      >
+                        <span className="mn">{k + 1}</span>
+                        <span className="mm">{money(LADDER[k])}</span>
+                      </li>
+                    ))}
+                </ol>
+              </div>
               <h4 className="present-hide">📢 Bảng tin</h4>
               <div id="news" className={`${newsHot ? "hot" : ""} present-hide`} dangerouslySetInnerHTML={{ __html: newsHtml }} />
               <div id="teams">
@@ -1150,8 +1262,9 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
           <br />
           🎵 Đổi bài nhạc + volume ở bảng tin bên phải · không nghe tiếng thì
           bấm <b>🔔 Thử loa</b>
-          <br />⏲ Phiên 40 phút: Mở màn 2&apos; · V1 13&apos; · V2 8&apos; ·
-          V3 14&apos; · Về đích 1&apos; (+2&apos; dự phòng)
+          <br />✂️ 50:50 · 📣 Hỏi cả lớp · 💡 Gợi ý — mỗi câu dùng 1 lần
+          <br />⏲ Phiên mặc định 20 phút — chọn 15&apos; / 20&apos; / 25&apos;
+          ở bảng tin
           <br />
           <center>
             <button className="fbtn sun" onClick={() => setHelpOpen(false)}>
@@ -1180,6 +1293,18 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
           </button>
         </div>
       </div>
+      {pollLeft !== null && (
+        <div id="poll">
+          <div>
+            <b>📣 HỎI Ý KIẾN CẢ LỚP</b>
+            <p>Cả lớp giơ tay chọn đáp án mình cho là đúng nhé!</p>
+            <div className="pollcount">{pollLeft <= 0 ? "HẾT!" : pollLeft}</div>
+            <button className="fbtn sun" onClick={() => setPollLeft(null)}>
+              Đóng
+            </button>
+          </div>
+        </div>
+      )}
       {bursts.map((b) => (
         <div key={b.id} className="burst" style={{ left: b.left, top: b.top }}>
           {b.e}

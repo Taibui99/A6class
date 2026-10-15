@@ -1150,3 +1150,167 @@ select:focus {
     animation: none;
   }
 }
+
+/* ============ AI LÀ TRIỆU PHÚ VẬT LÍ — theme + thang điểm + trợ giúp ============ */
+
+/* Nền "phòng thí nghiệm / vũ trụ" tông xanh điện, giữ toàn bộ thẻ sáng
+   để chữ đen vẫn đọc tốt như bản cũ. */
+.tgd {
+  background-color: #eef4ff;
+  background-image:
+    radial-gradient(circle at 10% 8%, rgba(56, 189, 248, 0.16), transparent 38%),
+    radial-gradient(circle at 92% 86%, rgba(124, 58, 237, 0.16), transparent 40%),
+    radial-gradient(rgba(23, 52, 120, 0.1) 1px, transparent 1.4px);
+  background-size: auto, auto, 24px 24px;
+}
+.tgd #bar {
+  background: #2563eb;
+}
+.tgd #num {
+  background: #1e3a8a;
+}
+.tgd .tag {
+  background: #7dd3fc;
+}
+.tgd #q {
+  border-color: #1e3a8a;
+  box-shadow: 6px 6px 0 #2563eb;
+}
+.tgd #cover h1 span {
+  color: #2563eb;
+}
+.tgd #cover .go,
+.tgd #win button {
+  box-shadow: 6px 6px 0 #2563eb;
+}
+.tgd .opt:nth-child(1) {
+  background: #c7dcff;
+}
+.tgd .opt:nth-child(2) {
+  background: #bfe9ff;
+}
+.tgd .opt:nth-child(3) {
+  background: #d8ccff;
+}
+.tgd .opt:nth-child(4) {
+  background: #c9f2df;
+}
+/* Đáp án bị 50:50 loại: mờ + gạch ngang, không bấm được. */
+.tgd .opt.gone {
+  opacity: 0.22;
+  text-decoration: line-through;
+  pointer-events: none;
+  filter: grayscale(1);
+}
+
+/* Thang điểm 15 mốc (cột phải, đảo trên xuống). */
+.tgd .ladderWrap {
+  margin-bottom: 10px;
+}
+.tgd .ladder {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.tgd .ladder li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  font-size: 14px;
+  padding: 3px 10px;
+  border-radius: 8px;
+  color: #5b6480;
+  font-variant-numeric: tabular-nums;
+}
+.tgd .ladder li .mn {
+  width: 22px;
+  text-align: right;
+  font-weight: 900;
+  color: #8a93ad;
+}
+.tgd .ladder li.safe .mm {
+  color: #b45309;
+}
+.tgd .ladder li.done {
+  color: #9aa3bd;
+}
+.tgd .ladder li.done .mm {
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+.tgd .ladder li.cur {
+  background: linear-gradient(90deg, #ffc531, #ff9f1c);
+  color: #1a1200;
+  transform: scale(1.04);
+  box-shadow: 3px 3px 0 rgba(30, 27, 22, 0.9);
+}
+.tgd .ladder li.cur .mn,
+.tgd .ladder li.cur .mm {
+  color: #1a1200;
+}
+
+/* Hàng quyền trợ giúp giữa màn chơi. */
+.tgd #lifelines {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  margin: 1vh auto 0;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+}
+.tgd #lifelines .lf {
+  font-size: 14px;
+  padding: 7px 16px;
+}
+
+/* Overlay "Hỏi ý kiến cả lớp". */
+.tgd #poll {
+  position: fixed;
+  inset: 0;
+  z-index: 92;
+  background: rgba(15, 23, 42, 0.82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.tgd #poll > div {
+  background: #0f1b3d;
+  border: 2px solid #38bdf8;
+  border-radius: 22px;
+  padding: 26px 34px;
+  text-align: center;
+  color: #e8f0ff;
+  box-shadow: 0 0 40px rgba(56, 189, 248, 0.4);
+  max-width: 640px;
+}
+.tgd #poll b {
+  font-size: clamp(20px, 3vw, 34px);
+}
+.tgd #poll p {
+  font-size: clamp(15px, 2vw, 22px);
+  font-weight: 600;
+  color: #b9c6e8;
+}
+.tgd .pollcount {
+  font-size: clamp(46px, 9vw, 110px);
+  font-weight: 900;
+  color: #ffc531;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  margin: 6px 0 10px;
+}
+
+/* Chế độ chiếu: hiện thang điểm cho khán giả thấy, ẩn phần cài đặt. */
+.tgd.present #sideR {
+  display: flex;
+  flex-direction: column;
+}
+.tgd.present #sideR > *:not(.ladderWrap) {
+  display: none !important;
+}
+.tgd.present .cols {
+  grid-template-columns: minmax(140px, 180px) minmax(0, 1fr) minmax(230px, 280px);
+}

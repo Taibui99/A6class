@@ -50,15 +50,17 @@ export default function Editor({
     const at = quiz.length;
     mut((q) => {
       q.push({
-        round: "Vòng mới",
+        round: "Câu mới",
         type: t,
         text: t === "info" ? "Thông báo mới" : "Câu hỏi mới",
         answers:
           t === "info"
             ? []
             : [
-                { text: "Đáp án 1", correct: true },
-                { text: "Đáp án 2", correct: false },
+                { text: "Đáp án A", correct: true },
+                { text: "Đáp án B", correct: false },
+                { text: "Đáp án C", correct: false },
+                { text: "Đáp án D", correct: false },
               ],
       });
       setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 50);
@@ -97,7 +99,7 @@ export default function Editor({
     });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(b);
-    a.download = "tram-gia-dinh.json";
+    a.download = "ai-la-trieu-phu-vat-li.json";
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 5000);
   }
@@ -396,7 +398,7 @@ export default function Editor({
                 )}
                 {s.type === "guess" && (
                   <div style={{ fontSize: 13, color: "#8a8aa3", marginTop: 6 }}>
-                    Đáp án 1 là câu ca dao tục ngữ đúng. Ảnh là gợi ý chính.
+                    Đáp án 1 là đáp án đúng. Ảnh là gợi ý chính.
                   </div>
                 )}
               </>
@@ -429,7 +431,7 @@ export default function Editor({
       <ConfirmDialog
         open={confirmReset}
         title="Tải lại bản gốc?"
-        message="Mọi sửa đổi của lớp sẽ mất, về lại 34 câu mặc định."
+        message="Mọi sửa đổi của lớp sẽ mất, về lại bộ câu hỏi Vật lí mặc định."
         confirmLabel="Tải lại"
         danger
         onConfirm={() => {
