@@ -44,7 +44,7 @@ const TRACKS = [
 const WIN_URL =
   "https://upload.wikimedia.org/wikipedia/commons/1/13/Kevin_MacLeod_-_Winner_Winner.ogg";
 const LETTERS = ["A", "B", "C", "D"];
-const FLOATS = ["⚛️", "🧲", "💡", "🔬", "🌡️", "🪐"];
+const FLOATS = ["⚛️", "•", "λ", "π", "ω", "ħ", "F", "E", "m", "v"];
 const LADDER = [
   100000, 200000, 300000, 500000, 1000000,
   2000000, 3000000, 5000000, 10000000, 20000000,
@@ -809,19 +809,20 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
   return (
     <>
       {FLOATS.map((e, k) => (
-        <span
-          key={k}
-          className="float"
-          style={{
-            top: ["8%", "10%", "76%", "70%", "44%", "52%"][k],
-            left: k % 2 === 0 ? `${2 + k}%` : undefined,
-            right: k % 2 === 1 ? `${2 + k}%` : undefined,
-            fontSize: 40 + (k % 3) * 7,
-            animationDelay: `${k * 0.5}s`,
-          }}
-        >
-          {e}
-        </span>
+      <span
+        key={k}
+        className="float"
+        style={{
+          top: ["6%", "14%", "78%", "66%", "40%", "52%", "18%", "84%", "32%", "60%"][k],
+          left: k % 2 === 0 ? `${1 + k}%` : undefined,
+          right: k % 2 === 1 ? `${1 + k}%` : undefined,
+          fontSize: 42 + (k % 4) * 6,
+          animationDelay: `${k * 0.3}s`,
+          fontFamily: "DM Mono, Fira Code, monospace",
+        }}
+      >
+        {e}
+      </span>
       ))}
       <div id="bar" style={{ width: idx < 0 ? "0%" : `${((idx + 1) / quiz.length) * 100}%` }} />
       <div id="num">{idx < 0 ? `0 / ${quiz.length}` : `${idx + 1} / ${quiz.length}`}</div>
@@ -833,11 +834,10 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
       <div id="stage">
         <div id="cover" className={idx >= 0 ? "hidden" : ""}>
           <h1>
-            ⚛️ AI LÀ TRIỆU PHÚ <span>VẬT LÍ</span>
+            AI LÀ TRIỆU PHÚ <span>VẬT LÍ 12</span>
           </h1>
           <p>
-            Kiểm tra bài cũ Vật lí 12 · chinh phục thang 15 mốc thưởng · cả lớp
-            cùng chơi
+            Kiểm tra bài cũ · 15 mốc giải thưởng · Quyền trợ giúp: 50:50 · Hỏi cả lớp · Gợi ý
           </p>
           <button className="go" onClick={startShow}>
             ▶ BẮT ĐẦU
@@ -956,7 +956,7 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
             </div>
             <div className="side" id="sideR">
               <div className="ladderWrap">
-                <h4>💰 Thang điểm · 15 mốc</h4>
+            Thang điểm · {qNo >= 0 ? money(LADDER[qNo]) : "0đ"} / {qNo >= LADDER.length-1 ? "150.000.000đ" : money(LADDER[Math.max(0,qNo+1)])}
                 <ol className="ladder">
                   {Array.from({ length: LADDER.length }, (_, k) => k)
                     .reverse()
