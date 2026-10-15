@@ -191,8 +191,8 @@ export function internalTools(): InternalTool[] {
     },
     {
       id: "tram-gia-dinh",
-      name: "Vua Vật lí",
-      summary: "Gameshow 20 phút kiểm tra bài cũ Vật lí 12 · tự soạn đề, chơi cả lớp",
+      name: "Nhanh như chớp",
+      summary: "Game nhanh 20 phút kiểm tra bài cũ Vật lí 12 · trắc nghiệm & điền khuyết, chơi theo đội",
       href: "/apps/tram-gia-dinh",
       icon: "trophy",
       accent: "amber",

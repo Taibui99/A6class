@@ -14,16 +14,6 @@ import {
   tone,
   winSong,
 } from "@/lib/tram-gia-dinh/audio";
-import {
-  answersSpeech,
-  getVoices,
-  pickVoice,
-  questionSpeech,
-  slideSpeech,
-  speak,
-  ttsStop,
-  verdictSpeech,
-} from "@/lib/tram-gia-dinh/speech";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 const TRACKS = [
@@ -43,16 +33,7 @@ const TRACKS = [
 const WIN_URL =
   "https://upload.wikimedia.org/wikipedia/commons/1/13/Kevin_MacLeod_-_Winner_Winner.ogg";
 const LETTERS = ["A", "B", "C", "D"];
-const FLOATS = ["⚛️", "•", "λ", "π", "ω", "ħ", "F", "E", "v", "a"];
-const LADDER = [
-  100000, 200000, 300000, 500000, 1000000,
-  2000000, 3000000, 5000000, 10000000, 20000000,
-  30000000, 50000000, 70000000, 100000000, 150000000,
-];
-const SAFE_MILESTONES = [4, 9, 14]; // mốc an toàn (0-based): 1tr · 10tr · 150tr
-function money(n: number): string {
-  return n.toLocaleString("vi-VN") + "đ";
-}
+const FLOATS = ["⚡", "•", "λ", "π", "ω", "ħ", "F", "E", "v", "a"];
 
 interface Burst { id: number; e: string; left: string; top: string }
 
@@ -92,13 +73,6 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
   const [bgmOn, setBgmOn] = useState(() => load<string>("tram_bgm", "1") !== "0");
   const [trackIdx, setTrackIdx] = useState<number>(() => load("tram_track", 0));
   const [bgmVol, setBgmVol] = useState<number>(() => load("tram_vol", 0.45));
-  const [voiceName, setVoiceName] = useState(() => load("tram_voice", ""));
-  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>(() => getVoices());
-  const [ttsRate, setTtsRate] = useState<number>(() => load("tram_rate", 1));
-  const [autoReadQ, setAutoReadQ] = useState(
-    () => load<string>("tram_autoread", "1") !== "0",
-  );
-  const [autoAnn, setAutoAnn] = useState(() => load<string>("tram_autoann", "1") !== "0");
   const [sessTotal, setSessTotal] = useState(20 * 60);
   const [sessLeft, setSessLeft] = useState<number | null>(null);
   const [sessOn, setSessOn] = useState(false);
@@ -106,7 +80,7 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
   const [helpOpen, setHelpOpen] = useState(false);
   const [winOpen, setWinOpen] = useState(false);
   const [confirmResetScores, setConfirmResetScores] = useState(false);
-  const [newsHtml, setNewsHtml] = useState("Bấm ▶ BẮT ĐẦU để chơi! Mỗi câu đúng leo 1 mốc 🪜");
+  const [newsHtml, setNewsHtml] = useState("Bấm ▶ BẮT ĐẦU để chơi! Trả lời nhanh như chớp ⚡");
   const [newsHot, setNewsHot] = useState(false);
   const [imgOk, setImgOk] = useState(true);
   const [unlocked, setUnlocked] = useState(false);
@@ -120,7 +94,6 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
 
   const bgmRef = useRef<HTMLAudioElement>(null);
   const winRef = useRef<HTMLAudioElement>(null);
-  const ttsFresh = useRef(false);
   const burstId = useRef(0);
   const zoomRef = useRef(zoomLv);
   useEffect(() => {
@@ -215,13 +188,6 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
   }
 
   useEffect(() => {
-    try {
-      const refreshVoices = () => setVoices(getVoices());
-      if ("speechSynthesis" in window)
-        speechSynthesis.onvoiceschanged = refreshVoices;
-    } catch {
-      /* bỏ qua */
-    }
     const unlock = () => {
       try {
         ac();
@@ -241,39 +207,6 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
     };
   }, [fitText]);
 
-  const curVoice = () =>
-    pickVoice(voiceName || (typeof window !== "undefined" ? (localStorage.getItem("tram_voice") ?? "") : ""));
-
-  const readQ = useCallback(() => {
-    const s = quizRef.current[idx];
-    if (!s || !s.text) return;
-    try {
-      if (speechSynthesis.speaking) {
-        ttsStop();
-        return;
-      }
-    } catch {
-      return;
-    }
-    speak(questionSpeech(s), curVoice(), ttsRate);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [idx, voiceName, ttsRate]);
-
-  const readAnswers = useCallback(() => {
-    const s = quizRef.current[idx];
-    if (!s || !s.answers || !s.answers.length) return;
-    try {
-      if (speechSynthesis.speaking) {
-        ttsStop();
-        return;
-      }
-    } catch {
-      return;
-    }
-    speak(answersSpeech(s), curVoice(), ttsRate);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [idx, voiceName, ttsRate]);
-
   function go(n: number) {
     const q = quizRef.current;
     setIdx(Math.max(-1, Math.min(q.length - 1, n)));
@@ -290,8 +223,6 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
     setLfPoll(false);
     setHintOpen(false);
     setPollLeft(null);
-    ttsStop();
-    ttsFresh.current = true;
   }
 
   function lock() {
@@ -307,7 +238,6 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
     const q = quizRef.current;
     const s = q[idx];
     if (!s || s.type === "info" || stage === 2) return;
-    ttsStop();
     setStage(2);
     const n = s.answers.length;
     for (let k = 0; k < n; k++)
@@ -327,10 +257,6 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
             sRight();
             burst();
           } else sWrong();
-        }
-        if (autoAnn) {
-          const v = verdictSpeech(s);
-          if (v) setTimeout(() => speak(v, curVoice(), ttsRate), 1200);
         }
       },
       n * 200 + 250,
@@ -556,18 +482,6 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
   }, [winOpen, burst]);
 
   useEffect(() => {
-    if (idx < 0 || stage !== 0 || !autoReadQ) return;
-    const s = quiz[idx];
-    if (!s || s.type === "info") return;
-    const my = idx;
-    const t = setTimeout(() => {
-      if (my === idx) speak(slideSpeech(s), curVoice(), ttsRate);
-    }, 500);
-    return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [idx, stage, autoReadQ, quiz]);
-
-  useEffect(() => {
     const h = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement | null;
       if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
@@ -592,16 +506,6 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
       else if (e.key === "-" || e.key === "_") zoom(-1);
       else if (e.key === "f" || e.key === "F") onTogglePresent();
       else if (e.key === "h" || e.key === "H") setHelpOpen((v) => !v);
-      else if (e.key === "d" || e.key === "D") {
-        e.preventDefault();
-        try {
-          if (speechSynthesis.speaking) ttsStop();
-          else if (e.shiftKey) readAnswers();
-          else readQ();
-        } catch {
-          /* bỏ qua */
-        }
-      }
     };
     document.addEventListener("keydown", h);
     return () => document.removeEventListener("keydown", h);
@@ -611,8 +515,6 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
   const revealed = stage === 2;
   const maxScore = scores.length ? Math.max(...scores) : 0;
   const winners = teams.filter((_, k) => (scores[k] || 0) === maxScore);
-  // Số thứ tự câu hỏi (bỏ qua slide thông báo) → vị trí trên thang điểm.
-  const qNo = idx < 0 ? -1 : quiz.slice(0, idx + 1).filter((x) => x.type !== "info").length - 1;
   const canFifty = !!s && s.type === "one" && stage === 0 && !lfFifty;
 
   function useFifty() {
@@ -792,10 +694,10 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
       <div id="stage">
         <div id="cover" className={idx >= 0 ? "hidden" : ""}>
           <h1>
-            VUA VẬT LÍ <span>12</span>
+            NHANH NHƯ CHỚP <span>⚡</span>
           </h1>
           <p>
-            Kiểm tra bài cũ · 15 mốc · 50:50 · Hỏi cả lớp · Gợi ý
+            Vật lí 12 · Trắc nghiệm &amp; Điền khuyết · 50:50 · Hỏi cả lớp · Gợi ý
           </p>
           <button className="go" onClick={startShow}>
             ▶ BẮT ĐẦU
@@ -852,19 +754,6 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
                   ) : null}
                 </div>
               )}
-              {s && s.type !== "info" && (
-                <div id="ttsbar">
-                  <button className="fbtn" onClick={readQ} title="Đọc câu hỏi (D)">
-                    🔊 Đọc câu hỏi
-                  </button>
-                  <button className="fbtn" onClick={readAnswers} title="Đọc đáp án (Shift+D)">
-                    🔊 Đọc đáp án
-                  </button>
-                  <button className="fbtn" onClick={() => ttsStop()} title="Dừng đọc">
-                    ⏹
-                  </button>
-                </div>
-              )}
               {s && s.type !== "info" && <div id="q">{s.text}</div>}
               {s && s.type !== "info" && s.img && s.type !== "guess" && imgOk && (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -913,24 +802,6 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
               <div id="opts">{renderOpts()}</div>
             </div>
             <div className="side" id="sideR">
-              <div className="ladderWrap">
-            Thang điểm · {qNo >= 0 ? money(LADDER[qNo]) : "0đ"} / {qNo >= LADDER.length-1 ? "150.000.000đ" : money(LADDER[Math.max(0,qNo+1)])}
-                <ol className="ladder">
-                  {Array.from({ length: LADDER.length }, (_, k) => k)
-                    .reverse()
-                    .map((k) => (
-                      <li
-                        key={k}
-                        className={`${k === qNo ? "cur" : ""}${
-                          SAFE_MILESTONES.includes(k) ? " safe" : ""
-                        }${k < qNo ? " done" : ""}`}
-                      >
-                        <span className="mn">{k + 1}</span>
-                        <span className="mm">{money(LADDER[k])}</span>
-                      </li>
-                    ))}
-                </ol>
-              </div>
               <h4 className="present-hide">📢 Bảng tin</h4>
               <div id="news" className={`${newsHot ? "hot" : ""} present-hide`} dangerouslySetInnerHTML={{ __html: newsHtml }} />
               <div id="teams">
@@ -1053,77 +924,6 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
                   Nhạc: Kevin MacLeod (CC-BY) · mất mạng tự dùng nhạc máy
                 </div>
               </div>
-              <div style={{ marginTop: 10, borderTop: "2px dashed #23233A55", paddingTop: 8 }} className="present-hide">
-                <h4 style={{ margin: "0 0 6px", fontSize: 15, color: "#8a8aa3" }}>
-                  🔊 GIỌNG ĐỌC
-                </h4>
-                <select
-                  id="voice"
-                  value={voiceName}
-                  onChange={(e) => {
-                    setVoiceName(e.target.value);
-                    store("tram_voice", e.target.value);
-                  }}
-                >
-                  <option value="">Tự chọn giọng Việt (nếu có)</option>
-                  {voices.map((v) => (
-                    <option key={v.name} value={v.name}>
-                      {v.name} ({v.lang})
-                    </option>
-                  ))}
-                </select>
-                <div style={{ display: "flex", gap: 6, alignItems: "center", marginTop: 6 }}>
-                  <span style={{ fontSize: 13 }}>🐢</span>
-                  <input
-                    id="rate"
-                    type="range"
-                    min={0.5}
-                    max={1.5}
-                    step={0.05}
-                    value={ttsRate}
-                    style={{ flex: 1, accentColor: "#3D8BFF" }}
-                    onChange={(e) => {
-                      const v = parseFloat(e.target.value);
-                      setTtsRate(v);
-                      store("tram_rate", v);
-                    }}
-                  />
-                  <span id="ratev" style={{ fontSize: 13, fontWeight: 900 }}>
-                    {ttsRate.toFixed(2)}x
-                  </span>
-                </div>
-                <label style={{ fontSize: 14, fontWeight: 700 }}>
-                  <input
-                    type="checkbox"
-                    id="autoq"
-                    style={{ width: "auto", accentColor: "#00B96B" }}
-                    checked={autoReadQ}
-                    onChange={(e) => {
-                      setAutoReadQ(e.target.checked);
-                      store("tram_autoread", e.target.checked ? "1" : "0");
-                    }}
-                  />{" "}
-                  Tự đọc khi sang câu mới
-                </label>
-                <br />
-                <label style={{ fontSize: 14, fontWeight: 700 }}>
-                  <input
-                    type="checkbox"
-                    id="autoann"
-                    style={{ width: "auto", accentColor: "#00B96B" }}
-                    checked={autoAnn}
-                    onChange={(e) => {
-                      setAutoAnn(e.target.checked);
-                      store("tram_autoann", e.target.checked ? "1" : "0");
-                    }}
-                  />{" "}
-                  Đọc đáp án đúng khi chấm
-                </label>
-                <div style={{ fontSize: 11, color: "#8a8aa3", marginTop: 4 }}>
-                  Chưa có giọng Việt? Vào Windows Settings &gt; Time &amp;
-                  Language &gt; Speech để thêm.
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -1206,23 +1006,22 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
         <div>
           <b>🎮 CHỌN → CHỐT → CHẤM</b>
           <br />
-            1️⃣ Bấm chọn đáp án (câu Đúng/Sai: bấm ✅ Chấm để hiện đáp án)
+          1️⃣ Bấm chọn đáp án (câu Điền khuyết: bấm ✅ Chấm để hiện đáp án)
           <br />
           2️⃣ Muốn gây cấn thì bấm <b>🔒 Chốt</b> (tùy chọn — bỏ qua vẫn chấm
           được)
           <br />
           3️⃣ Bấm <b>✅ Chấm</b> / Space — đáp án hiện từng cái + âm thanh +
           pháo giấy
-          <br />→ tiếp · ← lùi · click chọn / nút ĐÚNG-SAI · Space chấm đáp án
-          · T đồng hồ · M nhạc · S bảng điểm · Esc mục lục · F full màn hình ·
-          H trợ giúp
-          <br />→ <b>D</b> đọc câu hỏi · <b>Shift</b>+<b>D</b> đọc đáp án
+          <br />→ tiếp · ← lùi · click chọn đáp án · Space chấm đáp án ·
+          T đồng hồ · M nhạc · Esc mục lục · F full màn hình · H trợ giúp
           <br />
           🎵 Đổi bài nhạc + volume ở bảng tin bên phải · không nghe tiếng thì
           bấm <b>🔔 Thử loa</b>
           <br />✂️ 50:50 · 📣 Hỏi cả lớp · 💡 Gợi ý — mỗi câu dùng 1 lần
           <br />⏲ Phiên mặc định 20 phút — chọn 15&apos; / 20&apos; / 25&apos;
           ở bảng tin
+          <br />⚡ Bấm <b>🏆</b> để công bố đội chiến thắng
           <br />
           <center>
             <button className="fbtn sun" onClick={() => setHelpOpen(false)}>
@@ -1233,10 +1032,8 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
       </div>
       <div id="win" className={winOpen ? "" : "hidden"}>
         <div className="cup">🏆</div>
-        <h2 id="winT">
-          🏆 {winners.join(" & ") || "Cả lớp"} CHIẾN THẮNG!
-        </h2>
-        <p id="winP">với {maxScore} điểm — xin chúc mừng!</p>
+        <h2 id="winT">🎉 CHÚC MỪNG CHIẾN THẮNG!</h2>
+        <p id="winP">{winners.join(" & ") || "Cả lớp"} — xin chúc mừng!</p>
         <div>
           <button
             className="fbtn sun"

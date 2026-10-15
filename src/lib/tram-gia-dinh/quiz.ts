@@ -20,13 +20,13 @@ export const SEED_QUIZ: Slide[] = [
   {
     "round": "Khởi động",
     "type": "info",
-    "text": "⚛️ AI LÀ TRIỆU PHÚ — VẬT LÍ 12\nKiểm tra bài cũ mà vẫn như gameshow!\nCả lớp cùng nhau chinh phục thang 15 mốc thưởng.",
+    "text": "⚡ NHANH NHƯ CHỚP — VẬT LÍ 12\nTrả lời thật nhanh, giành điểm cho đội!\nTrắc nghiệm & điền khuyết kiểm tra bài cũ.",
     "answers": []
   },
   {
     "round": "Luật chơi",
     "type": "info",
-    "text": "CÁCH CHƠI\n1️⃣ Đọc câu hỏi, chọn đáp án A / B / C / D\n2️⃣ Bấm 🔒 Chốt để khóa đáp án, rồi ✅ Chấm\n3️⃣ Đúng thì leo lên mốc tiếp theo\nBa quyền trợ giúp (mỗi quyền dùng 1 lần): 50:50 · Hỏi cả lớp · Gợi ý công thức",
+    "text": "CÁCH CHƠI\n1️⃣ Đọc câu hỏi, chọn đáp án A / B / C / D (câu điền khuyết: trả lời miệng)\n2️⃣ Bấm 🔒 Chốt để khóa lựa chọn, rồi ✅ Chấm\n3️⃣ Trả lời đúng thì cộng điểm cho đội\nBa quyền trợ giúp (mỗi quyền 1 lần/câu): 50:50 · Hỏi cả lớp · Gợi ý",
     "answers": []
   },
   {
@@ -79,12 +79,13 @@ export const SEED_QUIZ: Slide[] = [
   },
   {
     "round": "Chương II · Sóng cơ",
-    "type": "many",
-    "text": "Nhận định nào ĐÚNG về sóng cơ?",
+    "type": "one",
+    "text": "Phát biểu nào sau đây ĐÚNG về sóng cơ?",
+    "note": "Sóng cơ cần môi trường vật chất để lan truyền, không truyền được trong chân không.",
     "answers": [
       { "text": "Sóng cơ không truyền được trong chân không.", "correct": true },
-      { "text": "Sóng cơ là quá trình truyền năng lượng trong môi trường.", "correct": true },
-      { "text": "Sóng dọc có phương dao động trùng với phương truyền sóng.", "correct": true },
+      { "text": "Sóng cơ truyền được trong chân không.", "correct": false },
+      { "text": "Sóng cơ chỉ truyền được trong chất khí.", "correct": false },
       { "text": "Tần số sóng thay đổi khi truyền qua các môi trường khác nhau.", "correct": false }
     ]
   },
@@ -102,13 +103,14 @@ export const SEED_QUIZ: Slide[] = [
   },
   {
     "round": "Chương III · Điện xoay chiều",
-    "type": "many",
-    "text": "Mạch RLC mắc nối tiếp có dòng điện xoay chiều. Chọn ĐÚNG hay SAI cho mỗi nhận định:",
+    "type": "one",
+    "text": "Trong mạch RLC mắc nối tiếp, hiện tượng cộng hưởng điện xảy ra khi:",
+    "note": "Cộng hưởng khi ZL = ZC → Z = R, cường độ dòng điện hiệu dụng cực đại.",
     "answers": [
-      { "text": "Hiện tượng cộng hưởng xảy ra khi ZL = ZC.", "correct": true },
-      { "text": "Khi cộng hưởng, cường độ dòng điện hiệu dụng đạt cực đại.", "correct": true },
-      { "text": "Công suất tỏa nhiệt chủ yếu trên cuộn cảm thuần.", "correct": false },
-      { "text": "Hệ số công suất cosφ = R/Z.", "correct": true }
+      { "text": "ZL > ZC", "correct": false },
+      { "text": "ZL = ZC", "correct": true },
+      { "text": "ZL < ZC", "correct": false },
+      { "text": "R = ZL", "correct": false }
     ]
   },
   {
@@ -171,7 +173,7 @@ export const SEED_QUIZ: Slide[] = [
   {
     "round": "Về đích",
     "type": "info",
-    "text": "🏆 VỀ ĐÍCH!\nCộng điểm và công bố nhà vô địch của lớp mình!",
+    "text": "🏆 VỀ ĐÍCH!\nCộng điểm và công bố đội chiến thắng của lớp mình!",
     "answers": []
   }
 ];

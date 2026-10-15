@@ -13,6 +13,13 @@ const TYPES: Record<SlideType, string> = {
   guess: "Nhìn hình đoán",
 };
 
+// "Nhanh như chớp" chỉ dùng thông báo, trắc nghiệm và điền khuyết.
+const EDIT_TYPES: SlideType[] = ["info", "one", "fill"];
+
+// Giữ loại hiện có của slide (kể cả dữ liệu cũ many/guess) để không mất nội dung.
+const typeOpts = (cur: SlideType): SlideType[] =>
+  EDIT_TYPES.includes(cur) ? EDIT_TYPES : [cur, ...EDIT_TYPES];
+
 function esc(s: string): string {
   return s == null ? "" : s;
 }
@@ -131,7 +138,7 @@ export default function Editor({
           {quiz.length}
           <small>slide</small>
         </div>
-        {(Object.keys(TYPES) as SlideType[]).map((k) => (
+        {EDIT_TYPES.map((k) => (
           <div className="stat" key={k}>
             {counts[k] || 0}
             <small>{TYPES[k]}</small>
@@ -171,7 +178,7 @@ export default function Editor({
           <span style={{ fontWeight: 900 }}>Thêm câu mới vào cuối</span>
         </div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {(Object.keys(TYPES) as SlideType[]).map((t) => (
+          {EDIT_TYPES.map((t) => (
             <button key={t} className="btn" onClick={() => addOf(t)}>
               + {TYPES[t]}
             </button>
@@ -209,7 +216,7 @@ export default function Editor({
                   })
                 }
               >
-                {(Object.keys(TYPES) as SlideType[]).map((k) => (
+                {typeOpts(s.type).map((k) => (
                   <option key={k} value={k}>
                     {TYPES[k]}
                   </option>
@@ -441,7 +448,7 @@ export default function Editor({
         onCancel={() => setConfirmReset(false)}
       />
       <div id="addbar">
-        {(Object.keys(TYPES) as SlideType[]).map((t) => (
+        {EDIT_TYPES.map((t) => (
           <button key={t} className="btn" onClick={() => addOf(t)}>
             + {TYPES[t]}
           </button>

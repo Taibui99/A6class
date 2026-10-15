@@ -32,11 +32,11 @@ export default async function TramGiaDinhPage() {
     <div className="space-y-4">
       <header>
         <h1 className="text-xl font-extrabold tracking-tight text-text sm:text-2xl">
-          Vua Vật lí
+          Nhanh như chớp ⚡
         </h1>
         <p className="mt-0.5 text-sm text-text-secondary">
-          Gameshow kiểm tra bài cũ Vật lí 12 kiểu &quot;Vua Vật lí&quot;:
-          mỗi câu đúng leo một mốc thưởng, có 3 quyền trợ giúp. Câu hỏi soạn
+          Game kiểm tra bài cũ Vật lí 12 &quot;Nhanh như chớp&quot;: trắc nghiệm
+          và điền khuyết, các đội giành quyền trả lời tính điểm. Câu hỏi soạn
           chung giữa trình chiếu và soạn đề, lưu theo lớp.
         </p>
         <div className="mt-3 flex flex-wrap gap-2 text-xs font-bold">
@@ -49,7 +49,7 @@ export default async function TramGiaDinhPage() {
           </span>
           <span className="rounded-full bg-amber-100 px-3 py-1 text-amber-800">
             <Trophy className="mr-1 inline size-3.5" />
-            15 mốc thưởng
+            Chơi theo đội
           </span>
           <span className="rounded-full bg-violet-100 px-3 py-1 text-violet-800">
             ✂️ 50:50 · 📣 Hỏi cả lớp · 💡 Gợi ý
