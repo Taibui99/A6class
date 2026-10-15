@@ -305,7 +305,7 @@
   border: 1px solid rgba(56, 189, 248, 0.7);
   border-radius: 20px;
   padding: 1vh 22px;
-  font-size: calc(clamp(16px, 3vmin, 36px) * var(--u));
+  font-size: calc(clamp(19px, 3.6vmin, 44px) * var(--u));
   font-weight: 700;
   display: flex;
   gap: 16px;
@@ -613,7 +613,7 @@
   font-size: calc(clamp(26px, 5vw, 68px) * var(--u));
 }
 .tgd.present .opt {
-  font-size: calc(clamp(22px, 3.8vmin, 44px) * var(--u));
+  font-size: calc(clamp(26px, 4.6vmin, 54px) * var(--u));
 }
 .tgd #timerpop {
   position: fixed;
@@ -1028,6 +1028,22 @@
   padding: 0 14px;
   font-weight: 800;
   white-space: nowrap;
+}
+/* Câu điền khuyết: đáp án to rõ ràng, căn giữa (không bị đẩy sang hai bên) */
+.tgd .opt.fillans {
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  font-size: calc(clamp(26px, 4.8vmin, 58px) * var(--u));
+}
+.tgd .opt.fillans .badge {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.tgd.present .opt.fillans {
+  font-size: calc(clamp(34px, 6vmin, 78px) * var(--u));
 }
 /* Hiệu ứng bùng nổ */
 .tgd .burst {

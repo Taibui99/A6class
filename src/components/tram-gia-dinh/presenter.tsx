@@ -554,7 +554,7 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
       if (stage === 2) {
         return (
           <>
-            <div className="opt pop ok" style={{ animationDelay: "150ms" }}>
+            <div className="opt fillans pop ok" style={{ animationDelay: "150ms" }}>
               <span className="k">✏️</span>
               <span>
                 <b>{a0.text}</b>
@@ -566,7 +566,7 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
         );
       }
       return (
-        <div className={`opt${stage === 1 ? " lock" : ""}`}>
+        <div className={`opt fillans${stage === 1 ? " lock" : ""}`}>
           <span className="k">✏️</span>
           <span className="blank">……………</span>
           <span className="badge">trả lời miệng</span>
