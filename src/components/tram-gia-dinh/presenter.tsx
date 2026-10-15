@@ -551,14 +551,13 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
     }
     if (s.type === "fill") {
       const a0 = s.answers[0] || { text: "" };
-      const parts = s.text.split("___");
       if (stage === 2) {
         return (
           <>
             <div className="opt pop ok" style={{ animationDelay: "150ms" }}>
               <span className="k">✏️</span>
               <span>
-                {parts[0]} <b>{a0.text}</b> {parts.slice(1).join(" ")}
+                <b>{a0.text}</b>
               </span>
               <span className="badge">✅</span>
             </div>
@@ -569,11 +568,7 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
       return (
         <div className={`opt${stage === 1 ? " lock" : ""}`}>
           <span className="k">✏️</span>
-          <span>
-            {parts[0]}
-            <span className="blank">&nbsp;?&nbsp;</span>
-            {parts.slice(1).join(" ")}
-          </span>
+          <span className="blank">……………</span>
           <span className="badge">trả lời miệng</span>
         </div>
       );
