@@ -14,7 +14,6 @@ import {
   tone,
   winSong,
 } from "@/lib/tram-gia-dinh/audio";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 const TRACKS = [
   {
@@ -61,13 +60,12 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
   const [picks, setPicks] = useState<number[]>([]);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [timerOn, setTimerOn] = useState(false);
+  const [timerPop, setTimerPop] = useState(false);
+  const [timerPhase, setTimerPhase] = useState<"center" | "corner">("center");
+  const timerPhaseRef = useRef<number | null>(null);
   const [teams, setTeams] = useState<string[]>(() =>
     load("tram_show_teams", ["Đội Cam", "Đội Xanh"]),
   );
-  const [scores, setScores] = useState<number[]>(() => load("tram_show_scores", [0, 0]));
-  const [scorePop, setScorePop] = useState<{ k: number; pts: number; id: number } | null>(null);
-  const popTimer = useRef<number | null>(null);
-  const [denom, setDenom] = useState(100);
   const [zoomLv, setZoomLv] = useState<number>(() => load("tram_zoom", 1));
   const autoFRef = useRef(1);
   const [bgmOn, setBgmOn] = useState(() => load<string>("tram_bgm", "1") !== "0");
@@ -79,7 +77,6 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
   const [gridOpen, setGridOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [winOpen, setWinOpen] = useState(false);
-  const [confirmResetScores, setConfirmResetScores] = useState(false);
   const [newsHtml, setNewsHtml] = useState("Bấm ▶ BẮT ĐẦU để chơi! Trả lời nhanh như chớp ⚡");
   const [newsHot, setNewsHot] = useState(false);
   const [imgOk, setImgOk] = useState(true);
@@ -214,6 +211,7 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
     setPicks([]);
     setImgOk(true);
     setTimerOn(false);
+    setTimerPop(false);
     setTimeLeft(null);
     timeRef.current = null;
     setWinOpen(false);
@@ -292,18 +290,25 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
     if (!s || s.type === "info") return;
     if (timerOn) {
       setTimerOn(false);
+      setTimerPop(false);
       return;
     }
     const total = s.type === "many" || s.type === "guess" ? 45 : 30;
     const start = timeRef.current === null || timeRef.current <= 0 ? total : timeRef.current;
     timeRef.current = start;
     setTimeLeft(start);
+    setTimerPop(true);
+    setTimerPhase("center");
+    if (timerPhaseRef.current) window.clearTimeout(timerPhaseRef.current);
+    timerPhaseRef.current = window.setTimeout(() => setTimerPhase("corner"), 900);
     setTimerOn(true);
   }
   function resetT() {
     setTimerOn(false);
     timeRef.current = null;
     setTimeLeft(null);
+    setTimerPop(false);
+    if (timerPhaseRef.current) window.clearTimeout(timerPhaseRef.current);
   }
 
   useEffect(() => {
@@ -316,9 +321,15 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
       if (nv <= 0) {
         clearInterval(id);
         setTimerOn(false);
-        tone(440, 0.25, "square", 0, 0.3);
-        tone(330, 0.45, "square", 0.2, 0.3);
+        // Reo lên khi hết giờ.
+        tone(880, 0.12, "square", 0, 0.32);
+        tone(880, 0.12, "square", 0.2, 0.32);
+        tone(880, 0.12, "square", 0.4, 0.32);
+        tone(660, 0.5, "square", 0.6, 0.32);
         news("⏰ Hết giờ! Bấm <b>✅ CHẤM</b> để xem đáp án nhé!");
+        // Rồi ẩn ô thời gian đi.
+        if (timerPhaseRef.current) window.clearTimeout(timerPhaseRef.current);
+        timerPhaseRef.current = window.setTimeout(() => setTimerPop(false), 1300);
       }
     }, 1000);
     return () => clearInterval(id);
@@ -353,20 +364,6 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
     setSessOn(true);
   }
 
-  function addScore(k: number, d: number) {
-    setScores((sc) => {
-      const n = [...sc];
-      n[k] = (n[k] || 0) + d * denom;
-      store("tram_show_scores", n);
-      return n;
-    });
-    // Popup xác nhận (cả khi bấm nút lẫn phím số): thay nội dung + chạy lại
-    // animation bằng key, tự ẩn sau 1.4 giây.
-    if (popTimer.current) window.clearTimeout(popTimer.current);
-    setScorePop({ k, pts: d * denom, id: Date.now() });
-    popTimer.current = window.setTimeout(() => setScorePop(null), 1400);
-    sFlip();
-  }
   function rename(k: number, v: string) {
     setTeams((t) => {
       const n = [...t];
@@ -382,11 +379,6 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
       while (t.includes(`Đội ${n}`)) n++;
       const next = [...t, `Đội ${n}`];
       store("tram_show_teams", next);
-      setScores((sc) => {
-        const s = [...sc, 0];
-        store("tram_show_scores", s);
-        return s;
-      });
       return next;
     });
   }
@@ -395,18 +387,8 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
       if (t.length <= 2) return t;
       const next = t.filter((_, i) => i !== k);
       store("tram_show_teams", next);
-      setScores((sc) => {
-        const s = sc.filter((_, i) => i !== k);
-        store("tram_show_scores", s);
-        return s;
-      });
       return next;
     });
-  }
-  function resetScores() {
-    const n = teams.map(() => 0);
-    setScores(n);
-    store("tram_show_scores", n);
   }
   function zoom(d: number) {
     setZoomLv((z) => {
@@ -490,13 +472,6 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
       else if (e.key === " ") {
         e.preventDefault();
         smart();
-      } else if (/^[1-6]$/.test(e.key)) {
-        // Phím số 1–6: cộng điểm (mệnh giá hiện tại) cho đội tương ứng.
-        // Chỉ khi đã chấm (stage 2) để khỏi bấm nhầm, giống nút + trên bảng.
-        // (Dùng stage trực tiếp thay vì biến revealed vì rule compiler yêu cầu
-        //  giá trị phải khai báo trước effect.)
-        const k = Number(e.key) - 1;
-        if (stage === 2 && k < teams.length) addScore(k, 1);
       } else if (e.key === "t" || e.key === "T") timer();
       else if (e.key === "r" || e.key === "R") resetT();
       else if (e.key === "m" || e.key === "M") bgmToggle();
@@ -512,9 +487,7 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
   });
 
   const s = idx >= 0 ? quiz[idx] : null;
-  const revealed = stage === 2;
-  const maxScore = scores.length ? Math.max(...scores) : 0;
-  const winners = teams.filter((_, k) => (scores[k] || 0) === maxScore);
+  const winners = teams;
   const canFifty = !!s && s.type === "one" && stage === 0 && !lfFifty;
 
   function useFifty() {
@@ -686,9 +659,13 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
       ))}
       <div id="bar" style={{ width: idx < 0 ? "0%" : `${((idx + 1) / quiz.length) * 100}%` }} />
       <div id="num">{idx < 0 ? `0 / ${quiz.length}` : `${idx + 1} / ${quiz.length}`}</div>
-      {scorePop && teams[scorePop.k] && (
-        <div key={scorePop.id} className="score-pop">
-          +{scorePop.pts} · {teams[scorePop.k]}
+      {timerPop && timeLeft !== null && (
+        <div
+          id="timerpop"
+          className={`${timerPhase}${timeLeft <= 5 ? " low" : ""}`}
+          aria-live="polite"
+        >
+          {timeLeft <= 0 ? "HẾT!" : timeLeft}
         </div>
       )}
       <div id="stage">
@@ -708,17 +685,9 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
           <div className="cols">
             <div className="side" id="sideL">
               <h4>⏱ Đếm giờ</h4>
-              <div id="clock" className={timeLeft !== null && timeLeft <= 5 ? "low" : ""}>
-                {timeLeft === null ? "--" : timeLeft <= 0 ? "HẾT!" : timeLeft}
-              </div>
-              <div id="tbar" className={timeLeft !== null && timeLeft <= 5 ? "low" : ""}>
-                <i
-                  id="tfill"
-                  style={{
-                    width: timeLeft === null ? "100%" : `${(timeLeft / (s?.type === "many" || s?.type === "guess" ? 45 : 30)) * 100}%`,
-                  }}
-                />
-              </div>
+              <p style={{ fontSize: 13, opacity: 0.7, margin: "0 0 8px" }}>
+                Nhấn <b>T</b> để chạy/dừng — đồng hồ hiện giữa màn hình rồi thu về góc trái.
+              </p>
               <div className="tbtns">
                 <button onClick={timer}>⏱ Chạy/Dừng</button>
                 <button onClick={resetT}>↺ Đặt lại</button>
@@ -806,7 +775,7 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
               <div id="news" className={`${newsHot ? "hot" : ""} present-hide`} dangerouslySetInnerHTML={{ __html: newsHtml }} />
               <div id="teams">
                 {teams.map((n, k) => (
-                  <div className="team" key={k}>
+                  <div className="team" key={k} data-team={k + 1}>
                     <span
                       contentEditable
                       suppressContentEditableWarning
@@ -814,10 +783,6 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
                     >
                       {n}
                     </span>
-                    <span>{scores[k] || 0}</span>
-                    {revealed && (
-                      <button onClick={() => addScore(k, 1)}>+{denom}</button>
-                    )}
                     {teams.length > 2 && (
                       <button
                         title={`Xóa ${n}`}
@@ -846,41 +811,7 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
                     + Thêm đội
                   </button>
                 )}
-                <button
-                  className="fbtn"
-                  style={{ width: "100%", marginTop: 6, fontSize: 14 }}
-                  onClick={() => setConfirmResetScores(true)}
-                >
-                  ↺ Reset điểm
-                </button>
               </div>
-              <ConfirmDialog
-                open={confirmResetScores}
-                title="Reset điểm các đội?"
-                message="Điểm mọi đội về 0. Không hoàn tác được."
-                confirmLabel="Reset"
-                danger
-                onConfirm={() => {
-                  setConfirmResetScores(false);
-                  resetScores();
-                }}
-                onCancel={() => setConfirmResetScores(false)}
-              />
-              <label className="present-hide" style={{ fontSize: 13, fontWeight: 900 }}>
-                Mệnh giá mỗi câu đúng:
-              </label>
-              <select
-                id="denom"
-                className="present-hide"
-                value={denom}
-                onChange={(e) => setDenom(parseInt(e.target.value, 10))}
-              >
-                {[50, 100, 150, 200].map((v) => (
-                  <option key={v} value={v}>
-                    {v}
-                  </option>
-                ))}
-              </select>
               <div style={{ marginTop: 10, borderTop: "2px dashed #23233A55", paddingTop: 8 }} className="present-hide">
                 <h4 style={{ margin: "0 0 6px", fontSize: 15, color: "#8a8aa3" }}>
                   🎵 NHẠC NỀN (ONLINE)
@@ -1033,7 +964,11 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
       <div id="win" className={winOpen ? "" : "hidden"}>
         <div className="cup">🏆</div>
         <h2 id="winT">🎉 CHÚC MỪNG CHIẾN THẮNG!</h2>
-        <p id="winP">{winners.join(" & ") || "Cả lớp"} — xin chúc mừng!</p>
+        <p id="winP">
+          {winners.length
+            ? `Chúc mừng ${winners.join(", ")}!`
+            : "Xin chúc mừng cả lớp!"}
+        </p>
         <div>
           <button
             className="fbtn sun"
