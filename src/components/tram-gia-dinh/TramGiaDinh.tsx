@@ -30,7 +30,8 @@ export default function TramGiaDinh({
 }) {
   const [tab, setTab] = useState<"play" | "edit">("play");
   const [present, setPresent] = useState(false);
-  const [guideOpen, setGuideOpen] = useState(false);
+  // Bản công khai: mở sẵn bảng hướng dẫn ngay khi vào để cô khỏi phải tìm nút.
+  const [guideOpen, setGuideOpen] = useState(standalone);
   const [quiz, setQuiz] = useState<Slide[]>(initialQuiz);
   const [savedAt, setSavedAt] = useState("");
   const [saving, setSaving] = useState(false);
