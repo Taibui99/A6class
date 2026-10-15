@@ -665,7 +665,7 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
           className={`${timerPhase}${timeLeft <= 5 ? " low" : ""}`}
           aria-live="polite"
         >
-          {timeLeft <= 0 ? "HẾT!" : timeLeft}
+          {timeLeft <= 0 ? <span className="tp-done">HẾT!</span> : timeLeft}
         </div>
       )}
       <div id="stage">

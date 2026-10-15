@@ -620,39 +620,63 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
+  width: clamp(150px, 16vw, 230px);
+  height: clamp(150px, 16vw, 230px);
   font-family: "DM Mono", "Fira Code", monospace;
   font-weight: 900;
   font-variant-numeric: tabular-nums;
   color: #fde047;
   background: radial-gradient(circle at 50% 40%, rgba(56, 189, 248, 0.22), rgba(5, 8, 22, 0.92));
   border: 2px solid rgba(56, 189, 248, 0.55);
-  border-radius: 26px;
+  border-radius: 28px;
   box-shadow: 0 0 60px rgba(56, 189, 248, 0.35), inset 0 0 40px rgba(56, 189, 248, 0.12);
   text-shadow: 0 0 40px rgba(250, 204, 21, 0.55);
   pointer-events: none;
-  padding: 16px 44px;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%) scale(1);
-  font-size: clamp(84px, 16vw, 220px);
+  transform: translate(-50%, -50%);
+  font-size: clamp(72px, 11vw, 150px);
+  animation: tgd-timer-pop 0.5s cubic-bezier(0.18, 1.5, 0.45, 1);
   transition: left 0.6s cubic-bezier(0.22, 0.9, 0.24, 1),
     top 0.6s cubic-bezier(0.22, 0.9, 0.24, 1),
     transform 0.6s cubic-bezier(0.22, 0.9, 0.24, 1),
+    width 0.6s cubic-bezier(0.22, 0.9, 0.24, 1),
+    height 0.6s cubic-bezier(0.22, 0.9, 0.24, 1),
     font-size 0.6s cubic-bezier(0.22, 0.9, 0.24, 1),
-    padding 0.6s cubic-bezier(0.22, 0.9, 0.24, 1);
+    border-radius 0.6s cubic-bezier(0.22, 0.9, 0.24, 1);
 }
 .tgd #timerpop.corner {
   left: 18px;
   top: 74px;
   transform: translate(0, 0);
-  font-size: clamp(40px, 6vw, 76px);
-  padding: 8px 22px;
+  width: clamp(64px, 7vw, 96px);
+  height: clamp(64px, 7vw, 96px);
   border-radius: 16px;
+  font-size: clamp(30px, 3.4vw, 46px);
 }
 .tgd #timerpop.low {
   color: #fca5a5;
   border-color: rgba(248, 113, 113, 0.75);
   box-shadow: 0 0 60px rgba(248, 113, 113, 0.5), inset 0 0 40px rgba(248, 113, 113, 0.16);
+}
+.tgd #timerpop .tp-done {
+  font-size: 0.4em;
+  letter-spacing: 0.02em;
+}
+@keyframes tgd-timer-pop {
+  0% {
+    transform: translate(-50%, -50%) scale(0.25);
+    opacity: 0;
+  }
+  65% {
+    transform: translate(-50%, -50%) scale(1.12);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
 }
 .tgd .hidden {
   display: none !important;
