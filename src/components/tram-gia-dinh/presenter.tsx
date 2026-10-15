@@ -63,6 +63,7 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
   const [timerPop, setTimerPop] = useState(false);
   const [timerPhase, setTimerPhase] = useState<"center" | "corner">("center");
   const timerPhaseRef = useRef<number | null>(null);
+  const [qTime, setQTime] = useState<number>(() => load("tram_qtime", 30));
   const [teams, setTeams] = useState<string[]>(() =>
     load("tram_show_teams", ["Đội Cam", "Đội Xanh"]),
   );
@@ -293,7 +294,7 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
       setTimerPop(false);
       return;
     }
-    const total = s.type === "many" || s.type === "guess" ? 45 : 30;
+    const total = qTime > 0 ? qTime : 30;
     const start = timeRef.current === null || timeRef.current <= 0 ? total : timeRef.current;
     timeRef.current = start;
     setTimeLeft(start);
@@ -691,6 +692,40 @@ export default function Presenter({ quiz, onTogglePresent }: { quiz: Slide[]; on
               <div className="tbtns">
                 <button onClick={timer}>⏱ Chạy/Dừng</button>
                 <button onClick={resetT}>↺ Đặt lại</button>
+              </div>
+              <label style={{ fontSize: 13, fontWeight: 900, display: "block", marginTop: 10 }}>
+                ⏳ Số giây mỗi câu:
+              </label>
+              <input
+                type="number"
+                min={5}
+                max={300}
+                step={5}
+                value={qTime}
+                onChange={(e) => {
+                  const v = Math.max(5, Math.min(300, parseInt(e.target.value, 10) || 30));
+                  setQTime(v);
+                  store("tram_qtime", v);
+                }}
+                style={{ width: "100%", marginTop: 4, fontWeight: 900, textAlign: "center" }}
+              />
+              <div className="tbtns" style={{ marginTop: 6 }}>
+                {[15, 30, 45, 60].map((v) => (
+                  <button
+                    key={v}
+                    onClick={() => {
+                      setQTime(v);
+                      store("tram_qtime", v);
+                    }}
+                    style={
+                      qTime === v
+                        ? { background: "#38bdf8", color: "#04121f", borderColor: "#38bdf8" }
+                        : undefined
+                    }
+                  >
+                    {v}s
+                  </button>
+                ))}
               </div>
               <div style={{ marginTop: 10, borderTop: "2px dashed #23233A55", paddingTop: 8 }} className="present-hide">
                 <h4>⏲ PHIÊN</h4>

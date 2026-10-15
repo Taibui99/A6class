@@ -64,7 +64,7 @@ export default async function TramGiaDinhPage() {
       />
 
       <p className="text-xs text-text-secondary">
-        Mẹo chiếu lớp: bấm F (hoặc nút ⛶ Chiếu) để lên chế độ chiếu full màn hình không vướng khung web, Esc để thoát. A+/A- chỉnh cỡ chữ, M tắt mở nhạc nền, phím 1–6 cộng điểm cho đội.
+        Mẹo chiếu lớp: bấm F (hoặc nút ⛶ Chiếu) để lên chế độ chiếu full màn hình không vướng khung web, Esc để thoát. A+/A- chỉnh cỡ chữ, M tắt mở nhạc nền, T chạy đồng hồ đếm ngược, R đặt lại.
       </p>
     </div>
   );
