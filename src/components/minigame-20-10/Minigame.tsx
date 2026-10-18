@@ -1088,7 +1088,7 @@ export default function Minigame() {
             </span>
             {curBox.icon && (
               <div className="mg-rebus">
-                <RebusIcon key={curBox.icon} size={80} />
+                <RebusIcon icon={curBox.icon} size={80} />
               </div>
             )}
 
@@ -1124,7 +1124,7 @@ export default function Minigame() {
             )}
 
             {curBox.title.trim() && <h2 className="mg-panel-title">{curBox.title}</h2>}
-            {curBox.prompt.trim() &&
+            {curBox.prompt?.trim() &&
               curBox.prompt.trim().toLowerCase() !== curBox.title.trim().toLowerCase() && (
                 <p className="mg-prompt">{curBox.prompt}</p>
               )}

@@ -1,4 +1,4 @@
-﻿import type { RebusIconKey } from "./rebus-icons";
+import type { RebusIconKey } from "./rebus-icons";
 
 export type BoxType = "truth" | "dare" | "gift";
 
@@ -19,14 +19,14 @@ export type MinigameData = {
   boxes: BoxItem[];
 };
 
-export const STORAGE_KEY = "mg20_10_v5";
+export const STORAGE_KEY = "mg20_10_v6";
 export const BOX_COUNT = 50;
 export const DEFAULT_SECS = 45;
 
 export const TYPE_META: Record<BoxType, { label: string; color: string; hint: string }> = {
   truth: { label: "CÂU HỎI", color: "#ff4d6d", hint: "Đọc xong bấm HIỆN ĐÁP ÁN" },
   dare: { label: "Thách", color: "#a259ff", hint: "Phải làm ngay" },
-  gift: { label: "Quà", color: "#ffb703", hint: "Nhận quà may mắn" },
+  gift: { label: "Quà", color: "#ffb703", hint: "Nhận quà ngay" },
 };
 
 const uid = () => Math.random().toString(36).slice(2, 9);
@@ -76,7 +76,7 @@ function item(
   return b;
 }
 
-/* ===== 50 ô: nhìn hình thật (SVG), xếp chữ gạch nhọn, quà ngẫu nhiên — liên quan 20/10 ===== */
+/* ===== 50 ô: nhìn hình thật (SVG), xếp chữ gạch nhọn, hỏi yêu cầu, quà ngẫu nhiên — liên quan 20/10 ===== */
 const BOXES: BoxItem[] = [
   /* ---------- Nhìn hình thật đoán chữ ---------- */
   item("truth", "NHÌN HÌNH ĐOÁN CHỮ", undefined, "nón lá", DEFAULT_SECS, undefined, "nonla"),
@@ -112,12 +112,19 @@ const BOXES: BoxItem[] = [
   item("truth", "XẾP LẠI CÂU", "n/ữ /t/h/ế /g/i/o/ì", "nữ thế giới"),
   item("truth", "XẾP LẠI CÂU", "b/à /m/ẹ /c/h/ị /e/m /p/h/ụ /n/ữ", "bà mẹ chị em phụ nữ"),
   item("truth", "XẾP LẠI CÂU", "n/ư/ố/n/g /c/õ/n/g /h/ò/a", "nước cộng hòa"),
-  item("truth", "XẾP LẠI CÂU", "t/u/ổi /t/h/ơ", "tuổi thơ"),
+  item("truth", "XẾP LẠI CÂU", "t/u/ơ/i /t/h/ơ", "tuổi thơ"),
   item("truth", "XẾP LẠI CÂU", "p/h/ụ /n/ữ /v/iệt /n/a/m", "phụ nữ Việt Nam"),
-  item("truth", "XẾP LẠI CÂU", "c/ư/ø/ng /n/u/ờ/n/g /v/iệt /n/a/m", "cường nữ Việt Nam"),
+  item("truth", "XẾP LẠI CÂU", "c/u/ơ/n/g /n/u/ờ/n/g /v/iệt /n/a/m", "cường nữ Việt Nam"),
+
+  /* ---------- Phụ nữ yêu cầu bạn nam (chúc/làm gì đó) ---------- */
+  item("truth", "CÂU HỎI", "Bạn nam gửi 1 câu chúc 20/10 cho bạn nữ classe nào đẹp nhất?", "Gửi lời chúc thật lòng."),
+  item("truth", "CÂU HỎI", "Bạn nam hẹn hò bạn nữ để làm gì vào tối 20/10?", "Đến tiệc/ăn tối cùng."),
+  item("truth", "CÂU HỎI", "Bạn nam tặng bạn nữ cái gì vào ngày 20/10?", "Hoa hồng/quà tặng."),
+  item("truth", "CÂU HỎI", "Bạn nam nói câu gì để bạn nữ cười nhất?", "Câu ngọt ngào/kịch liễu."),
+  item("truth", "CÂU HỎI", "Bạn nam viết bài thơ bao nhiêu dòng cho bạn nữ?", "1 bài thơ ngắn."),
+  item("truth", "CÂU HỎI", "Bạn nam hát 1 bài hát về phụ nữ là bài gì?", "Bài hát về mẹ/phụ nữ."),
 
   /* ---------- Quà ngẫu nhiên ---------- */
-const GIFTS: BoxItem[] = [
   item("gift", "QUÀ 20/10", "Được chọn 1 bài hát để cả lớp nghe ngay bây giờ!"),
   item("gift", "QUÀ 20/10", "Được miễn 1 bài tập về nhà sắp tới của thầy/cô."),
   item("gift", "QUÀ 20/10", "Cả lớp vỗ tay khen 'Bạn giỏi quá!' 3 lần."),

@@ -19,9 +19,21 @@ export type RebusIconKey =
 const stroke = "#000000";
 const fill = "#ffffff";
 
-export function RebusIcon(key: RebusIconKey, props: SVGProps<SVGSVGElement> = {}) {
-  const base: SVGProps<SVGSVGElement> = { viewBox: "0 0 100 100", ...props };
-  switch (key) {
+export function RebusIcon({
+  icon,
+  size,
+  ...props
+}: { icon?: RebusIconKey; size?: number } & SVGProps<SVGSVGElement> = {
+  icon: undefined,
+}) {
+  const base: SVGProps<SVGSVGElement> = {
+    viewBox: "0 0 100 100",
+    width: size,
+    height: size,
+    ...props,
+  };
+  if (!icon) return null;
+  switch (icon) {
     case "nonla": {
       return (
         <svg {...base}>
