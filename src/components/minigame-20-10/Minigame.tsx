@@ -1137,7 +1137,7 @@ export default function Minigame() {
             )}
 
             <div className="mg-panel-actions">
-              {curBox.answer && !answerShown && (expired || curBox.type === "gift") && (
+              {curBox.answer && !answerShown && (
                 <button className="mg-btn mg-reveal" onClick={() => setAnswerShown(true)}>
                   HIỆN ĐÁP ÁN
                 </button>
