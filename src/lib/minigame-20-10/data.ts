@@ -19,7 +19,7 @@ export type MinigameData = {
   boxes: BoxItem[];
 };
 
-export const STORAGE_KEY = "mg20_10_v6";
+export const STORAGE_KEY = "mg20_10_v7";
 export const BOX_COUNT = 50;
 export const DEFAULT_SECS = 45;
 
@@ -76,24 +76,8 @@ function item(
   return b;
 }
 
-/* ===== 50 ô: nhìn hình thật (SVG), xếp chữ gạch nhọn, hỏi yêu cầu, quà ngẫu nhiên — liên quan 20/10 ===== */
+/* ===== 50 ô: xếp chữ gạch nhọn, phụ nữ yêu cầu, ô trống để bạn điền, quà ngẫu nhiên — liên quan 20/10 ===== */
 const BOXES: BoxItem[] = [
-  /* ---------- Nhìn hình thật đoán chữ ---------- */
-  item("truth", "NHÌN HÌNH ĐOÁN CHỮ", undefined, "nón lá", DEFAULT_SECS, undefined, "nonla"),
-  item("truth", "NHÌN HÌNH ĐOÁN CHỮ", undefined, "hoa hồng", DEFAULT_SECS, undefined, "hoa"),
-  item("truth", "NHÌN HÌNH ĐOÁN CHỮ", undefined, "tim", DEFAULT_SECS, undefined, "tim"),
-  item("truth", "NHÌN HÌNH ĐOÁN CHỮ", undefined, "mắt", DEFAULT_SECS, undefined, "mat"),
-  item("truth", "NHÌN HÌNH ĐOÁN CHỮ", undefined, "nước", DEFAULT_SECS, undefined, "nuoc"),
-  item("truth", "NHÌN HÌNH ĐOÁN CHỮ", undefined, "trăng", DEFAULT_SECS, undefined, "trang"),
-  item("truth", "NHÌN HÌNH ĐOÁN CHỮ", undefined, "sao", DEFAULT_SECS, undefined, "sao"),
-  item("truth", "NHÌN HÌNH ĐOÁN CHỮ", undefined, "nắng", DEFAULT_SECS, undefined, "nang"),
-  item("truth", "NHÌN HÌNH ĐOÁN CHỮ", undefined, "nhà", DEFAULT_SECS, undefined, "nha"),
-  item("truth", "NHÌN HÌNH ĐOÁN CHỮ", undefined, "cây", DEFAULT_SECS, undefined, "cay"),
-  item("truth", "NHÌN HÌNH ĐOÁN CHỮ", undefined, "nhẫn", DEFAULT_SECS, undefined, "nhan"),
-  item("truth", "NHÌN HÌNH ĐOÁN CHỮ", undefined, "miệng", DEFAULT_SECS, undefined, "mieung"),
-  item("truth", "NHÌN HÌNH ĐOÁN CHỮ", undefined, "đồng hồ", DEFAULT_SECS, undefined, "dongho"),
-  item("truth", "NHÌN HÌNH ĐOÁN CHỮ", undefined, "túi xách", DEFAULT_SECS, undefined, "tui"),
-
   /* ---------- Sắp xếp lại câu (gạch nhọn) ---------- */
   item("truth", "XẾP LẠI CÂU", "n/ữ/a /v/iệ/t /n/a/m", "nữ Việt Nam"),
   item("truth", "XẾP LẠI CÂU", "h/ọ/a /h/ô/n/g", "hoa hồng"),
@@ -116,13 +100,23 @@ const BOXES: BoxItem[] = [
   item("truth", "XẾP LẠI CÂU", "p/h/ụ /n/ữ /v/iệt /n/a/m", "phụ nữ Việt Nam"),
   item("truth", "XẾP LẠI CÂU", "c/u/ơ/n/g /n/u/ờ/n/g /v/iệt /n/a/m", "cường nữ Việt Nam"),
 
-  /* ---------- Phụ nữ yêu cầu bạn nam (chúc/làm gì đó) ---------- */
-  item("truth", "CÂU HỎI", "Bạn nam gửi 1 câu chúc 20/10 cho bạn nữ classe nào đẹp nhất?", "Gửi lời chúc thật lòng."),
+  /* ---------- Phụ nữ yêu cầu bạn nam ---------- */
+  item("truth", "CÂU HỎI", "Bạn nam gửi 1 câu chúc 20/10 cho bạn nữ nào đẹp nhất?", "Gửi lời chúc thật lòng."),
   item("truth", "CÂU HỎI", "Bạn nam hẹn hò bạn nữ để làm gì vào tối 20/10?", "Đến tiệc/ăn tối cùng."),
   item("truth", "CÂU HỎI", "Bạn nam tặng bạn nữ cái gì vào ngày 20/10?", "Hoa hồng/quà tặng."),
-  item("truth", "CÂU HỎI", "Bạn nam nói câu gì để bạn nữ cười nhất?", "Câu ngọt ngào/kịch liễu."),
+  item("truth", "CÂU HỎI", "Bạn nam nói câu gì để bạn nữ cười nhất?", "Câu ngọt ngào/hù hùi."),
   item("truth", "CÂU HỎI", "Bạn nam viết bài thơ bao nhiêu dòng cho bạn nữ?", "1 bài thơ ngắn."),
   item("truth", "CÂU HỎI", "Bạn nam hát 1 bài hát về phụ nữ là bài gì?", "Bài hát về mẹ/phụ nữ."),
+
+  /* ---------- Ô trống để bạn điền câu hỏi ---------- */
+  item("truth", "", "", undefined, DEFAULT_SECS),
+  item("truth", "", "", undefined, DEFAULT_SECS),
+  item("truth", "", "", undefined, DEFAULT_SECS),
+  item("truth", "", "", undefined, DEFAULT_SECS),
+  item("truth", "", "", undefined, DEFAULT_SECS),
+  item("truth", "", "", undefined, DEFAULT_SECS),
+  item("truth", "", "", undefined, DEFAULT_SECS),
+  item("truth", "", "", undefined, DEFAULT_SECS),
 
   /* ---------- Quà ngẫu nhiên ---------- */
   item("gift", "QUÀ 20/10", "Được chọn 1 bài hát để cả lớp nghe ngay bây giờ!"),
@@ -150,7 +144,7 @@ export function defaultBoxes(): BoxItem[] {
 export function emptyData(): MinigameData {
   return {
     title: "TRẢ LỜI CÂU HỎI 20/10",
-    wish: "50 ô trộn lẫn nhìn hình thật, xếp chữ và quà ngẫu nhiên — đọc xong bấm HIỆN ĐÁP ÁN để xem đáp án. Cùng quay và khám phá nhé!",
+    wish: "50 ô trộn lẫn xếp chữ, phụ nữ yêu cầu và quà ngẫu nhiên — đọc xong bấm HIỆN ĐÁP ÁN để xem đáp án. Cùng quay và khám phá nhé!",
     boxes: defaultBoxes(),
   };
 }
