@@ -16,7 +16,7 @@ export type MinigameData = {
   boxes: BoxItem[];
 };
 
-export const STORAGE_KEY = "hopqua_20_10_v3";
+export const STORAGE_KEY = "mg20_10_v4";
 export const BOX_COUNT = 50;
 export const DEFAULT_SECS = 45;
 
