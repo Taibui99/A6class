@@ -633,11 +633,11 @@
 .mg-panel.is-expired { border-color: #ff4d6daa; }
 /* Hộp có video → thẻ rộng ra cho clip lớn */
 .mg-panel.has-video {
-  width: min(1000px, 96vw);
-  padding: 20px clamp(14px, 3vw, 30px);
+  width: min(1120px, 98vw);
+  padding: 14px clamp(10px, 2.5vw, 24px);
 }
 .mg-panel.has-video .mg-video {
-  max-height: min(72vh, 620px);
+  max-height: min(82vh, 720px);
 }
 .mg-panel.has-video .mg-panel-title {
   margin: 10px 0 2px;
