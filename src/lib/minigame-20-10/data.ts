@@ -19,14 +19,14 @@ export type MinigameData = {
   boxes: BoxItem[];
 };
 
-export const STORAGE_KEY = "mg20_10_v7";
+export const STORAGE_KEY = "mg20_10_v8";
 export const BOX_COUNT = 50;
 export const DEFAULT_SECS = 45;
 
 export const TYPE_META: Record<BoxType, { label: string; color: string; hint: string }> = {
   truth: { label: "CÂU HỎI", color: "#ff4d6d", hint: "Đọc xong bấm HIỆN ĐÁP ÁN" },
-  dare: { label: "Thách", color: "#a259ff", hint: "Phải làm ngay" },
-  gift: { label: "Quà", color: "#ffb703", hint: "Nhận quà ngay" },
+  dare: { label: "Thách", color: "#a259ff", hint: "Phải làm ngay trước lớp" },
+  gift: { label: "Quà", color: "#ffb703", hint: "Nhận quà ngay, không hỏi" },
 };
 
 const uid = () => Math.random().toString(36).slice(2, 9);
@@ -76,65 +76,76 @@ function item(
   return b;
 }
 
-/* ===== 50 ô: xếp chữ gạch nhọn, phụ nữ yêu cầu, ô trống để bạn điền, quà ngẫu nhiên — liên quan 20/10 ===== */
+/* ===== 50 ô: đố vui, lịch sử phụ nữ, kiến thức tổng hợp, "bạn chọn gì", thách vui, quà ngẫu nhiên ===== */
 const BOXES: BoxItem[] = [
-  /* ---------- Sắp xếp lại câu (gạch nhọn) ---------- */
-  item("truth", "XẾP LẠI CÂU", "n/ữ/a /v/iệ/t /n/a/m", "nữ Việt Nam"),
-  item("truth", "XẾP LẠI CÂU", "h/ọ/a /h/ô/n/g", "hoa hồng"),
-  item("truth", "XẾP LẠI CÂU", "m/ẹ", "mẹ"),
-  item("truth", "XẾP LẠI CÂU", "b/à /t/r/i/ế/u", "bà Triệu"),
-  item("truth", "XẾP LẠI CÂU", "h/ả/i /b/à /t/r/i/ế/u", "hai bà Trưng"),
-  item("truth", "XẾP LẠI CÂU", "t/í/nh /y/ế/u", "tình yêu"),
-  item("truth", "XẾP LẠI CÂU", "y/ế/u /t/h/ư/ờ/n/g", "yêu thương"),
-  item("truth", "XẾP LẠI CÂU", "h/ọ/a /h/ậu", "hoa hậu"),
-  item("truth", "XẾP LẠI CÂU", "n/ữ /n/h/â/n", "nữ nhân"),
-  item("truth", "XẾP LẠI CÂU", "t/h/ể /g/i/o/ì /n/u/ờ/n/g", "thể giới nữ"),
-  item("truth", "XẾP LẠI CÂU", "l/ễ /l/ộ/i /2/0/1/0", "lễ 20/10"),
-  item("truth", "XẾP LẠI CÂU", "m/ẹ /c/h/ủ/a /n/h/à", "mẹ chủ nhà"),
-  item("truth", "XẾP LẠI CÂU", "y/ế/u /m/ẹ", "yêu mẹ"),
-  item("truth", "XẾP LẠI CÂU", "h/ọ/a /h/ậu /v/iệt /n/a/m", "hoa hậu Việt Nam"),
-  item("truth", "XẾP LẠI CÂU", "n/ữ /t/h/ế /g/i/o/ì", "nữ thế giới"),
-  item("truth", "XẾP LẠI CÂU", "b/à /m/ẹ /c/h/ị /e/m /p/h/ụ /n/ữ", "bà mẹ chị em phụ nữ"),
-  item("truth", "XẾP LẠI CÂU", "n/ư/ố/n/g /c/õ/n/g /h/ò/a", "nước cộng hòa"),
-  item("truth", "XẾP LẠI CÂU", "t/u/ơ/i /t/h/ơ", "tuổi thơ"),
-  item("truth", "XẾP LẠI CÂU", "p/h/ụ /n/ữ /v/iệt /n/a/m", "phụ nữ Việt Nam"),
-  item("truth", "XẾP LẠI CÂU", "c/u/ơ/n/g /n/u/ờ/n/g /v/iệt /n/a/m", "cường nữ Việt Nam"),
+  /* ---------- Đố vui / tư duy ---------- */
+  item("truth", "ĐỐ VUI", "Gì càng dùng càng ngắn đi?", "Cây bút chì."),
+  item("truth", "ĐỐ VUI", "Gì có mắt mà không nhìn thấy gì?", "Cây kim."),
+  item("truth", "ĐỐ VUI", "Gì có cổ mà không có đầu?", "Cái chai."),
+  item("truth", "ĐỐ VUI", "Gì có 4 chân mà không đi lại được?", "Cái giường (hoặc cái bàn)."),
+  item("truth", "ĐỐ VUI", "Con gì kêu 'quạc quạc'?", "Con vịt."),
+  item("truth", "ĐỐ VUI", "Gì mỏng nhất mà ai cũng có trên đầu?", "Sợi tóc."),
+  item("truth", "ĐỐ VUI", "Gì luôn chạy mà chẳng bao giờ mệt?", "Kim đồng hồ."),
+  item("truth", "ĐỐ VUI", "Cái gì đập thì vỡ, không đập thì vẫn cứng?", "Trứng."),
 
-  /* ---------- Phụ nữ yêu cầu bạn nam ---------- */
-  item("truth", "CÂU HỎI", "Bạn nam gửi 1 câu chúc 20/10 cho bạn nữ nào đẹp nhất?", "Gửi lời chúc thật lòng."),
-  item("truth", "CÂU HỎI", "Bạn nam hẹn hò bạn nữ để làm gì vào tối 20/10?", "Đến tiệc/ăn tối cùng."),
-  item("truth", "CÂU HỎI", "Bạn nam tặng bạn nữ cái gì vào ngày 20/10?", "Hoa hồng/quà tặng."),
-  item("truth", "CÂU HỎI", "Bạn nam nói câu gì để bạn nữ cười nhất?", "Câu ngọt ngào/hù hùi."),
-  item("truth", "CÂU HỎI", "Bạn nam viết bài thơ bao nhiêu dòng cho bạn nữ?", "1 bài thơ ngắn."),
-  item("truth", "CÂU HỎI", "Bạn nam hát 1 bài hát về phụ nữ là bài gì?", "Bài hát về mẹ/phụ nữ."),
+  /* ---------- Lịch sử phụ nữ Việt Nam ---------- */
+  item("truth", "LỊCH SỬ", "Hai bà Trưng khởi nghĩa chống giặc Hán vào năm nào?", "Năm 40 Công Nguyên."),
+  item("truth", "LỊCH SỬ", "Ngày Phụ nữ Việt Nam 20/10 bắt nguồn từ năm nào?", "Năm 1930 (đồng chí Nguyễn Thị Minh Khai nhận nhiệm vụ thành lập Hội Phụ nữ phản đế)."),
+  item("truth", "LỊCH SỬ", "Bà Triệu (Triệu Thị Trinh) nổi tiếng với câu nói nào?", "\"Tôi muốn cưỡi cơn gió mạnh, đập đầu chày sắt, để nước nhà khỏi lầm than.\""),
+  item("truth", "LỊCH SỬ", "Mùng 8 tháng 3 là ngày gì?", "Ngày Quốc tế Phụ nữ."),
+  item("truth", "LỊCH SỬ", "Hai bà Trưng tên là ai?", "Trưng Trắc và Trưng Nhị."),
+  item("truth", "LỊCH SỬ", "Bà Nguyễn Thị Định là nữ tướng đầu tiên của Việt Nam, bà mang quân hàm gì?", "Thiếu tướng."),
+  item("truth", "LỊCH SỬ", "Ngày Quốc khánh Việt Nam 2/9 là năm nào, có sự kiện gì?", "Năm 1945 — Hồ Chí Minh đọc Tuyên ngôn Độc lập tại Quảng trường Ba Đình."),
+  item("truth", "LỊCH SỬ", "Phụ nữ Việt Nam trong kháng chiến còn được ví như 'thành đồng' — cụm từ đầy đủ là gì?", "Phụ nữ là 'tài sản quý giá', 'một nửa thế giới'."),
+
+  /* ---------- Kiến thức tổng hợp ---------- */
+  item("truth", "KIẾN THỨC", "Thủ đô của nước Pháp là gì?", "Paris."),
+  item("truth", "KIẾN THỨC", "Con sông dài nhất thế giới là sông nào?", "Sông Nile."),
+  item("truth", "KIẾN THỨC", "Núi cao nhất Việt Nam là núi nào?", "Núi Fansipan."),
+  item("truth", "KIẾN THỨC", "Tính: 9 + 9 ÷ 9 = ?", "10 (vì 9 ÷ 9 = 1 trước)."),
+  item("truth", "KIẾN THỨC", "Quốc gia nào có hình chữ S trên bản đồ?", "Việt Nam."),
+  item("truth", "KIẾN THỨC", "Loại quả nào vừa là trái cây, vừa dùng làm nước sốt cho pizza?", "Cà chua."),
+  item("truth", "KIẾN THỨC", "Đèn giao thông có mấy màu chính?", "3 màu: đỏ, vàng, xanh."),
+  item("truth", "KIẾN THỨC", "Tổng: 1 + 2 + 3 + … + 10 = ?", "55."),
+
+  /* ---------- Bạn chọn gì (thảo luận cả lớp) ---------- */
+  item("truth", "BẠN CHỌN GÌ?", "Bay được hoặc biết 5 thứ ngoại ngữ — bạn chọn cái nào?", "Tùy bạn, cả lớp cùng bình chọn và tranh luận!"),
+  item("truth", "BẠN CHỌN GÌ?", "Giỏi giang nhưng ít bạn, hoặc bình thường nhưng nhiều bạn thân — bạn chọn cái nào?", "Tùy bạn, cả lớp cùng bình chọn và tranh luận!"),
+  item("truth", "BẠN CHỌN GÌ?", "Du lịch về quá khứ hoặc tương lai — bạn đi về đâu?", "Tùy bạn, cả lớp cùng bình chọn và tranh luận!"),
+  item("truth", "BẠN CHỌN GÌ?", "Sống không có mạng xã hội hoặc không có âm nhạc — bạn giữ cái nào?", "Tùy bạn, cả lớp cùng bình chọn và tranh luận!"),
+  item("truth", "BẠN CHỌN GÌ?", "Một ngày không được ăn hoặc một đêm không được ngủ — bạn chọn?", "Tùy bạn, cả lớp cùng bình chọn và tranh luận!"),
+
+  /* ---------- Sự thật thú vị ---------- */
+  item("truth", "SỰ THẬT", "Một năm thường có bao nhiêu ngày?", "365 ngày."),
+  item("truth", "SỰ THẬT", "Cầu vồng có mấy màu chính?", "7 màu."),
+  item("truth", "SỰ THẬT", "Trái Đất xoay quanh thiên thể nào?", "Mặt Trời."),
+  item("truth", "SỰ THẬT", "Việt Nam có 54 dân tộc anh em, dân tộc nào đông nhất?", "Dân tộc Kinh."),
+  item("truth", "SỰ THẬT", "Nhịp tim trung bình của người lớn mỗi phút khoảng bao nhiêu lần?", "Khoảng 70–80 lần/phút."),
+  item("truth", "SỰ THẬT", "Một phút có bao nhiêu giây?", "60 giây."),
+
+  /* ---------- Thách vui ---------- */
+  item("dare", "THÁCH", "Khen 3 bạn nữ trong lớp một lời thật lòng, to và rõ.", "Phải nói ngay trước lớp!"),
+  item("dare", "THÁCH", "Hát to 5 giây bất kỳ bài hát nào bạn thích.", "Phải hát đủ to cả lớp nghe!"),
+  item("dare", "THÁCH", "Giả tiếng động hài hước (con vật/máy bay/…) trong 3 giây.", "Cả lớp đoán xem là tiếng gì."),
+  item("dare", "THÁCH", "Nhảy cóc 3 bước như ếch từ đầu lớp đến giữa lớp.", "Phải nhảy thật giống!"),
+  item("dare", "THÁCH", "Nói 'I love 12A6' bằng tiếng Anh rồi lặp lại 3 lần thật nhanh.", "Không được vấp!"),
+  item("dare", "THÁCH", "Catwalk 3 bước như người mẫu trên sàn runway.", "Phải tạo dáng thật 'chất'."),
+  item("dare", "THÁCH", "Ôm chặt một người bạn ngồi cạnh (nếu bạn đó đồng ý).", "Nếu từ chối thì hát thêm 5 giây thay thế."),
+
+  /* ---------- Quà ngẫu nhiên (nhận trực tiếp) ---------- */
+  item("gift", "QUÀ 20/10", "Được chọn 1 bài hát để cả lớp nghe ngay bây giờ."),
+  item("gift", "QUÀ 20/10", "Được miễn 1 bài tập về nhà sắp tới của thầy/cô."),
+  item("gift", "QUÀ 20/10", "Cả lớp vỗ tay khen 'Bạn giỏi quá!' 3 lần."),
+  item("gift", "QUÀ 20/10", "Nhận 1 phần quà nhỏ từ thầy/cô."),
+  item("gift", "QUÀ 20/10", "Chọn 1 bạn nữ trong lớp để tặng hoa 1 bông."),
+  item("gift", "QUÀ 20/10", "Được ngồi 'ghế vinh danh' 5 phút tiếp theo."),
+  item("gift", "QUÀ 20/10", "Được chọn món quà 20/10 bất ngờ cho chính mình."),
 
   /* ---------- Ô trống để bạn điền câu hỏi ---------- */
   item("truth", "", "", undefined, DEFAULT_SECS),
   item("truth", "", "", undefined, DEFAULT_SECS),
   item("truth", "", "", undefined, DEFAULT_SECS),
   item("truth", "", "", undefined, DEFAULT_SECS),
-  item("truth", "", "", undefined, DEFAULT_SECS),
-  item("truth", "", "", undefined, DEFAULT_SECS),
-  item("truth", "", "", undefined, DEFAULT_SECS),
-  item("truth", "", "", undefined, DEFAULT_SECS),
-
-  /* ---------- Quà ngẫu nhiên ---------- */
-  item("gift", "QUÀ 20/10", "Được chọn 1 bài hát để cả lớp nghe ngay bây giờ!"),
-  item("gift", "QUÀ 20/10", "Được miễn 1 bài tập về nhà sắp tới của thầy/cô."),
-  item("gift", "QUÀ 20/10", "Cả lớp vỗ tay khen 'Bạn giỏi quá!' 3 lần."),
-  item("gift", "QUÀ 20/10", "Chọn 1 bạn nữ trong lớp để tặng hoa 1 bông."),
-  item("gift", "QUÀ 20/10", "Được ngồi 'ghế vinh danh' 5 phút tiếp theo."),
-  item("gift", "QUÀ 20/10", "Nhận 1 lời chúc 20/10 dễ thương từ cả lớp."),
-  item("gift", "QUÀ 20/10", "Bốc thăm: 1 phần quà nhỏ từ thầy/cô."),
-  item("gift", "QUÀ 20/10", "Được miễn phạt cho lần chơi tiếp theo."),
-  item("gift", "QUÀ 20/10", "Cả lớp hát 1 đoạn bài hát bạn yêu thích."),
-  item("gift", "QUÀ 20/10", "Được chọn món quà 20/10 cho mình."),
-  item("gift", "QUÀ 20/10", "Được nhận 1 biểu tình khen ngợi từ toàn lớp."),
-  item("gift", "QUÀ 20/10", "Được chọn 1 bạn để ôn lại bài học cùng."),
-  item("gift", "QUÀ 20/10", "Được ngồi ngay bên thầy/cô trong 1 tiết."),
-  item("gift", "QUÀ 20/10", "Được chọn 1 món tráng miệng cho cả lớp."),
-  item("gift", "QUÀ 20/10", "Nhận 1 lá thư chúc 20/10 từ bạn học cùng."),
-  item("gift", "QUÀ 20/10", "Được miễn 1 câu hỏi bất ngờ lần tới."),
 ];
 
 export function defaultBoxes(): BoxItem[] {
@@ -143,8 +154,8 @@ export function defaultBoxes(): BoxItem[] {
 
 export function emptyData(): MinigameData {
   return {
-    title: "TRẢ LỜI CÂU HỎI 20/10",
-    wish: "50 ô trộn lẫn xếp chữ, phụ nữ yêu cầu và quà ngẫu nhiên — đọc xong bấm HIỆN ĐÁP ÁN để xem đáp án. Cùng quay và khám phá nhé!",
+    title: "TRÒ CHƠI 20/10 LỚP 12A6",
+    wish: "50 ô trộn đố vui, lịch sử phụ nữ, kiến thức, 'bạn chọn gì', thách vui và quà ngẫu nhiên — mở ô xong bấm HIỆN ĐÁP ÁN để xem đáp án. Cùng quay và khám phá nhé!",
     boxes: defaultBoxes(),
   };
 }
