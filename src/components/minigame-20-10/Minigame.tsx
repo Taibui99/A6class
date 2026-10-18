@@ -529,7 +529,7 @@ export default function Minigame() {
         ...boxes[i],
         type: it.type,
         title: label,
-        prompt: q || label,
+        prompt: q,
         video: it.path,
         answer: it.answer.trim() || undefined,
         secs: Math.max(5, Math.min(300, it.secs)),
@@ -1049,7 +1049,10 @@ export default function Minigame() {
 
       {curBox && curIdx !== null && (
         <div className="mg-modal" onClick={closeModal}>
-          <div className={`mg-panel ${expired ? "is-expired" : ""} is-${curBox.type}`} onClick={(e) => e.stopPropagation()}>
+          <div
+            className={`mg-panel ${expired ? "is-expired" : ""} ${curBox.video ? "has-video" : ""} is-${curBox.type}`}
+            onClick={(e) => e.stopPropagation()}
+          >
             <span className="mg-panel-rose is-l">
               <RoseSvg size={56} c="#ff2d6f" d="#a80d3c" />
             </span>
@@ -1092,8 +1095,11 @@ export default function Minigame() {
               </div>
             )}
 
-            <h2 className="mg-panel-title">{curBox.title}</h2>
-            <p className="mg-prompt">{curBox.prompt}</p>
+            {curBox.title.trim() && <h2 className="mg-panel-title">{curBox.title}</h2>}
+            {curBox.prompt.trim() &&
+              curBox.prompt.trim().toLowerCase() !== curBox.title.trim().toLowerCase() && (
+                <p className="mg-prompt">{curBox.prompt}</p>
+              )}
 
             <p className="mg-kind-hint" style={{ ["--c" as string]: TYPE_META[curBox.type].color }}>
               {TYPE_META[curBox.type].hint}
