@@ -7,6 +7,7 @@ import {
   DEFAULT_SECS,
   TYPE_META,
   cryptoRandom,
+  defaultBoxes,
   emptyData,
   formatTime,
   shuffle,
@@ -531,7 +532,7 @@ export default function Minigame() {
         title: label,
         prompt: q,
         video: it.path,
-        answer: it.answer.trim() || undefined,
+        answer: it.answer || undefined,
         secs: Math.max(5, Math.min(300, it.secs)),
       };
     });
@@ -543,6 +544,21 @@ export default function Minigame() {
       `Đã gán ${ready.length} video vào các hộp: ${nums.join(", ")}. Nội dung lưu tự động — bấm Chơi để kiểm tra.`,
     );
     sfxGift();
+  }
+
+  /* Xóa hết câu hỏi, đáp án và video trên 50 hộp (đặt về mặc định). */
+  function resetEverything() {
+    if (
+      !window.confirm(
+        "Xóa HẾT câu hỏi, đáp án và video trên 50 hộp? Thao tác này không hoàn tác được.",
+      )
+    ) {
+      return;
+    }
+    persist({ ...data, boxes: defaultBoxes() });
+    setPending([]);
+    setImportMsg("Đã xóa hết nội dung 50 hộp — về mặc định.");
+    setEditIdx(null);
   }
 
   function toggleSound() {
@@ -695,6 +711,9 @@ export default function Minigame() {
             Chơi
           </button>
           {soundBtn}
+          <button className="mg-btn" onClick={resetEverything}>
+            XÓA HẾT NỘI DUNG
+          </button>
           <span className="mg-saved">Lưu tự động trên máy này</span>
         </div>
         <div className="mg-edit">
@@ -921,7 +940,10 @@ export default function Minigame() {
                     rows={2}
                     value={data.boxes[editIdx].answer ?? ""}
                     placeholder="Để trống nếu hộp này không có đáp án…"
-                    onChange={(e) => updateBox(editIdx, { answer: e.target.value.trim() || undefined })}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      updateBox(editIdx, { answer: v === "" ? undefined : v });
+                    }}
                   />
                 </label>
 
