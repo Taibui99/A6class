@@ -17,6 +17,7 @@ import {
   type MinigameData,
 } from "@/lib/minigame-20-10/data";
 import { isVideoFile, titleFromFileName, uploadVideo } from "@/lib/minigame-20-10/upload";
+import { RebusIcon } from "@/lib/minigame-20-10/rebus-icons";
 import { GiftBox } from "@/lib/minigame-20-10/gift-boxes";
 import {
   cycleSoundMode,
@@ -1085,6 +1086,11 @@ export default function Minigame() {
               <i className="mg-badge-dot" aria-hidden="true" />
               {TYPE_META[curBox.type].label} · Hộp {curIdx + 1}
             </span>
+            {curBox.icon && (
+              <div className="mg-rebus">
+                <RebusIcon key={curBox.icon} size={80} />
+              </div>
+            )}
 
             {curBox.video && !videoEnded && (
               <div className="mg-video-wrap">

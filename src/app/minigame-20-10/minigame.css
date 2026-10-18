@@ -647,6 +647,16 @@
   font-size: clamp(18px, 2.4vw, 26px);
   margin: 4px 0 12px;
 }
+.mg-rebus {
+  display: flex;
+  justify-content: center;
+  margin: 14px 0 8px;
+}
+.mg-rebus svg {
+  width: 90px;
+  height: 90px;
+  filter: drop-shadow(0 6px 12px #00000066);
+}
 /* Hồng trang trí 2 góc thẻ */
 .mg-panel-rose {
   position: absolute;

@@ -1,13 +1,16 @@
-﻿export type BoxType = "truth" | "dare" | "gift";
+﻿import type { RebusIconKey } from "./rebus-icons";
+
+export type BoxType = "truth" | "dare" | "gift";
 
 export type BoxItem = {
   id: string;
   type: BoxType;
   title: string;
-  prompt: string;
+  prompt?: string;
+  icon?: RebusIconKey;
   answer?: string;
-  video?: string;
   secs: number;
+  video?: string;
 };
 
 export type MinigameData = {
@@ -16,7 +19,7 @@ export type MinigameData = {
   boxes: BoxItem[];
 };
 
-export const STORAGE_KEY = "mg20_10_v4";
+export const STORAGE_KEY = "mg20_10_v5";
 export const BOX_COUNT = 50;
 export const DEFAULT_SECS = 45;
 
@@ -59,78 +62,88 @@ export function shuffle<T>(list: T[]): T[] {
 function item(
   type: BoxType,
   title: string,
-  prompt: string,
-  answer = "",
+  prompt?: string,
+  answer?: string,
   secs = DEFAULT_SECS,
   video?: string,
+  icon?: RebusIconKey,
 ): BoxItem {
-  const b: BoxItem = { id: uid(), type, title, prompt, secs };
+  const b: BoxItem = { id: uid(), type, title, secs };
+  if (prompt !== undefined) b.prompt = prompt;
   if (answer) b.answer = answer;
   if (video) b.video = video;
+  if (icon) b.icon = icon;
   return b;
 }
 
-/* ===== 50 câu hỏi cực khó (tổng hợp từ mạng: đố mẹo, logic, chơi chữ) — mỗi ô chỉ hiện câu hỏi, bấm HIỆN ĐÁP ÁN để xem đáp án ===== */
-const QUESTIONS: BoxItem[] = [
-  item("truth", "CÂU HỎI", "Thứ gì thuộc về bạn nhưng mọi người lại dùng nhiều hơn bạn?", "Tên của bạn."),
-  item("truth", "CÂU HỎI", "Cái gì phải ném đi khi cần dùng, rồi thu lại khi không cần?", "Mỏ neo."),
-  item("truth", "CÂU HỎI", "Cái gì có hai đầu nhưng không có chân?", "Cây cầu."),
-  item("truth", "CÂU HỎI", "Từ nào trong tiếng Việt có chín mẫu tự?", "Chính."),
-  item("truth", "CÂU HỎI", "Cái gì lớn bằng voi nhưng không nặng gram nào?", "Bóng con voi."),
-  item("truth", "CÂU HỎI", "Cái gì đen khi mua, đỏ khi dùng, xám xịt khi vứt đi?", "Than."),
-  item("truth", "CÂU HỎI", "Số gì khi xoay ngược lại thành 99 mà không cần tính toán?", "66."),
-  item("truth", "CÂU HỎI", "Cái gì luôn tăng mà không bao giờ giảm?", "Tuổi tác."),
-  item("truth", "CÂU HỎI", "Cái gì bạn không thể nhặt được từ trên sàn nhà?", "Cái bóng."),
-  item("truth", "CÂU HỎI", "Bánh xe nào không quay khi ô tô rẽ về bên phải?", "Bánh xe dự phòng."),
-  item("truth", "CÂU HỎI", "Có sông nhưng không nước, có thành phố nhưng không nhà, có rừng không cây — ở đâu?", "Trên bản đồ."),
-  item("truth", "CÂU HỎI", "Bạn vượt qua người thứ nhì trong cuộc đua, bạn đang ở vị trí nào?", "Thứ nhì."),
-  item("truth", "CÂU HỎI", "Bạn chạy qua người cuối cùng trong cuộc đua, bạn đang ở vị trí nào?", "Cuối cùng."),
-  item("truth", "CÂU HỎI", "Cái gì không có chân, không có đuôi, không có cơ thể mà nhiều đầu?", "Cầu truyền hình."),
-  item("truth", "CÂU HỎI", "Chuột nào đi bằng 2 chân?", "Chuột Mickey."),
-  item("truth", "CÂU HỎI", "Bóng gì bạn mang khắp thế giới mà vẫn ở nguyên một chỗ?", "Tem thư."),
-  item("truth", "CÂU HỎI", "Nhà nào lạnh lẽo nhưng ai cũng muốn tới?", "Nhà băng."),
-  item("truth", "CÂU HỎI", "Hôn mà bị hôn lại gọi là gì?", "Đính hôn."),
-  item("truth", "CÂU HỎI", "Từ gì bỏ đầu thành tên nước, mất đuôi thành loài chim?", "Cúc (bỏ C → Úc, mất c → cú)."),
-  item("truth", "CÂU HỎI", "Túi gì nghe tên ngọt nhưng đắng ngắt, khó lọt khỏi người?", "Túi mật."),
-  item("truth", "CÂU HỎI", "Quần rộng nhất là quần gì?", "Quần đảo."),
-  item("truth", "CÂU HỎI", "Một xương sống, một đống xương sườn là cái gì?", "Cái lược."),
-  item("truth", "CÂU HỎI", "Miệng rộng nhưng không nói một từ là gì?", "Con sông."),
-  item("truth", "CÂU HỎI", "Đi thì đứng, đứng thì ngã là gì?", "Xe đạp."),
-  item("truth", "CÂU HỎI", "Mặt bằng phẳng thênh thang, người đi muôn lối phố phường là gì?", "Mặt đất."),
-  item("truth", "CÂU HỎI", "Hoa gì quân tử không chê mùi bùn?", "Hoa sen."),
-  item("truth", "CÂU HỎI", "Nơi nào trên Trái Đất đàn ông khổ nhất?", "Nam Cực."),
-  item("truth", "CÂU HỎI", "Cái gì trong trắng ngoài xanh, trồng đậu trồng hành rồi thả heo vào?", "Bánh chưng."),
-  item("truth", "CÂU HỎI", "Con gì mang được miếng gỗ lớn nhưng không mang được hòn sỏi?", "Con sông."),
-  item("truth", "CÂU HỎI", "Ở Việt Nam, rồng bay ở đâu và đáp ở đâu?", "Rồng bay ở Thăng Long, đáp ở Hạ Long."),
-  item("truth", "CÂU HỎI", "Con gì có hai mắt mà không nhìn thấy?", "Con kim."),
-  item("truth", "CÂU HỎI", "Cái gì chạy cả ngày không bao giờ mệt?", "Đồng hồ."),
-  item("truth", "CÂU HỎI", "Bố mẹ có 6 người con trai, mỗi người trai có một em gái. Gia đình đó có bao nhiêu người?", "9 người (bố, mẹ, 6 con trai và 1 em gái)."),
-  item("truth", "CÂU HỎI", "Có 3 quả táo, bạn lấy đi 2 quả, hỏi bạn còn mấy quả?", "2 quả (vì bạn lấy đi 2 quả)."),
-  item("truth", "CÂU HỎI", "2 con vịt đi trước 2 con vịt, 2 con vịt đi sau 2 con vịt, 2 con vịt đi giữa 2 con vịt. Có mấy con vịt?", "4 con."),
-  item("truth", "CÂU HỎI", "Cái gì có cổ nhưng không có đầu?", "Chai."),
-  item("truth", "CÂU HỎI", "Cái gì bạn phải chia sẻ trước khi có thể giữ nó?", "Bí mật."),
-  item("truth", "CÂU HỎI", "Cái gì có năm ngón tay nhưng không có thịt?", "Găng tay."),
-  item("truth", "CÂU HỎI", "Cái gì có trước có sau mà không đi được?", "Đường."),
-  item("truth", "CÂU HỎI", "Cái gì bạn cầm được bằng tay trái nhưng không cầm được bằng tay phải?", "Khuỷu tay phải."),
-  item("truth", "CÂU HỎI", "Cái gì càng lớn thì lỗ càng lớn?", "Bánh donut."),
-  item("truth", "CÂU HỎI", "Cái gì không có cánh mà bay, không có miệng mà kêu?", "Gió."),
-  item("truth", "CÂU HỎI", "Cái gì bạn càng cho ăn thì càng lớn?", "Lửa."),
-  item("truth", "CÂU HỎI", "Con gì có mắt nhưng không nhìn thấy?", "Con kim."),
-  item("truth", "CÂU HỎI", "Cái gì luôn đi trước bạn nhưng không ai nhìn thấy?", "Tương lai."),
-  item("truth", "CÂU HỎI", "Cái gì có lưng mà không có đầu?", "Sách."),
-  item("truth", "CÂU HỎI", "Cái gì bạn nhìn thấy mỗi khi nhìn vào gương?", "Ảnh của bạn."),
-  item("truth", "CÂU HỎI", "Cái gì có hàng ngàn phím nhưng không mở cửa nào?", "Bàn phím."),
-  item("truth", "CÂU HỎI", "Cái gì không có chân mà đi khắp thế giới?", "Cầu vồng."),
+/* ===== 50 ô: nhìn hình thật (SVG), xếp chữ gạch nhọn, quà ngẫu nhiên — liên quan 20/10 ===== */
+const BOXES: BoxItem[] = [
+  /* ---------- Nhìn hình thật đoán chữ ---------- */
+  item("truth", "NHÌN HÌNH ĐOÁN CHỮ", undefined, "nón lá", DEFAULT_SECS, undefined, "nonla"),
+  item("truth", "NHÌN HÌNH ĐOÁN CHỮ", undefined, "hoa hồng", DEFAULT_SECS, undefined, "hoa"),
+  item("truth", "NHÌN HÌNH ĐOÁN CHỮ", undefined, "tim", DEFAULT_SECS, undefined, "tim"),
+  item("truth", "NHÌN HÌNH ĐOÁN CHỮ", undefined, "mắt", DEFAULT_SECS, undefined, "mat"),
+  item("truth", "NHÌN HÌNH ĐOÁN CHỮ", undefined, "nước", DEFAULT_SECS, undefined, "nuoc"),
+  item("truth", "NHÌN HÌNH ĐOÁN CHỮ", undefined, "trăng", DEFAULT_SECS, undefined, "trang"),
+  item("truth", "NHÌN HÌNH ĐOÁN CHỮ", undefined, "sao", DEFAULT_SECS, undefined, "sao"),
+  item("truth", "NHÌN HÌNH ĐOÁN CHỮ", undefined, "nắng", DEFAULT_SECS, undefined, "nang"),
+  item("truth", "NHÌN HÌNH ĐOÁN CHỮ", undefined, "nhà", DEFAULT_SECS, undefined, "nha"),
+  item("truth", "NHÌN HÌNH ĐOÁN CHỮ", undefined, "cây", DEFAULT_SECS, undefined, "cay"),
+  item("truth", "NHÌN HÌNH ĐOÁN CHỮ", undefined, "nhẫn", DEFAULT_SECS, undefined, "nhan"),
+  item("truth", "NHÌN HÌNH ĐOÁN CHỮ", undefined, "miệng", DEFAULT_SECS, undefined, "mieung"),
+  item("truth", "NHÌN HÌNH ĐOÁN CHỮ", undefined, "đồng hồ", DEFAULT_SECS, undefined, "dongho"),
+  item("truth", "NHÌN HÌNH ĐOÁN CHỮ", undefined, "túi xách", DEFAULT_SECS, undefined, "tui"),
+
+  /* ---------- Sắp xếp lại câu (gạch nhọn) ---------- */
+  item("truth", "XẾP LẠI CÂU", "n/ữ/a /v/iệ/t /n/a/m", "nữ Việt Nam"),
+  item("truth", "XẾP LẠI CÂU", "h/ọ/a /h/ô/n/g", "hoa hồng"),
+  item("truth", "XẾP LẠI CÂU", "m/ẹ", "mẹ"),
+  item("truth", "XẾP LẠI CÂU", "b/à /t/r/i/ế/u", "bà Triệu"),
+  item("truth", "XẾP LẠI CÂU", "h/ả/i /b/à /t/r/i/ế/u", "hai bà Trưng"),
+  item("truth", "XẾP LẠI CÂU", "t/í/nh /y/ế/u", "tình yêu"),
+  item("truth", "XẾP LẠI CÂU", "y/ế/u /t/h/ư/ờ/n/g", "yêu thương"),
+  item("truth", "XẾP LẠI CÂU", "h/ọ/a /h/ậu", "hoa hậu"),
+  item("truth", "XẾP LẠI CÂU", "n/ữ /n/h/â/n", "nữ nhân"),
+  item("truth", "XẾP LẠI CÂU", "t/h/ể /g/i/o/ì /n/u/ờ/n/g", "thể giới nữ"),
+  item("truth", "XẾP LẠI CÂU", "l/ễ /l/ộ/i /2/0/1/0", "lễ 20/10"),
+  item("truth", "XẾP LẠI CÂU", "m/ẹ /c/h/ủ/a /n/h/à", "mẹ chủ nhà"),
+  item("truth", "XẾP LẠI CÂU", "y/ế/u /m/ẹ", "yêu mẹ"),
+  item("truth", "XẾP LẠI CÂU", "h/ọ/a /h/ậu /v/iệt /n/a/m", "hoa hậu Việt Nam"),
+  item("truth", "XẾP LẠI CÂU", "n/ữ /t/h/ế /g/i/o/ì", "nữ thế giới"),
+  item("truth", "XẾP LẠI CÂU", "b/à /m/ẹ /c/h/ị /e/m /p/h/ụ /n/ữ", "bà mẹ chị em phụ nữ"),
+  item("truth", "XẾP LẠI CÂU", "n/ư/ố/n/g /c/õ/n/g /h/ò/a", "nước cộng hòa"),
+  item("truth", "XẾP LẠI CÂU", "t/u/ổi /t/h/ơ", "tuổi thơ"),
+  item("truth", "XẾP LẠI CÂU", "p/h/ụ /n/ữ /v/iệt /n/a/m", "phụ nữ Việt Nam"),
+  item("truth", "XẾP LẠI CÂU", "c/ư/ø/ng /n/u/ờ/n/g /v/iệt /n/a/m", "cường nữ Việt Nam"),
+
+  /* ---------- Quà ngẫu nhiên ---------- */
+const GIFTS: BoxItem[] = [
+  item("gift", "QUÀ 20/10", "Được chọn 1 bài hát để cả lớp nghe ngay bây giờ!"),
+  item("gift", "QUÀ 20/10", "Được miễn 1 bài tập về nhà sắp tới của thầy/cô."),
+  item("gift", "QUÀ 20/10", "Cả lớp vỗ tay khen 'Bạn giỏi quá!' 3 lần."),
+  item("gift", "QUÀ 20/10", "Chọn 1 bạn nữ trong lớp để tặng hoa 1 bông."),
+  item("gift", "QUÀ 20/10", "Được ngồi 'ghế vinh danh' 5 phút tiếp theo."),
+  item("gift", "QUÀ 20/10", "Nhận 1 lời chúc 20/10 dễ thương từ cả lớp."),
+  item("gift", "QUÀ 20/10", "Bốc thăm: 1 phần quà nhỏ từ thầy/cô."),
+  item("gift", "QUÀ 20/10", "Được miễn phạt cho lần chơi tiếp theo."),
+  item("gift", "QUÀ 20/10", "Cả lớp hát 1 đoạn bài hát bạn yêu thích."),
+  item("gift", "QUÀ 20/10", "Được chọn món quà 20/10 cho mình."),
+  item("gift", "QUÀ 20/10", "Được nhận 1 biểu tình khen ngợi từ toàn lớp."),
+  item("gift", "QUÀ 20/10", "Được chọn 1 bạn để ôn lại bài học cùng."),
+  item("gift", "QUÀ 20/10", "Được ngồi ngay bên thầy/cô trong 1 tiết."),
+  item("gift", "QUÀ 20/10", "Được chọn 1 món tráng miệng cho cả lớp."),
+  item("gift", "QUÀ 20/10", "Nhận 1 lá thư chúc 20/10 từ bạn học cùng."),
+  item("gift", "QUÀ 20/10", "Được miễn 1 câu hỏi bất ngờ lần tới."),
 ];
 
 export function defaultBoxes(): BoxItem[] {
-  return QUESTIONS.map((b) => ({ ...b, id: uid() }));
+  return shuffle(BOXES).slice(0, BOX_COUNT).map((b) => ({ ...b, id: uid() }));
 }
 
 export function emptyData(): MinigameData {
   return {
-    title: "THẬT HAY THÁCH",
-    wish: "50 câu hỏi cực khó đang chờ — đọc xong bấm HIỆN ĐÁP ÁN để xem đáp án. Cùng quay và khám phá nhé!",
+    title: "TRẢ LỜI CÂU HỎI 20/10",
+    wish: "50 ô trộn lẫn nhìn hình thật, xếp chữ và quà ngẫu nhiên — đọc xong bấm HIỆN ĐÁP ÁN để xem đáp án. Cùng quay và khám phá nhé!",
     boxes: defaultBoxes(),
   };
 }
