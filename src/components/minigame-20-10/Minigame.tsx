@@ -10,6 +10,7 @@ import {
   defaultBoxes,
   emptyData,
   formatTime,
+  recoverStoredData,
   shuffle,
   STORAGE_KEY,
   type BoxItem,
@@ -297,11 +298,17 @@ export default function Minigame() {
   useEffect(() => {
     let d = emptyData();
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as MinigameData;
-        if (parsed && typeof parsed.title === "string" && Array.isArray(parsed.boxes) && parsed.boxes.length) {
-          d = { ...parsed, boxes: parsed.boxes.slice(0, BOX_COUNT) };
+      /* Ưu tiên: tự khôi phục dữ liệu người dùng đã nhập tay (quét toàn bộ key cũ). */
+      const recovered = recoverStoredData();
+      if (recovered) {
+        d = recovered;
+      } else {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw) as MinigameData;
+          if (parsed && typeof parsed.title === "string" && Array.isArray(parsed.boxes) && parsed.boxes.length) {
+            d = { ...parsed, boxes: parsed.boxes.slice(0, BOX_COUNT) };
+          }
         }
       }
     } catch {

@@ -23,6 +23,42 @@ export const STORAGE_KEY = "mg20_10_v9";
 export const BOX_COUNT = 50;
 export const DEFAULT_SECS = 45;
 
+/* Các key localStorage đã dùng qua các bản — dùng để tự khôi phục dữ liệu người dùng đã nhập tay. */
+const LEGACY_KEYS = [
+  "mg20_10_v9",
+  "mg20_10_v8",
+  "mg20_10_v7",
+  "mg20_10_v6",
+  "mg20_10_v5",
+  "mg20_10_v4",
+  "mg20_10_v3",
+  "mg20_10_v11",
+];
+
+function isValidData(x: unknown): x is MinigameData {
+  const d = x as MinigameData | null;
+  return !!d && typeof d.title === "string" && Array.isArray(d.boxes) && d.boxes.length > 0;
+}
+
+/* Quét toàn bộ key cũ, trả về bộ dữ liệu hợp lệ đầu tiên tìm được (null nếu không có). */
+export function recoverStoredData(): MinigameData | null {
+  const seen = new Set<string>();
+  const keys = [STORAGE_KEY, ...LEGACY_KEYS].filter((k) => (seen.has(k) ? false : (seen.add(k), true)));
+  for (const key of keys) {
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) continue;
+      const parsed: unknown = JSON.parse(raw);
+      if (isValidData(parsed)) {
+        return { ...parsed, boxes: parsed.boxes.slice(0, BOX_COUNT) };
+      }
+    } catch {
+      /* key hỏng → bỏ qua, thử key tiếp */
+    }
+  }
+  return null;
+}
+
 export const TYPE_META: Record<BoxType, { label: string; color: string; hint: string }> = {
   truth: { label: "CÂU HỎI", color: "#ff4d6d", hint: "Đọc xong bấm HIỆN ĐÁP ÁN" },
   dare: { label: "Thách", color: "#a259ff", hint: "Phải làm ngay trước lớp" },
