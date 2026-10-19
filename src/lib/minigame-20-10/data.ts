@@ -19,7 +19,7 @@ export type MinigameData = {
   boxes: BoxItem[];
 };
 
-export const STORAGE_KEY = "mg20_10_v9";
+export const STORAGE_KEY = "mg20_10_v11";
 export const BOX_COUNT = 50;
 export const DEFAULT_SECS = 45;
 
@@ -76,69 +76,67 @@ function item(
   return b;
 }
 
-/* ===== VUA TIẾNG VIỆT 20/10 — 50 ô đa thể loại ===== */
+/* ===== VUA TIẾNG VIỆT 20/10 — TOÀN BỘ TÁCH TỪNG KÍ TỰ, CHỦ ĐỀ 20/10 + ĐỐ VUI TIẾNG VIỆT ===== */
 const BOXES: BoxItem[] = [
-  /* ---------- Sắp chữ / Ghép từ ---------- */
-  item("truth", "SẮP CHỮ", "Xếp lại cho đúng: việt / phụ / nữ / nam", "phụ nữ Việt Nam"),
-  item("truth", "SẮP CHỮ", "Xếp lại cho đúng: hồng / hoa", "hoa hồng"),
-  item("truth", "SẮP CHỮ", "Xếp lại cho đúng: triệu / bà", "bà Triệu"),
-  item("truth", "SẮP CHỮ", "Xếp lại cho đúng: trưng / hai / bà", "hai bà Trưng"),
-  item("truth", "SẮP CHỮ", "Xếp lại cho đúng: hậu / hoa", "hoa hậu"),
-  item("truth", "SẮP CHỮ", "Xếp lại cho đúng: yêu / tình", "tình yêu"),
-  item("truth", "SẮP CHỮ", "Xếp lại cho đúng: sử / lịch", "lịch sử"),
-  item("truth", "SẮP CHỮ", "Xếp lại cho đúng: mẹ / yêu", "yêu mẹ"),
-  item("truth", "SẮP CHỮ", "Xếp lại cho đúng: thơ / tuổi", "tuổi thơ"),
-  item("truth", "SẮP CHỮ", "Xếp lại cho đúng: hoa / hồng / đỏ", "hoa hồng đỏ"),
+  /* ---------- Xếp chữ tách kí tự — chủ đề 20/10 ---------- */
+  item("truth", "XẾP CHỮ", "p/h/ụ /n/ữ /v/i/ệ/t /n/a/m", "phụ nữ Việt Nam"),
+  item("truth", "XẾP CHỮ", "n/g/à/y /p/h/ụ /n/ữ /v/i/ệ/t /n/a/m", "ngày phụ nữ Việt Nam"),
+  item("truth", "XẾP CHỮ", "2/0 /t/h/á/n/g /1/0", "20 tháng 10"),
+  item("truth", "XẾP CHỮ", "l/ễ /2/0 /1/0", "lễ 20/10"),
+  item("truth", "XẾP CHỮ", "c/h/ú/c /m/ự/n/g /2/0 /1/0", "chúc mừng 20/10"),
+  item("truth", "XẾP CHỮ", "h/ạ/i /b/à /t/r/ư/n/g", "hai bà Trưng"),
+  item("truth", "XẾP CHỮ", "b/à /t/r/i/ệ/u", "bà Triệu"),
+  item("truth", "XẾP CHỮ", "t/r/i/ệ/u /t/h/ị /t/r/i/n/h", "Triệu Thị Trinh"),
+  item("truth", "XẾP CHỮ", "t/r/ư/n/g /t/r/ắ/c", "Trưng Trắc"),
+  item("truth", "XẾP CHỮ", "t/r/ư/n/g /n/h/ị", "Trưng Nhị"),
 
-  /* ---------- Điền từ khuyết / Trắc nghiệm ngôn ngữ ---------- */
-  item("truth", "ĐIỀN TỪ", "Hà Nội là ______ của Việt Nam.", "thủ đô"),
-  item("truth", "ĐIỀN TỪ", "Trong câu 'Tôi yêu Việt Nam', từ 'yêu' là từ loại gì?", "động từ"),
-  item("truth", "ĐIỀN TỪ", "Từ nào là danh từ trong: 'chạy – hoa – đẹp'?", "hoa"),
-  item("truth", "ĐIỀN TỪ", "Từ đồng nghĩa với 'vui vẻ' là gì?", "hạnh phúc"),
-  item("truth", "ĐIỀN TỪ", "Từ trái nghĩa với 'cao' là gì?", "thấp"),
-  item("truth", "ĐIỀN TỪ", "Số 'hai mươi mốt' viết bằng số là?", "21"),
-  item("truth", "ĐIỀN TỪ", "Con vật kêu 'meo meo' là con gì?", "con mèo"),
-  item("truth", "ĐIỀN TỪ", "Thành phố Hồ Chí Minh còn gọi là gì?", "Sài Gòn"),
-  item("truth", "ĐIỀN TỪ", "Từ nào bắt đầu bằng chữ 'nh': 'nhà – hoa – cá'?", "nhà"),
-  item("truth", "ĐIỀN TỪ", "Từ 'bạn' gồm mấy chữ cái?", "3 chữ cái (b, ạ, n)"),
+  /* ---------- Xếp chữ tách kí tự — phụ nữ, tình yêu, cuộc sống ---------- */
+  item("truth", "XẾP CHỮ", "m/ẹ", "mẹ"),
+  item("truth", "XẾP CHỮ", "y/ê/u /m/ẹ", "yêu mẹ"),
+  item("truth", "XẾP CHỮ", "t/ì/n/h /y/ê/u", "tình yêu"),
+  item("truth", "XẾP CHỮ", "y/ê/u /t/h/ư/ơ/n/g", "yêu thương"),
+  item("truth", "XẾP CHỮ", "n/ữ /n/h/â/n", "nữ nhân"),
+  item("truth", "XẾP CHỮ", "c/ư/ờ/n/g /n/ữ", "cường nữ"),
+  item("truth", "XẾP CHỮ", "c/ư/ờ/n/g /n/ữ /v/i/ệ/t /n/a/m", "cường nữ Việt Nam"),
+  item("truth", "XẾP CHỮ", "n/ữ /t/h/ế /g/i/ớ/i", "nữ thế giới"),
+  item("truth", "XẾP CHỮ", "t/h/ể /g/i/ớ/i /n/ữ", "thể giới nữ"),
+  item("truth", "XẾP CHỮ", "h/ọ/a /h/ồ/n/g", "hoa hồng"),
 
-  /* ---------- Đố vui / Trắc nghiệm tổng hợp ---------- */
-  item("truth", "ĐỐ VUI", "Thủ đô của nước Pháp là gì?", "Paris."),
-  item("truth", "ĐỐ VUI", "Con sông dài nhất thế giới là sông nào?", "Sông Nile."),
-  item("truth", "ĐỐ VUI", "Núi cao nhất Việt Nam là núi nào?", "Núi Fansipan."),
-  item("truth", "ĐỐ VUI", "Trái Đất xoay quanh thiên thể nào?", "Mặt Trời."),
-  item("truth", "ĐỐ VUI", "Cầu vồng có mấy màu chính?", "7 màu."),
-  item("truth", "ĐỐ VUI", "Tính: 9 + 9 ÷ 9 = ?", "10 (vì 9 ÷ 9 = 1 tính trước)."),
-  item("truth", "ĐỐ VUI", "Đèn giao thông có mấy màu chính?", "3 màu: đỏ, vàng, xanh."),
-  item("truth", "ĐỐ VUI", "Quốc khánh Việt Nam là ngày nào?", "Ngày 2 tháng 9."),
-  item("truth", "ĐỐ VUI", "Quốc gia nào có hình chữ S trên bản đồ?", "Việt Nam."),
-  item("truth", "ĐỐ VUI", "Một năm thường có bao nhiêu ngày?", "365 ngày."),
+  /* ---------- Xếp chữ tách kí tự — đố vui tiếng Việt ---------- */
+  item("truth", "XẾP CHỮ", "t/h/ủ /đ/ô", "thủ đô"),
+  item("truth", "XẾP CHỮ", "h/à /n/ộ/i", "Hà Nội"),
+  item("truth", "XẾP CHỮ", "s/ả/i /g/ò/n", "Sài Gòn"),
+  item("truth", "XẾP CHỮ", "v/i/ệ/t /n/a/m", "Việt Nam"),
+  item("truth", "XẾP CHỮ", "m/ặ/t /t/r/ờ/i", "Mặt Trời"),
+  item("truth", "XẾP CHỮ", "t/r/á/i /đ/ấ/t", "Trái Đất"),
+  item("truth", "XẾP CHỮ", "c/ầ/u /v/ò/n/g", "cầu vồng"),
+  item("truth", "XẾP CHỮ", "t/h/ơ/m /t/h/ư", "thơm thảo"),
+  item("truth", "XẾP CHỮ", "h/ọ/c /t/ậ/p", "học tập"),
+  item("truth", "XẾP CHỮ", "l/ị/c/h /s/ử", "lịch sử"),
 
-  /* ---------- Xếp chữ gạch nhọn ---------- */
-  item("truth", "XẾP CHỮ", "n/ữ/a /v/iệ/t /n/a/m", "nữ Việt Nam"),
-  item("truth", "XẾP CHỮ", "h/ọ/a /h/ô/n/g", "hoa hồng"),
-  item("truth", "XẾP CHỮ", "b/à /t/r/i/ế/u", "bà Triệu"),
-  item("truth", "XẾP CHỮ", "h/ả/i /b/à /t/r/i/ế/u", "hai bà Trưng"),
-  item("truth", "XẾP CHỮ", "h/ọ/a /h/ậu", "hoa hậu"),
-  item("truth", "XẾP CHỮ", "t/í/nh /y/ế/u", "tình yêu"),
-  item("truth", "XẾP CHỮ", "t/u/ơ/i /t/h/ơ", "tuổi thơ"),
-  item("truth", "XẾP CHỮ", "p/h/ụ /n/ữ /v/iệt /n/a/m", "phụ nữ Việt Nam"),
-  item("truth", "XẾP CHỮ", "l/ễ /l/ộ/i /2/0/1/0", "lễ 20/10"),
+  /* ---------- Xếp chữ tách kí tự — đố vui tiếng Việt (tiếp) ---------- */
+  item("truth", "XẾP CHỮ", "v/ă/n /h/ọ/c", "văn học"),
+  item("truth", "XẾP CHỮ", "t/i/ế/n/g /v/i/ệ/t", "tiếng Việt"),
+  item("truth", "XẾP CHỮ", "t/ừ /đ/i/ể/n", "từ điển"),
+  item("truth", "XẾP CHỮ", "đ/ố /v/u/i", "đố vui"),
+  item("truth", "XẾP CHỮ", "t/r/í /t/u/ệ", "trí tuệ"),
+  item("truth", "XẾP CHỮ", "s/á/n/g /t/ạ/o", "sáng tạo"),
+  item("truth", "XẾP CHỮ", "t/h/â/n /t/h/à/n/h", "thân thiện"),
+  item("truth", "XẾP CHỮ", "c/h/ấ/t /p/h/á/t", "chất phát"),
+  item("truth", "XẾP CHỮ", "h/ả/i /l/ò/n/g", "hai lòng"),
+  item("truth", "XẾP CHỮ", "t/ậ/n /t/ì/n/h", "tận tình"),
 
-  /* ---------- Quà ngẫu nhiên (nhận trực tiếp) ---------- */
-  item("gift", "QUÀ 20/10", "Được chọn 1 bài hát để cả lớp nghe ngay bây giờ."),
-  item("gift", "QUÀ 20/10", "Được miễn 1 bài tập về nhà sắp tới của thầy/cô."),
-  item("gift", "QUÀ 20/10", "Cả lớp vỗ tay khen 'Bạn giỏi quá!' 3 lần."),
-  item("gift", "QUÀ 20/10", "Nhận 1 phần quà nhỏ từ thầy/cô."),
-  item("gift", "QUÀ 20/10", "Chọn 1 bạn nữ trong lớp để tặng hoa 1 bông."),
-  item("gift", "QUÀ 20/10", "Được ngồi 'ghế vinh danh' 5 phút tiếp theo."),
-  item("gift", "QUÀ 20/10", "Được chọn món quà 20/10 bất ngờ cho chính mình."),
-
-  /* ---------- Ô trống để bạn điền câu hỏi ---------- */
-  item("truth", "", "", undefined, DEFAULT_SECS),
-  item("truth", "", "", undefined, DEFAULT_SECS),
-  item("truth", "", "", undefined, DEFAULT_SECS),
-  item("truth", "", "", undefined, DEFAULT_SECS),
+  /* ---------- Xếp chữ tách kí tự — từ vựng, lễ hội ---------- */
+  item("truth", "XẾP CHỮ", "q/u/ố/c /k/h/á/n/h", "quốc khánh"),
+  item("truth", "XẾP CHỮ", "n/g/à/y /q/u/ố/c /t/ế /p/h/ụ /n/ữ", "ngày Quốc tế Phụ nữ"),
+  item("truth", "XẾP CHỮ", "n/g/à/y /q/u/ố/c /k/h/á/n/h /v/i/ệ/t /n/a/m", "ngày Quốc khánh Việt Nam"),
+  item("truth", "XẾP CHỮ", "b/à /m/ẹ /v/i/ệ/t /n/a/m", "bà mẹ Việt Nam"),
+  item("truth", "XẾP CHỮ", "c/h/ị /e/m /p/h/ụ /n/ữ", "chị em phụ nữ"),
+  item("truth", "XẾP CHỮ", "t/h/à/n/h /c/ô/n/g", "thành công"),
+  item("truth", "XẾP CHỮ", "h/ọ/c /g/i/ỏ/i", "học giỏi"),
+  item("truth", "XẾP CHỮ", "c/ả /l/ớ/p", "cả lớp"),
+  item("truth", "XẾP CHỮ", "l/ớ/p /1/2 /a/6", "lớp 12A6"),
+  item("truth", "XẾP CHỮ", "c/h/ú/c /p/h/ụ /n/ữ /2/0 /1/0", "chúc phụ nữ 20/10"),
 ];
 
 export function defaultBoxes(): BoxItem[] {
@@ -147,8 +145,8 @@ export function defaultBoxes(): BoxItem[] {
 
 export function emptyData(): MinigameData {
   return {
-    title: "VUA TIẾNG VIỆT 20/10 — LỚP 12A6",
-    wish: "50 ô trộn Sắp chữ, Điền từ, Đố vui và Xếp chữ gạch nhọn — mở ô xong bấm HIỆN ĐÁP ÁN để xem đáp án. Cùng quay và thể hiện mình là Vua Tiếng Việt nhé!",
+    title: "VUA TIẾNG VIỆT 20/10",
+    wish: "50 ô xếp chữ tách từng kí tự — chủ đề 20/10 và đố vui tiếng Việt. Mở ô → bấm HIỆN ĐÁP ÁN để xem đáp án.",
     boxes: defaultBoxes(),
   };
 }
