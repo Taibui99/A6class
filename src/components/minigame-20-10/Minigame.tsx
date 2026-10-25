@@ -565,6 +565,37 @@ export default function Minigame() {
     setEditIdx(null);
   }
 
+  function exportJson() {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `minigame_12a6_100tui_${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function handleImportJson(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const parsed = JSON.parse(ev.target?.result as string);
+        if (parsed && Array.isArray(parsed.boxes) && parsed.boxes.length) {
+          persist(parsed);
+          setImportMsg("Đã nhập thành công 100 câu hỏi từ file JSON!");
+        } else {
+          setImportMsg("File JSON không đúng định dạng 100 túi.");
+        }
+      } catch {
+        setImportMsg("Lỗi đọc file JSON.");
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  }
+
   function toggleSound() {
     unlockAudio();
     const next = cycleSoundMode();
@@ -743,6 +774,13 @@ export default function Minigame() {
             Chơi
           </button>
           {soundBtn}
+          <button className="mg-btn" onClick={exportJson} title="Xuất file JSON để chuyển sang máy chiếu hoặc sao lưu">
+            📥 Xuất JSON
+          </button>
+          <label className="mg-btn" title="Nhập file JSON đã lưu" style={{ cursor: "pointer" }}>
+            📤 Nhập JSON
+            <input type="file" accept=".json" onChange={handleImportJson} style={{ display: "none" }} />
+          </label>
           <button className="mg-btn" onClick={resetEverything}>
             XÓA HẾT NỘI DUNG
           </button>

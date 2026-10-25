@@ -20,7 +20,7 @@ export type MinigameData = {
   boxes: BoxItem[];
 };
 
-export const STORAGE_KEY = "mg_12a6_100bags_v7";
+export const STORAGE_KEY = "mg_12a6_100bags_v8";
 export const BOX_COUNT = 100;
 export const DEFAULT_SECS = 35;
 
@@ -125,7 +125,7 @@ const BOXES: BoxItem[] = [
   item("truth", "NHIỆT DUNG RIÊNG", "Đại lượng đo bằng nhiệt lượng cần cung cấp để 1 kg chất tăng thêm 1°C (hoặc 1 K) gọi là gì?", "Nhiệt dung riêng (kí hiệu là c, đơn vị là J/kg.K)!", 30, undefined, undefined, "⚡ VẬT LÍ 12"),
 
   /* 15 */
-  item("dare", "HÌNH PHẠT HÍT ĐẤT", "Thực hiện chống đẩy (hít đất) 5 cái, mỗi lần lên phải hô to: '12A6 QUYẾT TÂM ĐỖ NGUYỆN VỌNG 1!'", undefined, 35, undefined, undefined, "⚡ HÌNH PHẠT"),
+  item("dare", "HÌNH PHẠT HÍT ĐẤT", "Thực hiện chống đẩy (hít đất) đúng 5 cái ngay tại chỗ để vượt qua thử thách!", undefined, 30, undefined, undefined, "⚡ HÌNH PHẠT"),
 
   /* 16 */
   item("truth", "3 VIÊN THUỐC CỦA BÁC SĨ", "Bác sĩ kê đơn cho bạn đúng 3 viên thuốc và dặn: 'Cứ đúng 30 phút thì uống 1 viên'. Hỏi sau bao nhiêu phút bạn sẽ uống hết cả 3 viên thuốc?", "Đúng 60 phút! (Phút 0 uống viên đầu tiên, phút 30 uống viên thứ hai, phút 60 uống viên thứ ba — nhiều bạn vội tính 30 × 3 = 90 phút là dính bẫy)!", 35, undefined, undefined, "🧠 SUY LUẬN LOGIC"),
