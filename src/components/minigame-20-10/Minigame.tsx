@@ -1069,25 +1069,18 @@ export default function Minigame() {
               <span className="mg-slide-badge">PHẦN 2 / 4 · LƯỢT THI ĐẤU CÁ NHÂN</span>
               <h2 className="mg-slide-title">1 NGƯỜI TRONG TỔ LẦN LƯỢT THAM GIA</h2>
 
-              <div className="mg-slide-icon-banner">🎯</div>
-
-              <div className="mg-slide-callout">
-                <p className="mg-slide-huge-text">
-                  Khi đến đội của mình: <b>Mỗi lượt chơi sẽ là 1 người trong tổ lần lượt tham gia!</b>
+              <div className="mg-slide-center-hero">
+                <div className="mg-hero-icon-ring">🎯</div>
+                <div className="mg-slide-huge-text">
+                  Khi đến đội của mình:
+                  <br />
+                  <span className="mg-text-gold">Mỗi lượt chơi sẽ là 1 người trong tổ lần lượt tham gia!</span>
+                </div>
+                <p className="mg-slide-sub-text">
+                  Từng thành viên trong tổ sẽ lần lượt bước lên bục để xé hộp quà bí ẩn và trả lời câu hỏi đố vui hoặc thực hiện các thử thách.
                 </p>
-                <div className="mg-slide-bullet-list">
-                  <div className="mg-bullet-item">
-                    <span className="mg-bullet-icon">👤</span>
-                    <span>Từng thành viên trong tổ sẽ lần lượt bước lên bục để xé hộp quà bí ẩn.</span>
-                  </div>
-                  <div className="mg-bullet-item">
-                    <span className="mg-bullet-icon">🎤</span>
-                    <span>Thành viên tự tin trả lời câu hỏi đố vui hoặc thực hiện các thử thách vui nhộn.</span>
-                  </div>
-                  <div className="mg-bullet-item">
-                    <span className="mg-bullet-icon">🎡</span>
-                    <span>Có thể sử dụng <b>Vòng Quay Chọn Người 12A6</b> nếu tổ chưa biết gọi ai lên tiếp theo!</span>
-                  </div>
+                <div className="mg-hero-note-pill">
+                  🎡 Có thể dùng <b>Vòng Quay Chọn Người 12A6</b> nếu tổ chưa biết cử ai lên tiếp theo!
                 </div>
               </div>
             </div>
