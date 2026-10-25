@@ -1258,11 +1258,31 @@ export default function Minigame() {
                   <h2 className="mg-panel-title">{curBox.title}</h2>
                 )}
                 {curBox.type === "truth" ? (
-                  <p className="mg-prompt">{curBox.prompt?.trim() || curBox.title}</p>
+                  <p
+                    className={`mg-prompt ${
+                      (curBox.prompt?.trim() || curBox.title).length > 130
+                        ? "is-xl"
+                        : (curBox.prompt?.trim() || curBox.title).length > 70
+                          ? "is-long"
+                          : ""
+                    }`}
+                  >
+                    {curBox.prompt?.trim() || curBox.title}
+                  </p>
                 ) : (
                   curBox.prompt?.trim() &&
                   curBox.prompt.trim().toLowerCase() !== curBox.title.trim().toLowerCase() && (
-                    <p className="mg-prompt">{curBox.prompt}</p>
+                    <p
+                      className={`mg-prompt ${
+                        curBox.prompt.length > 130
+                          ? "is-xl"
+                          : curBox.prompt.length > 70
+                            ? "is-long"
+                            : ""
+                      }`}
+                    >
+                      {curBox.prompt}
+                    </p>
                   )
                 )}
                 <p className="mg-kind-hint" style={{ ["--c" as string]: TYPE_META[curBox.type].color }}>

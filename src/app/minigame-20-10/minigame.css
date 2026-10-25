@@ -758,31 +758,40 @@
   letter-spacing: 0.5px;
 }
 .mg-prompt {
-  font-size: clamp(26px, 3.4vw, 44px);
+  font-size: clamp(22px, 2.8vw, 36px);
   font-weight: 800;
-  line-height: 1.45;
-  margin: 10px 0 20px;
+  line-height: 1.4;
+  margin: 10px 0 16px;
+  word-break: break-word;
+}
+.mg-prompt.is-long {
+  font-size: clamp(19px, 2.3vw, 28px);
+  line-height: 1.36;
+}
+.mg-prompt.is-xl {
+  font-size: clamp(16.5px, 1.9vw, 23px);
+  line-height: 1.33;
 }
 .mg-answer {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  font-size: 24px;
-  font-weight: 800;
+  gap: 8px;
   color: #7cf5c0;
   background: #00000055;
   border: 2px dashed #7cf5c099;
   border-radius: 16px;
-  padding: 18px 22px;
-  margin: 0 0 18px;
+  padding: clamp(10px, 1.6vh, 16px) clamp(14px, 2vw, 22px);
+  margin: 10px 0 14px;
   animation: mg-fade 0.25s ease;
+  max-height: 38vh;
+  overflow-y: auto;
 }
 .mg-answer p {
   margin: 0;
-  font-size: clamp(22px, 2.8vw, 36px);
+  font-size: clamp(17px, 2.2vw, 26px);
   font-weight: 800;
-  line-height: 1.4;
+  line-height: 1.38;
 }
 .mg-answer-tag {
   font-size: 14px;
@@ -1536,87 +1545,136 @@
    FULLSCREEN PROJECTOR / TV VIEW (MÁY CHIẾU LỚP HỌC)
    Phóng to toàn bộ cỡ chữ để học sinh cuối lớp nhìn rõ 100%
    ======================================================== */
+:fullscreen .mg-modal,
+:-webkit-full-screen .mg-modal,
+.mg.is-fullscreen .mg-modal {
+  padding: clamp(8px, 1.8vh, 20px) clamp(10px, 2vw, 24px);
+  align-items: center;
+}
+
 :fullscreen .mg-panel,
 :-webkit-full-screen .mg-panel,
 .mg.is-fullscreen .mg-panel {
-  max-width: min(1200px, 94vw);
-  padding: clamp(36px, 5vh, 60px) clamp(28px, 4.5vw, 68px);
+  max-width: min(1180px, 94vw);
+  width: min(1180px, 94vw);
+  max-height: min(94vh, 96dvh);
+  padding: clamp(14px, 2.2vh, 28px) clamp(20px, 3.5vw, 48px);
+  overflow-y: auto;
 }
 
 :fullscreen .mg-panel-title,
 :-webkit-full-screen .mg-panel-title,
 .mg.is-fullscreen .mg-panel-title {
-  font-size: clamp(30px, 3.2vw, 46px);
-  margin: 18px 0 12px;
+  font-size: clamp(22px, 2.6vmin, 32px);
+  margin: 8px 0 6px;
 }
 
 :fullscreen .mg-prompt,
 :-webkit-full-screen .mg-prompt,
 .mg.is-fullscreen .mg-prompt {
-  font-size: clamp(34px, 4.2vw, 56px);
-  line-height: 1.45;
-  margin: 16px 0 26px;
+  font-size: clamp(24px, 3.2vmin, 38px);
+  line-height: 1.38;
+  margin: clamp(8px, 1.5vh, 16px) 0 clamp(8px, 1.5vh, 16px);
+}
+
+:fullscreen .mg-prompt.is-long,
+:-webkit-full-screen .mg-prompt.is-long,
+.mg.is-fullscreen .mg-prompt.is-long {
+  font-size: clamp(20px, 2.6vmin, 28px);
+  line-height: 1.35;
+}
+
+:fullscreen .mg-prompt.is-xl,
+:-webkit-full-screen .mg-prompt.is-xl,
+.mg.is-fullscreen .mg-prompt.is-xl {
+  font-size: clamp(17.5px, 2.2vmin, 24px);
+  line-height: 1.32;
+}
+
+:fullscreen .mg-kind-hint,
+:-webkit-full-screen .mg-kind-hint,
+.mg.is-fullscreen .mg-kind-hint {
+  font-size: clamp(12.5px, 1.4vmin, 15px);
+  padding: 3px 14px;
+  margin: 2px auto 0;
 }
 
 :fullscreen .mg-answer,
 :-webkit-full-screen .mg-answer,
 .mg.is-fullscreen .mg-answer {
-  padding: 24px 32px;
-  margin: 18px 0 22px;
+  padding: clamp(10px, 1.6vh, 18px) clamp(16px, 2vw, 26px);
+  margin: clamp(8px, 1.4vh, 14px) 0;
+  max-height: 38vh;
+  overflow-y: auto;
 }
 
 :fullscreen .mg-answer p,
 :-webkit-full-screen .mg-answer p,
 .mg.is-fullscreen .mg-answer p {
-  font-size: clamp(28px, 3.6vw, 46px);
-  line-height: 1.45;
+  font-size: clamp(17px, 2.2vmin, 25px);
+  line-height: 1.38;
 }
 
 :fullscreen .mg-answer-tag,
 :-webkit-full-screen .mg-answer-tag,
 .mg.is-fullscreen .mg-answer-tag {
-  font-size: 18px;
-  padding: 6px 24px;
+  font-size: clamp(13px, 1.5vmin, 16px);
+  padding: 4px 18px;
 }
 
 :fullscreen .mg-badge,
 :-webkit-full-screen .mg-badge,
 .mg.is-fullscreen .mg-badge {
-  font-size: 18px;
-  padding: 9px 24px;
+  font-size: clamp(13px, 1.6vmin, 15.5px);
+  padding: 5px 16px;
 }
 
 :fullscreen .mg-category-tag,
 :-webkit-full-screen .mg-category-tag,
 .mg.is-fullscreen .mg-category-tag {
-  font-size: 18px;
-  padding: 8px 24px;
+  font-size: clamp(12.5px, 1.5vmin, 15px);
+  padding: 4px 16px;
+  margin: 6px auto 0;
+}
+
+:fullscreen .mg-timer,
+:-webkit-full-screen .mg-timer,
+.mg.is-fullscreen .mg-timer {
+  margin: clamp(8px, 1.2vh, 14px) 0 clamp(6px, 1vh, 10px);
 }
 
 :fullscreen .mg-timer-num,
 :-webkit-full-screen .mg-timer-num,
 .mg.is-fullscreen .mg-timer-num {
-  font-size: clamp(50px, 5.5vw, 78px);
-  min-width: 120px;
+  font-size: clamp(32px, 4.2vmin, 46px);
+  min-width: 90px;
 }
 
 :fullscreen .mg-timer-bar,
 :-webkit-full-screen .mg-timer-bar,
 .mg.is-fullscreen .mg-timer-bar {
-  height: 24px;
+  height: clamp(14px, 1.8vmin, 20px);
+}
+
+:fullscreen .mg-panel-actions,
+:-webkit-full-screen .mg-panel-actions,
+.mg.is-fullscreen .mg-panel-actions {
+  margin-top: clamp(8px, 1.4vh, 14px);
+  flex-shrink: 0;
 }
 
 :fullscreen .mg-panel-actions .mg-btn,
 :-webkit-full-screen .mg-panel-actions .mg-btn,
 .mg.is-fullscreen .mg-panel-actions .mg-btn {
-  font-size: clamp(20px, 2.2vw, 28px);
-  padding: 16px 40px;
+  font-size: clamp(16px, 1.8vmin, 22px);
+  padding: clamp(9px, 1.4vh, 14px) clamp(22px, 2.5vmin, 36px);
 }
 
 :fullscreen .mg-modal-player,
 :-webkit-full-screen .mg-modal-player,
 .mg.is-fullscreen .mg-modal-player {
-  font-size: clamp(24px, 2.8vw, 36px);
+  font-size: clamp(18px, 2.2vmin, 26px);
+  margin: 6px 0;
 }
 
 :fullscreen .mg-wheel-modal,
