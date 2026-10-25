@@ -632,9 +632,9 @@
   background: rgba(10, 14, 26, 0.88);
   backdrop-filter: blur(8px);
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  padding: clamp(16px, 3vh, 32px) clamp(10px, 2vw, 24px);
+  padding: clamp(14px, 2.5vh, 28px) clamp(12px, 2vw, 32px);
   overflow-y: auto;
   box-sizing: border-box;
   animation: mg-fade 0.18s ease;
@@ -642,16 +642,19 @@
 @keyframes mg-fade { from { opacity: 0; } to { opacity: 1; } }
 .mg-panel {
   position: relative;
-  width: min(940px, 94vw);
+  width: min(1200px, 95vw);
+  max-width: min(1200px, 95vw);
+  min-height: min(54vh, 480px);
   max-height: min(92vh, 94dvh);
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   overflow-y: auto;
   margin: auto;
   background: linear-gradient(160deg, #13192b, #0d111d);
   border: 3px solid #ffd16688;
   border-radius: 28px;
-  padding: clamp(20px, 3vh, 36px) clamp(18px, 3vw, 44px);
+  padding: clamp(22px, 3vh, 36px) clamp(24px, 3.5vw, 56px);
   text-align: center;
   box-shadow: 0 30px 80px #000000cc, 0 0 60px rgba(121, 40, 202, 0.4);
   animation: mg-pop 0.24s cubic-bezier(0.2, 1.3, 0.5, 1);
@@ -766,40 +769,40 @@
   letter-spacing: 0.5px;
 }
 .mg-prompt {
-  font-size: clamp(22px, 2.8vw, 36px);
+  font-size: clamp(26px, 3.2vw, 42px);
   font-weight: 800;
-  line-height: 1.4;
-  margin: 10px 0 16px;
+  line-height: 1.45;
+  margin: 14px 0 18px;
   word-break: break-word;
 }
 .mg-prompt.is-long {
-  font-size: clamp(19px, 2.3vw, 28px);
-  line-height: 1.36;
+  font-size: clamp(22px, 2.6vw, 34px);
+  line-height: 1.4;
 }
 .mg-prompt.is-xl {
-  font-size: clamp(16.5px, 1.9vw, 23px);
-  line-height: 1.33;
+  font-size: clamp(19px, 2.2vw, 29px);
+  line-height: 1.36;
 }
 .mg-answer {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   color: #7cf5c0;
   background: #00000055;
-  border: 2px dashed #7cf5c099;
-  border-radius: 16px;
-  padding: clamp(10px, 1.6vh, 16px) clamp(14px, 2vw, 22px);
-  margin: 10px 0 14px;
+  border: 2.5px dashed #7cf5c0bb;
+  border-radius: 18px;
+  padding: clamp(14px, 2vh, 22px) clamp(18px, 2.5vw, 32px);
+  margin: 12px 0 16px;
   animation: mg-fade 0.25s ease;
-  max-height: 38vh;
+  max-height: 40vh;
   overflow-y: auto;
 }
 .mg-answer p {
   margin: 0;
-  font-size: clamp(17px, 2.2vw, 26px);
+  font-size: clamp(20px, 2.4vw, 30px);
   font-weight: 800;
-  line-height: 1.38;
+  line-height: 1.42;
 }
 .mg-answer-tag {
   font-size: 14px;
@@ -1556,133 +1559,140 @@
 :fullscreen .mg-modal,
 :-webkit-full-screen .mg-modal,
 .mg.is-fullscreen .mg-modal {
-  padding: clamp(8px, 1.8vh, 20px) clamp(10px, 2vw, 24px);
+  padding: clamp(12px, 2vh, 24px) clamp(14px, 2vw, 32px);
   align-items: center;
 }
 
 :fullscreen .mg-panel,
 :-webkit-full-screen .mg-panel,
 .mg.is-fullscreen .mg-panel {
-  max-width: min(1180px, 94vw);
-  width: min(1180px, 94vw);
-  max-height: min(94vh, 96dvh);
-  padding: clamp(14px, 2.2vh, 28px) clamp(20px, 3.5vw, 48px);
+  max-width: min(1560px, 96vw);
+  width: min(1560px, 96vw);
+  min-height: min(68vh, 650px);
+  max-height: min(92vh, 94dvh);
+  padding: clamp(24px, 3.5vh, 44px) clamp(32px, 4vw, 68px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   overflow-y: auto;
 }
 
 :fullscreen .mg-panel-title,
 :-webkit-full-screen .mg-panel-title,
 .mg.is-fullscreen .mg-panel-title {
-  font-size: clamp(22px, 2.6vmin, 32px);
-  margin: 8px 0 6px;
+  font-size: clamp(26px, 3vmin, 38px);
+  margin: 10px 0 8px;
 }
 
 :fullscreen .mg-prompt,
 :-webkit-full-screen .mg-prompt,
 .mg.is-fullscreen .mg-prompt {
-  font-size: clamp(24px, 3.2vmin, 38px);
-  line-height: 1.38;
-  margin: clamp(8px, 1.5vh, 16px) 0 clamp(8px, 1.5vh, 16px);
+  font-size: clamp(32px, 3.8vmin, 48px);
+  line-height: 1.45;
+  margin: clamp(12px, 2vh, 22px) 0;
 }
 
 :fullscreen .mg-prompt.is-long,
 :-webkit-full-screen .mg-prompt.is-long,
 .mg.is-fullscreen .mg-prompt.is-long {
-  font-size: clamp(20px, 2.6vmin, 28px);
-  line-height: 1.35;
+  font-size: clamp(27px, 3.2vmin, 38px);
+  line-height: 1.42;
 }
 
 :fullscreen .mg-prompt.is-xl,
 :-webkit-full-screen .mg-prompt.is-xl,
 .mg.is-fullscreen .mg-prompt.is-xl {
-  font-size: clamp(17.5px, 2.2vmin, 24px);
-  line-height: 1.32;
+  font-size: clamp(24px, 2.7vmin, 32px);
+  line-height: 1.38;
 }
 
 :fullscreen .mg-kind-hint,
 :-webkit-full-screen .mg-kind-hint,
 .mg.is-fullscreen .mg-kind-hint {
-  font-size: clamp(12.5px, 1.4vmin, 15px);
-  padding: 3px 14px;
-  margin: 2px auto 0;
+  font-size: clamp(14px, 1.6vmin, 18px);
+  padding: 5px 22px;
+  margin: 6px auto 0;
 }
 
 :fullscreen .mg-answer,
 :-webkit-full-screen .mg-answer,
 .mg.is-fullscreen .mg-answer {
-  padding: clamp(10px, 1.6vh, 18px) clamp(16px, 2vw, 26px);
-  margin: clamp(8px, 1.4vh, 14px) 0;
-  max-height: 38vh;
+  padding: clamp(16px, 2.2vh, 26px) clamp(24px, 3vw, 44px);
+  margin: clamp(12px, 1.8vh, 20px) 0;
+  max-height: 42vh;
   overflow-y: auto;
+  border-width: 2.5px;
 }
 
 :fullscreen .mg-answer p,
 :-webkit-full-screen .mg-answer p,
 .mg.is-fullscreen .mg-answer p {
-  font-size: clamp(17px, 2.2vmin, 25px);
-  line-height: 1.38;
+  font-size: clamp(22px, 2.8vmin, 32px);
+  line-height: 1.45;
 }
 
 :fullscreen .mg-answer-tag,
 :-webkit-full-screen .mg-answer-tag,
 .mg.is-fullscreen .mg-answer-tag {
-  font-size: clamp(13px, 1.5vmin, 16px);
-  padding: 4px 18px;
+  font-size: clamp(14px, 1.6vmin, 17px);
+  padding: 5px 22px;
+  font-weight: 900;
 }
 
 :fullscreen .mg-badge,
 :-webkit-full-screen .mg-badge,
 .mg.is-fullscreen .mg-badge {
-  font-size: clamp(13px, 1.6vmin, 15.5px);
-  padding: 5px 16px;
+  font-size: clamp(15px, 1.8vmin, 18px);
+  padding: 8px 24px;
 }
 
 :fullscreen .mg-category-tag,
 :-webkit-full-screen .mg-category-tag,
 .mg.is-fullscreen .mg-category-tag {
-  font-size: clamp(12.5px, 1.5vmin, 15px);
-  padding: 4px 16px;
-  margin: 6px auto 0;
+  font-size: clamp(14px, 1.7vmin, 17px);
+  padding: 6px 22px;
+  margin: 8px auto 0;
 }
 
 :fullscreen .mg-timer,
 :-webkit-full-screen .mg-timer,
 .mg.is-fullscreen .mg-timer {
-  margin: clamp(8px, 1.2vh, 14px) 0 clamp(6px, 1vh, 10px);
+  margin: clamp(10px, 1.6vh, 20px) 0 clamp(8px, 1.2vh, 14px);
 }
 
 :fullscreen .mg-timer-num,
 :-webkit-full-screen .mg-timer-num,
 .mg.is-fullscreen .mg-timer-num {
-  font-size: clamp(32px, 4.2vmin, 46px);
-  min-width: 90px;
+  font-size: clamp(40px, 4.8vmin, 58px);
+  min-width: 110px;
 }
 
 :fullscreen .mg-timer-bar,
 :-webkit-full-screen .mg-timer-bar,
 .mg.is-fullscreen .mg-timer-bar {
-  height: clamp(14px, 1.8vmin, 20px);
+  height: clamp(18px, 2.2vmin, 26px);
 }
 
 :fullscreen .mg-panel-actions,
 :-webkit-full-screen .mg-panel-actions,
 .mg.is-fullscreen .mg-panel-actions {
-  margin-top: clamp(8px, 1.4vh, 14px);
+  margin-top: clamp(14px, 2vh, 24px);
   flex-shrink: 0;
 }
 
 :fullscreen .mg-panel-actions .mg-btn,
 :-webkit-full-screen .mg-panel-actions .mg-btn,
 .mg.is-fullscreen .mg-panel-actions .mg-btn {
-  font-size: clamp(16px, 1.8vmin, 22px);
-  padding: clamp(9px, 1.4vh, 14px) clamp(22px, 2.5vmin, 36px);
+  font-size: clamp(19px, 2.3vmin, 26px);
+  padding: clamp(12px, 1.8vh, 18px) clamp(32px, 3.6vmin, 52px);
+  font-weight: 900;
 }
 
 :fullscreen .mg-modal-player,
 :-webkit-full-screen .mg-modal-player,
 .mg.is-fullscreen .mg-modal-player {
-  font-size: clamp(18px, 2.2vmin, 26px);
-  margin: 6px 0;
+  font-size: clamp(20px, 2.5vmin, 28px);
+  margin: 8px 0;
 }
 
 :fullscreen .mg-wheel-modal,

@@ -1397,9 +1397,9 @@ export default function Minigame() {
                 {curBox.type === "truth" ? (
                   <p
                     className={`mg-prompt ${
-                      (curBox.prompt?.trim() || curBox.title).length > 130
+                      (curBox.prompt?.trim() || curBox.title).length > 180
                         ? "is-xl"
-                        : (curBox.prompt?.trim() || curBox.title).length > 70
+                        : (curBox.prompt?.trim() || curBox.title).length > 95
                           ? "is-long"
                           : ""
                     }`}
@@ -1411,9 +1411,9 @@ export default function Minigame() {
                   curBox.prompt.trim().toLowerCase() !== curBox.title.trim().toLowerCase() && (
                     <p
                       className={`mg-prompt ${
-                        curBox.prompt.length > 130
+                        curBox.prompt.length > 180
                           ? "is-xl"
-                          : curBox.prompt.length > 70
+                          : curBox.prompt.length > 95
                             ? "is-long"
                             : ""
                       }`}
