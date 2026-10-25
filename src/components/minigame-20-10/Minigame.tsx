@@ -266,9 +266,22 @@ export default function Minigame() {
   const [currentPlayer, setCurrentPlayer] = useState<string | null>(null);
   const [wheelMode, setWheelMode] = useState<"next_answer" | "pick_gift" | "general">("general");
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [mcQrOpen, setMcQrOpen] = useState(false);
   /* 0 tắt · 1 bật hiệu ứng âm thanh (mặc định: 1) */
   const [snd, setSnd] = useState<SoundMode>(1);
   const [syncStatus, setSyncStatus] = useState<"idle" | "saving" | "synced" | "error">("idle");
+
+  const broadcastLiveState = useCallback(async (patch: Record<string, any>) => {
+    try {
+      await fetch("/api/minigame-20-10/live", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(patch),
+      });
+    } catch (err) {
+      console.warn("[minigame] broadcast error", err);
+    }
+  }, []);
 
   const rootRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<number | null>(null);
@@ -460,6 +473,16 @@ export default function Minigame() {
     setVideoEnded(true);
     setAnswerShown(false);
     setCurrentPlayer(null);
+    broadcastLiveState({
+      curIdx: null,
+      curBox: null,
+      currentPlayer: null,
+      wheelWinner: null,
+      timeLeft: null,
+      expired: false,
+      answerShown: false,
+      stage: "play",
+    });
   }
 
   function openBox(i: number) {
@@ -479,6 +502,24 @@ export default function Minigame() {
     setExpired(false);
     setCelebrate(true);
     window.setTimeout(() => setCelebrate(false), 900);
+
+    broadcastLiveState({
+      curIdx: i,
+      curBox: {
+        id: b.id,
+        type: b.type,
+        title: b.title,
+        category: b.category,
+        prompt: b.prompt,
+        answer: b.answer,
+        secs: b.secs,
+      },
+      currentPlayer,
+      timeLeft: !b.video && !noTimer ? b.secs : null,
+      expired: false,
+      answerShown: false,
+      stage: "play",
+    });
   }
 
   function spin() {
@@ -525,20 +566,29 @@ export default function Minigame() {
     return () => window.clearTimeout(id);
   }, [picked, opened]);
 
-  function closeModal() {
+  const closeModal = useCallback(() => {
     setCurIdx(null);
     setTimeLeft(null);
     setExpired(false);
     setVideoEnded(true);
     setAnswerShown(false);
     setCurrentPlayer(null);
-  }
+    broadcastLiveState({
+      curIdx: null,
+      curBox: null,
+      timeLeft: null,
+      expired: false,
+      answerShown: false,
+      currentPlayer: null,
+    });
+  }, [broadcastLiveState]);
 
   /* Video kết thúc (hoặc bỏ qua) → mới bắt đầu đếm ngược. */
   function endVideo() {
     setVideoEnded(true);
     if (curBox && curBox.type !== "gift" && curBox.type !== "special" && curBox.secs > 0) {
       setTimeLeft(curBox.secs);
+      broadcastLiveState({ timeLeft: curBox.secs });
     }
   }
 
@@ -720,12 +770,50 @@ export default function Minigame() {
   }, [curIdx, timeLeft, expired, answerShown]);
 
   useEffect(() => {
-    if (expired) sfxExpire();
-  }, [expired]);
+    if (expired) {
+      sfxExpire();
+      broadcastLiveState({ expired: true, timeLeft: 0 });
+    }
+  }, [expired, broadcastLiveState]);
 
   useEffect(() => {
-    if (answerShown) sfxReveal();
-  }, [answerShown]);
+    if (answerShown) {
+      sfxReveal();
+      broadcastLiveState({ answerShown: true });
+    }
+  }, [answerShown, broadcastLiveState]);
+
+  /* Lắng nghe lệnh điều khiển từ xa từ điện thoại của MC */
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const interval = window.setInterval(async () => {
+      try {
+        const res = await fetch("/api/minigame-20-10/live", { cache: "no-store" });
+        if (!res.ok) return;
+        const resJson = await res.json();
+        const cmd = resJson?.state?.remoteCommand;
+        if (cmd) {
+          // Xóa lệnh đã tiếp nhận
+          await fetch("/api/minigame-20-10/live", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ command: null }),
+          });
+
+          if (cmd === "reveal") {
+            setAnswerShown(true);
+          } else if (cmd === "close") {
+            closeModal();
+          } else if (cmd === "spin_wheel") {
+            setPickerOpen(true);
+          }
+        }
+      } catch {
+        // bỏ qua khi có lỗi mạng chập chờn
+      }
+    }, 1000);
+    return () => window.clearInterval(interval);
+  }, [closeModal]);
 
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
@@ -822,6 +910,13 @@ export default function Minigame() {
             >
               🎯 Quay chọn người
             </button>
+            <button
+              className="mg-btn mg-mc-btn"
+              onClick={() => setMcQrOpen(true)}
+              title="Quét mã QR kết nối MC trên điện thoại để nhìn trước đáp án"
+            >
+              📱 MC Mobile
+            </button>
             <button className="mg-btn" onClick={() => setStage("edit")}>
               Soạn nội dung
             </button>
@@ -833,12 +928,14 @@ export default function Minigame() {
           <p className="mg-hint">Enter bắt đầu · Space bốc túi · F toàn màn hình · H hướng dẫn · Esc đóng thẻ</p>
         </div>
         {helpOpen && <Help onClose={() => setHelpOpen(false)} />}
+        {mcQrOpen && <McQrModal onClose={() => setMcQrOpen(false)} />}
         {pickerOpen && (
           <StudentPickerModal
             mode={wheelMode}
             onClose={() => setPickerOpen(false)}
             onPickDone={(name) => {
               setCurrentPlayer(name);
+              broadcastLiveState({ currentPlayer: name, wheelWinner: name });
               setPickerOpen(false);
               start();
             }}
@@ -1193,6 +1290,13 @@ export default function Minigame() {
         <button className="mg-btn" onClick={start}>
           Chơi lại
         </button>
+        <button
+          className="mg-btn mg-mc-btn"
+          onClick={() => setMcQrOpen(true)}
+          title="Quét mã QR kết nối MC trên điện thoại để nhìn trước đáp án"
+        >
+          📱 MC Mobile
+        </button>
         <button className="mg-btn" onClick={() => setHelpOpen(true)}>
           Hướng dẫn
         </button>
@@ -1463,18 +1567,78 @@ export default function Minigame() {
 
       {celebrate && <Burst />}
       {helpOpen && <Help onClose={() => setHelpOpen(false)} />}
+      {mcQrOpen && <McQrModal onClose={() => setMcQrOpen(false)} />}
       {pickerOpen && (
         <StudentPickerModal
           mode={wheelMode}
           onClose={() => setPickerOpen(false)}
           onPickDone={(name) => {
             setCurrentPlayer(name);
+            broadcastLiveState({ currentPlayer: name, wheelWinner: name });
             setCurIdx(null);
             setPickerOpen(false);
           }}
           onSyncRoster={(roster) => saveToServer(undefined, roster)}
         />
       )}
+    </div>
+  );
+}
+
+function McQrModal({ onClose }: { onClose: () => void }) {
+  const url = typeof window !== "undefined" ? `${window.location.origin}/minigame-20-10/mc` : "/minigame-20-10/mc";
+  return (
+    <div className="mg-modal" onClick={onClose}>
+      <div className="mg-panel mg-mc-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="mg-panel-head">
+          <span className="mg-badge">📱 REALTIME MC TELEPROMPTER</span>
+          <button className="mg-close" onClick={onClose}>✕</button>
+        </div>
+        <h3 className="mg-mc-title">Quét mã QR để MC nhìn trước đáp án trên Mobile</h3>
+        <p className="mg-mc-desc">
+          Khi máy chiếu xé bất kỳ túi mù nào, điện thoại MC sẽ <b>ngay lập tức rung và hiển thị câu hỏi + đáp án bí mật</b> trước khi hiện lên màn hình lớp học!
+        </p>
+
+        <div className="mg-mc-qr-wrap">
+          <img
+            src={`https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(url)}`}
+            alt="QR Code MC Mobile"
+            className="mg-mc-qr-img"
+          />
+        </div>
+
+        <div className="mg-mc-link-box">
+          <input
+            type="text"
+            readOnly
+            value={url}
+            className="mg-mc-link-input"
+          />
+          <button
+            className="mg-btn mg-mc-copy-btn"
+            onClick={() => {
+              if (typeof window !== "undefined") {
+                navigator.clipboard.writeText(url);
+                alert("Đã sao chép link MC Mobile vào bộ nhớ tạm!");
+              }
+            }}
+          >
+            Sao chép link
+          </button>
+        </div>
+
+        <div className="mg-mc-features">
+          <div>🎯 <b>Thấy trước đáp án</b>: MC tự tin giải thích và đối chứng câu trả lời.</div>
+          <div>🎮 <b>Điều khiển từ xa</b>: Bấm hiện đáp án, đóng hộp hoặc mở vòng quay ngay trên điện thoại.</div>
+          <div>⚡ <b>Không cần cài app</b>: Quét bằng Camera / Zalo mở trực tiếp trên trình duyệt điện thoại.</div>
+        </div>
+
+        <div className="mg-modal-foot">
+          <button className="mg-btn mg-primary" onClick={onClose}>
+            Đã hiểu & Đóng
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

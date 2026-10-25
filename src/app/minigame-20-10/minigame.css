@@ -1753,3 +1753,93 @@
 .mg.is-fullscreen .mg-cell-no {
   font-size: 26px;
 }
+
+/* MC Mobile QR Modal & Top Bar Button */
+.mg-mc-btn {
+  background: linear-gradient(135deg, #059669, #10b981) !important;
+  color: #fff !important;
+  font-weight: 800 !important;
+  border: 1px solid rgba(16, 185, 129, 0.4) !important;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.3) !important;
+}
+.mg-mc-btn:hover {
+  background: linear-gradient(135deg, #10b981, #34d399) !important;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.5) !important;
+}
+
+.mg-mc-modal {
+  max-width: 580px !important;
+  text-align: center;
+  padding: 24px !important;
+}
+
+.mg-mc-title {
+  margin: 12px 0 6px;
+  font-size: 20px;
+  font-weight: 900;
+  color: #ffd166;
+}
+
+.mg-mc-desc {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #cbd5e1;
+  margin: 0 0 16px;
+}
+
+.mg-mc-qr-wrap {
+  display: inline-flex;
+  padding: 12px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  margin: 0 auto 16px;
+}
+
+.mg-mc-qr-img {
+  width: 220px;
+  height: 220px;
+  display: block;
+}
+
+.mg-mc-link-box {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 6px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mg-mc-link-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #ffd166;
+  font-size: 13px;
+  padding: 0 8px;
+  outline: none;
+}
+
+.mg-mc-copy-btn {
+  background: #334155 !important;
+  color: #fff !important;
+  font-size: 12px !important;
+  padding: 6px 14px !important;
+}
+
+.mg-mc-features {
+  text-align: left;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+  color: #e2e8f0;
+  line-height: 1.45;
+  margin-bottom: 16px;
+}
+
