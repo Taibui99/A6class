@@ -1016,10 +1016,10 @@ export default function Minigame() {
           <button className="mg-btn mg-fs-btn" onClick={toggleFullscreen}>
             {isFullscreen ? "Thu nhỏ" : "Toàn màn hình"}
           </button>
-          <button className="mg-btn mg-skip-btn" onClick={start}>
+          <button className="mg-btn mg-skip-btn mg-hide-on-fs" onClick={start}>
             Bỏ qua luật ➔ Vào chơi
           </button>
-          <button className="mg-btn" onClick={() => setStage("cover")}>
+          <button className="mg-btn mg-hide-on-fs" onClick={() => setStage("cover")}>
             Về bìa
           </button>
         </div>
