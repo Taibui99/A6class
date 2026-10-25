@@ -1,20 +1,21 @@
-/* ===== Hộp quà bí ẩn 20/10 · Lớp 12A6 ===== */
+/* ===== Xé Túi Mù Bí Ẩn · Lớp 12A6 ===== */
 
 .mg {
-  --pink: #ff2d6f;
-  --rose: #ff4d6d;
+  --neon-cyan: #06d6a0;
+  --neon-purple: #a259ff;
+  --neon-blue: #3a86ff;
+  --neon-yellow: #ffd166;
+  --neon-pink: #ff5c8a;
   --gold: #ffd166;
-  --purple: #a259ff;
-  --cream: #fff5f7;
-  --ink: #2b0b1a;
+  --ink: #0b0f19;
   min-height: 100vh;
   color: #fff;
   font-family: var(--font, "Segoe UI", system-ui, -apple-system, sans-serif);
   background:
-    radial-gradient(1200px 700px at 12% -8%, #ff3d7577, transparent 60%),
-    radial-gradient(1000px 650px at 100% 0%, #ffd16655, transparent 55%),
-    radial-gradient(900px 800px at 50% 120%, #ff2d6f66, transparent 60%),
-    linear-gradient(150deg, #6d0b2c 0%, #a5123f 45%, #4d0520 100%);
+    radial-gradient(1200px 800px at 10% -5%, rgba(121, 40, 202, 0.4), transparent 65%),
+    radial-gradient(1100px 700px at 90% 10%, rgba(0, 112, 243, 0.3), transparent 60%),
+    radial-gradient(900px 700px at 50% 115%, rgba(6, 214, 160, 0.2), transparent 65%),
+    linear-gradient(160deg, #0d111d 0%, #151a2b 50%, #0a0d17 100%);
   position: relative;
   overflow-x: hidden;
 }
@@ -65,24 +66,24 @@
   100% { transform: translate3d(0, 118vh, 0) rotate(var(--rot, 0deg)); opacity: 0.8; }
 }
 
-/* ---------- Băng rôn chúc mừng ---------- */
+/* ---------- Băng rôn tiêu đề ---------- */
 .mg-ribbon {
   position: relative;
   z-index: 2;
   display: inline-block;
   padding: 11px 46px;
-  background: linear-gradient(180deg, #ff3d75 0%, #c1114a 55%, #9d0b3c 100%);
-  color: #fff5f7;
+  background: linear-gradient(135deg, #7928ca 0%, #3b82f6 50%, #06d6a0 100%);
+  color: #ffffff;
   font-weight: 900;
   font-size: clamp(11px, 1.5vw, 15px);
   letter-spacing: 3px;
   text-transform: uppercase;
   clip-path: polygon(0 0, 100% 0, calc(100% - 20px) 50%, 100% 100%, 0 100%, 20px 50%);
-  filter: drop-shadow(0 8px 18px #00000066);
+  filter: drop-shadow(0 8px 24px rgba(121, 40, 202, 0.45));
   margin: 0 0 10px;
 }
 
-/* ---------- Số 20/10 khổng lồ ---------- */
+/* ---------- Số 12A6 khổng lồ ---------- */
 .mg-hero {
   position: relative;
   z-index: 2;
@@ -101,8 +102,8 @@
   width: clamp(230px, 48vw, 470px);
   height: clamp(230px, 48vw, 470px);
   border-radius: 50%;
-  background: radial-gradient(circle, #ff2d6f33 0%, #ff2d6f11 55%, transparent 72%);
-  border: 3px dashed #ffd16655;
+  background: radial-gradient(circle, rgba(121, 40, 202, 0.25) 0%, rgba(0, 112, 243, 0.1) 55%, transparent 72%);
+  border: 3px dashed rgba(255, 209, 102, 0.45);
   z-index: -1;
   pointer-events: none;
 }
@@ -110,15 +111,15 @@
   font-size: clamp(74px, 16vw, 190px);
   font-weight: 900;
   line-height: 0.95;
-  letter-spacing: -6px;
-  background: linear-gradient(165deg, #fff8e6 0%, #ffd166 26%, #ff8fab 60%, #ff2d6f 100%);
+  letter-spacing: clamp(-1px, 0.5vw, 4px);
+  background: linear-gradient(165deg, #ffffff 0%, #ffd166 32%, #06d6a0 68%, #3a86ff 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 5px 0 #6d0a2b) drop-shadow(0 18px 34px #ff2d6f77);
+  filter: drop-shadow(0 5px 0 #0d1326) drop-shadow(0 18px 36px rgba(0, 112, 243, 0.45));
 }
 .mg-hero-rose {
-  filter: drop-shadow(0 8px 16px #00000066);
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.5));
   animation: mg-hero-sway 5s ease-in-out infinite;
 }
 .mg-hero-rose:last-child {
@@ -129,7 +130,7 @@
   50% { transform: rotate(9deg) translateY(-9px); }
 }
 
-/* ---------- Dấu 20/10 trên thanh trên ---------- */
+/* ---------- Dấu badge thanh trên ---------- */
 .mg-mark {
   display: inline-flex;
   align-items: center;
@@ -137,12 +138,12 @@
   font-weight: 900;
   font-size: 14px;
   letter-spacing: 1px;
-  color: #fff5f7;
-  background: linear-gradient(135deg, #ff2d6f, #9d0b3c);
-  border: 1px solid #ffd16677;
+  color: #fff;
+  background: linear-gradient(135deg, #7928ca, #2563eb);
+  border: 1px solid rgba(255, 209, 102, 0.45);
   padding: 7px 14px 7px 9px;
   border-radius: 999px;
-  box-shadow: 0 6px 18px #ff2d6f66;
+  box-shadow: 0 6px 18px rgba(121, 40, 202, 0.4);
 }
 .mg-mark .gb-rose {
   margin: -4px 0;
@@ -379,16 +380,16 @@
 }
 .mg-spin {
   font-family: inherit;
-  font-size: clamp(22px, 3vw, 34px);
+  font-size: clamp(20px, 2.6vw, 32px);
   font-weight: 900;
   letter-spacing: 1px;
-  color: #3a0a22;
+  color: #0b0f19;
   padding: 16px clamp(24px, 5vw, 56px);
   border: none;
   border-radius: 999px;
   cursor: pointer;
-  background: linear-gradient(135deg, #ffe066, #ff9f1c 55%, #ff2d6f);
-  box-shadow: 0 12px 40px #ff2d6f77, inset 0 2px 0 #ffffffaa;
+  background: linear-gradient(135deg, #ffd166 0%, #ff9f1c 45%, #a259ff 100%);
+  box-shadow: 0 12px 40px rgba(162, 89, 255, 0.45), inset 0 2px 0 rgba(255, 255, 255, 0.6);
   transition: transform 0.15s ease, box-shadow 0.2s ease;
   display: inline-flex;
   align-items: center;
@@ -398,14 +399,14 @@
 .mg-spin-rose {
   display: inline-flex;
   animation: mg-hero-sway 3.4s ease-in-out infinite;
-  filter: drop-shadow(0 4px 8px #00000044);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 }
 .mg-spin-rose:last-child {
   animation-delay: -1.7s;
 }
 .mg-spin:hover:not(:disabled) {
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 18px 50px #ff2d6faa, inset 0 2px 0 #ffffffaa;
+  box-shadow: 0 18px 50px rgba(162, 89, 255, 0.65), inset 0 2px 0 rgba(255, 255, 255, 0.7);
 }
 .mg-spin:disabled {
   cursor: progress;
@@ -414,9 +415,19 @@
 .mg-spinbar .mg-spin:not(:disabled) {
   animation: mg-pulse 1.8s ease-in-out infinite;
 }
+.mg-spin.is-ready-to-open {
+  background: linear-gradient(135deg, #06d6a0 0%, #ffd166 50%, #a259ff 100%);
+  color: #0b0f19;
+  animation: mg-ready-pulse 0.9s ease-in-out infinite alternate !important;
+  cursor: pointer !important;
+}
+@keyframes mg-ready-pulse {
+  0% { transform: scale(1); box-shadow: 0 12px 40px rgba(6, 214, 160, 0.5), inset 0 2px 0 rgba(255, 255, 255, 0.7); }
+  100% { transform: scale(1.05); box-shadow: 0 16px 60px rgba(255, 209, 102, 0.9), 0 0 35px rgba(6, 214, 160, 0.8), inset 0 2px 0 rgba(255, 255, 255, 0.8); }
+}
 @keyframes mg-pulse {
-  0%, 100% { box-shadow: 0 12px 40px #ff2d6f77, inset 0 2px 0 #ffffffaa; }
-  50% { box-shadow: 0 12px 62px #ffd166cc, inset 0 2px 0 #ffffffaa; }
+  0%, 100% { box-shadow: 0 12px 40px rgba(162, 89, 255, 0.45), inset 0 2px 0 rgba(255, 255, 255, 0.6); }
+  50% { box-shadow: 0 12px 62px rgba(6, 214, 160, 0.65), inset 0 2px 0 rgba(255, 255, 255, 0.6); }
 }
 .mg-spin-sub {
   margin: 12px 0 0;
@@ -424,24 +435,25 @@
   font-size: 15px;
 }
 
-/* ---------- Grid ---------- */
+/* ---------- Grid 100 túi mù ---------- */
 .mg-grid {
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(158px, 1fr));
-  gap: 16px;
-  max-width: 1500px;
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+  gap: 12px;
+  max-width: 1600px;
   margin: 0 auto;
+  padding: 0 12px 60px;
 }
 .mg-cell {
   position: relative;
-  background: #ffffff10;
-  border: 2px solid #ffffff22;
-  border-radius: 20px;
-  padding: 10px 8px 30px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 8px 6px 26px;
   cursor: pointer;
-  transition: transform 0.18s ease, box-shadow 0.2s ease, background 0.2s ease;
+  transition: transform 0.16s ease, box-shadow 0.18s ease, background 0.18s ease;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -450,14 +462,14 @@
   width: 100%;
   height: auto;
   display: block;
-  filter: drop-shadow(0 10px 16px #00000055);
+  filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.45));
   transition: transform 0.2s ease, filter 0.2s ease;
 }
 .mg-cell:hover:not(:disabled) {
-  transform: translateY(-6px);
-  background: #ffffff1f;
-  box-shadow: 0 16px 34px #00000066;
-  border-color: #ffd16677;
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.6);
+  border-color: rgba(255, 209, 102, 0.6);
 }
 .mg-cell:hover:not(:disabled) .gb-svg {
   transform: scale(1.06);
@@ -609,25 +621,33 @@
   position: fixed;
   inset: 0;
   z-index: 50;
-  background: #1a0410d9;
-  backdrop-filter: blur(5px);
+  background: rgba(10, 14, 26, 0.88);
+  backdrop-filter: blur(8px);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 20px;
+  padding: clamp(16px, 3vh, 32px) clamp(10px, 2vw, 24px);
+  overflow-y: auto;
+  box-sizing: border-box;
   animation: mg-fade 0.18s ease;
 }
 @keyframes mg-fade { from { opacity: 0; } to { opacity: 1; } }
 .mg-panel {
   position: relative;
-  width: min(620px, 100%);
-  background: linear-gradient(160deg, #4a0f2c, #2a0a2e);
+  width: min(940px, 94vw);
+  max-height: min(92vh, 94dvh);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  margin: auto;
+  background: linear-gradient(160deg, #13192b, #0d111d);
   border: 3px solid #ffd16688;
-  border-radius: 26px;
-  padding: 26px clamp(20px, 4vw, 38px);
+  border-radius: 28px;
+  padding: clamp(20px, 3vh, 36px) clamp(18px, 3vw, 44px);
   text-align: center;
-  box-shadow: 0 30px 80px #000000aa, 0 0 60px #ff4d6d44;
+  box-shadow: 0 30px 80px #000000cc, 0 0 60px rgba(121, 40, 202, 0.4);
   animation: mg-pop 0.24s cubic-bezier(0.2, 1.3, 0.5, 1);
+  box-sizing: border-box;
 }
 @keyframes mg-pop { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 .mg-panel.is-expired { border-color: #ff4d6daa; }
@@ -676,15 +696,34 @@
 .mg-badge {
   display: inline-flex;
   align-items: center;
+  align-self: center;
+  margin: 0 auto;
   gap: 8px;
   font-weight: 800;
   font-size: 14px;
   letter-spacing: 1px;
   color: #2b0b1a;
   background: var(--c, #ff4d6d);
-  padding: 6px 16px;
+  padding: 6px 18px;
   border-radius: 999px;
   text-transform: uppercase;
+}
+.mg-category-tag {
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+  gap: 6px;
+  font-size: 13.5px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 6px 18px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(255, 209, 102, 0.22), rgba(6, 214, 160, 0.22));
+  border: 1.5px solid rgba(255, 209, 102, 0.65);
+  color: #ffd166;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  margin: 10px auto 0;
 }
 .mg-badge-dot {
   width: 11px;
@@ -710,45 +749,49 @@
 .mg-panel.is-truth { border-color: #ff4d6d99; box-shadow: 0 30px 80px #000000aa, 0 0 60px #ff4d6d55; }
 .mg-panel.is-dare { border-color: #a259ff99; box-shadow: 0 30px 80px #000000aa, 0 0 60px #a259ff55; }
 .mg-panel.is-gift { border-color: #ffd16699; box-shadow: 0 30px 80px #000000aa, 0 0 60px #ffd16666; }
+.mg-panel.is-special { border-color: #06d6a099; box-shadow: 0 30px 80px #000000aa, 0 0 60px #06d6a066; }
 .mg-panel-title {
-  margin: 16px 0 6px;
-  font-size: 20px;
+  margin: 16px 0 8px;
+  font-size: clamp(24px, 2.8vw, 36px);
+  font-weight: 900;
   color: var(--gold);
+  letter-spacing: 0.5px;
 }
 .mg-prompt {
-  font-size: clamp(20px, 3vw, 30px);
+  font-size: clamp(26px, 3.4vw, 44px);
   font-weight: 800;
-  line-height: 1.35;
-  margin: 6px 0 16px;
+  line-height: 1.45;
+  margin: 10px 0 20px;
 }
 .mg-answer {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  font-size: 22px;
+  gap: 10px;
+  font-size: 24px;
   font-weight: 800;
   color: #7cf5c0;
-  background: #00000044;
-  border: 2px dashed #7cf5c077;
-  border-radius: 14px;
-  padding: 14px 12px;
-  margin: 0 0 14px;
+  background: #00000055;
+  border: 2px dashed #7cf5c099;
+  border-radius: 16px;
+  padding: 18px 22px;
+  margin: 0 0 18px;
   animation: mg-fade 0.25s ease;
 }
 .mg-answer p {
   margin: 0;
-  font-size: clamp(17px, 2.4vw, 22px);
+  font-size: clamp(22px, 2.8vw, 36px);
+  font-weight: 800;
   line-height: 1.4;
 }
 .mg-answer-tag {
-  font-size: 12px;
+  font-size: 14px;
   letter-spacing: 2px;
   font-weight: 900;
   color: #0b1f18;
   background: #7cf5c0;
   border-radius: 999px;
-  padding: 3px 12px;
+  padding: 4px 16px;
 }
 .mg-reveal {
   background: linear-gradient(135deg, #7cf5c0, #ffe066);
@@ -762,11 +805,11 @@
   box-shadow: 0 12px 30px #7cf5c088;
 }
 .mg-expired {
-  font-size: 30px;
+  font-size: 34px;
   font-weight: 900;
   color: #ff8fa3;
   text-shadow: 0 0 20px #ff4d6d;
-  margin: 4px 0 14px;
+  margin: 6px 0 16px;
   animation: mg-shake 0.4s ease;
 }
 @keyframes mg-shake {
@@ -776,33 +819,118 @@
 }
 .mg-panel-actions {
   display: flex;
-  gap: 12px;
+  gap: 14px;
   justify-content: center;
   flex-wrap: wrap;
-  margin-top: 8px;
+  margin-top: 12px;
+}
+.mg-panel-actions .mg-btn {
+  font-size: clamp(17px, 2vw, 22px);
+  padding: 13px 32px;
+  font-weight: 800;
+}
+
+/* ---------- Lựa chọn khi mở hộp Vòng Quay 12A6 ---------- */
+.mg-wheel-box-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px 0 16px;
+}
+.mg-wheel-box-icon {
+  font-size: clamp(48px, 6vw, 72px);
+  line-height: 1;
+  margin: 6px 0 10px;
+  animation: mg-pop-in 0.35s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+.mg-wheel-box-choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin: 16px 0 12px;
+  width: 100%;
+}
+.mg-wheel-choice-btn {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 24px;
+  border-radius: 18px;
+  text-align: left;
+  background: rgba(13, 17, 29, 0.85);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  cursor: pointer;
+}
+.mg-wheel-choice-btn:hover {
+  transform: translateY(-4px) scale(1.02);
+}
+.mg-wheel-choice-btn.is-answer {
+  border-color: #ffd166;
+  background: linear-gradient(135deg, rgba(255, 209, 102, 0.18), rgba(121, 40, 202, 0.3));
+  box-shadow: 0 8px 24px rgba(255, 209, 102, 0.25);
+}
+.mg-wheel-choice-btn.is-answer:hover {
+  border-color: #ffe066;
+  box-shadow: 0 14px 34px rgba(255, 209, 102, 0.5);
+}
+.mg-wheel-choice-btn.is-gift {
+  border-color: #06d6a0;
+  background: linear-gradient(135deg, rgba(6, 214, 160, 0.18), rgba(0, 112, 243, 0.3));
+  box-shadow: 0 8px 24px rgba(6, 214, 160, 0.25);
+}
+.mg-wheel-choice-btn.is-gift:hover {
+  border-color: #2bfcd2;
+  box-shadow: 0 14px 34px rgba(6, 214, 160, 0.5);
+}
+.mg-choice-icon {
+  font-size: clamp(34px, 4vw, 48px);
+  line-height: 1;
+}
+.mg-choice-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.mg-choice-text b {
+  font-size: clamp(16px, 1.8vw, 20px);
+  color: #ffffff;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+}
+.mg-choice-text small {
+  font-size: clamp(13px, 1.4vw, 15px);
+  color: #ffd166;
+  font-weight: 700;
+}
+.mg-winner-desc {
+  margin: 6px 0 16px;
+  font-size: clamp(16px, 2vw, 22px);
+  font-weight: 800;
+  color: #ffd166;
 }
 
 /* ---------- Timer ---------- */
 .mg-timer {
   display: flex;
   align-items: center;
-  gap: 14px;
-  margin: 16px 0 4px;
+  gap: 16px;
+  margin: 18px 0 6px;
 }
 .mg-timer-num {
-  font-size: 32px;
+  font-size: clamp(38px, 4.5vw, 56px);
   font-weight: 900;
   color: var(--gold);
   font-variant-numeric: tabular-nums;
-  min-width: 76px;
+  min-width: 90px;
 }
 .mg-timer-bar {
   flex: 1;
-  height: 14px;
-  background: #00000055;
+  height: 18px;
+  background: #00000066;
   border-radius: 999px;
   overflow: hidden;
-  border: 1px solid #ffffff33;
+  border: 1px solid #ffffff44;
 }
 .mg-timer-bar i {
   display: block;
@@ -817,6 +945,29 @@
 }
 .mg-timer.is-urgent .mg-timer-bar i {
   background: linear-gradient(90deg, #ff4d6d, #ff8fa3);
+}
+.mg-timer.is-stopped .mg-timer-num {
+  color: #7cf5c0;
+  animation: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.mg-timer.is-stopped .mg-timer-bar i {
+  background: #7cf5c0;
+  transition: none;
+}
+.mg-timer-stopped-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 900;
+  color: #0d111d;
+  background: #7cf5c0;
+  border-radius: 999px;
+  padding: 3px 10px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(124, 245, 192, 0.4);
 }
 @keyframes mg-blink { 50% { opacity: 0.35; } }
 
@@ -1136,6 +1287,239 @@
 .mg-help b { color: #ffd166; }
 .mg-help .mg-btn { display: block; margin: 0 auto; }
 
+/* ---------- Vòng Quay Chọn Người 12A6 ---------- */
+.mg-picker-btn {
+  background: linear-gradient(135deg, #7928ca, #3b82f6) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 209, 102, 0.6) !important;
+  box-shadow: 0 4px 14px rgba(121, 40, 202, 0.4) !important;
+}
+.mg-spin-extra {
+  margin-top: 8px;
+}
+.mg-picker-link {
+  background: none;
+  border: none;
+  color: #ffd166;
+  font-size: 14.5px;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 6px 14px;
+  border-radius: 999px;
+  text-decoration: underline;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.mg-picker-link:hover {
+  transform: scale(1.04);
+  opacity: 0.9;
+}
+
+.mg-wheel-modal {
+  max-width: min(980px, 96vw);
+  max-height: min(94vh, 96dvh);
+  width: 100%;
+  text-align: center;
+  padding: clamp(14px, 2.5vh, 26px) clamp(16px, 3vw, 36px);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  margin: auto;
+  box-sizing: border-box;
+}
+.mg-wheel-header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.mg-wheel-header h3 {
+  margin: 0;
+  color: var(--gold);
+  font-size: clamp(17px, 2.4vw, 24px);
+  font-weight: 900;
+  letter-spacing: 0.5px;
+}
+.mg-wheel-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Thân vòng quay: 2 cột trên màn hình ngang, 1 cột trên màn hình dọc */
+.mg-wheel-body {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(16px, 3.5vw, 36px);
+  width: 100%;
+  margin: 8px 0 12px;
+}
+.mg-wheel-col-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+.mg-wheel-col-info {
+  flex: 1;
+  min-width: 280px;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.mg-wheel-stage {
+  position: relative;
+  width: min(340px, 44vh, 38vw);
+  height: min(340px, 44vh, 38vw);
+  margin: 6px auto;
+}
+.mg-wheel-pointer {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-top: 28px solid #ffd166;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.6));
+  z-index: 10;
+}
+.mg-wheel-disc {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 40px rgba(121, 40, 202, 0.35);
+  overflow: hidden;
+}
+.mg-wheel-control {
+  margin-top: 10px;
+}
+.mg-spin-wheel-btn {
+  font-size: clamp(16px, 2vw, 20px);
+  padding: 12px 32px;
+  border-radius: 999px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+}
+.mg-winner-card {
+  background: linear-gradient(135deg, rgba(121, 40, 202, 0.45), rgba(6, 214, 160, 0.3));
+  border: 2px solid #ffd166;
+  border-radius: 20px;
+  padding: clamp(16px, 2.4vh, 24px) clamp(16px, 2vw, 24px);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
+  animation: mg-ready-pulse 0.8s ease-in-out infinite alternate;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+.mg-winner-sub {
+  font-size: clamp(13px, 1.4vw, 15px);
+  font-weight: 900;
+  color: #ffd166;
+  letter-spacing: 1px;
+}
+.mg-winner-name {
+  font-size: clamp(26px, 3.6vw, 42px);
+  font-weight: 900;
+  color: #ffffff;
+  margin: 6px 0 10px;
+  text-shadow: 0 3px 14px rgba(255, 209, 102, 0.7);
+  word-break: break-word;
+}
+.mg-winner-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-top: 6px;
+}
+.mg-winner-actions .mg-btn {
+  width: 100%;
+  padding: 12px 20px;
+  font-size: clamp(15px, 1.8vw, 19px);
+  font-weight: 800;
+  border-radius: 999px;
+  box-sizing: border-box;
+}
+.mg-wheel-idle-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: clamp(18px, 2.5vh, 28px);
+  background: rgba(0, 0, 0, 0.3);
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  box-sizing: border-box;
+}
+.mg-wheel-idle-card h4 {
+  margin: 0;
+  font-size: clamp(18px, 2.2vw, 22px);
+  color: var(--gold);
+  font-weight: 900;
+}
+.mg-wheel-idle-card p {
+  margin: 0;
+  font-size: clamp(14px, 1.5vw, 16px);
+  line-height: 1.5;
+  color: #e2e8f0;
+}
+.mg-idle-badge {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: rgba(255, 209, 102, 0.15);
+  border: 1px solid rgba(255, 209, 102, 0.4);
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffd166;
+}
+
+@media (max-width: 768px), (max-aspect-ratio: 1/1) {
+  .mg-wheel-body {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .mg-wheel-stage {
+    width: min(280px, 32vh, 72vw);
+    height: min(280px, 32vh, 72vw);
+  }
+  .mg-wheel-col-info {
+    max-width: 100%;
+    width: 100%;
+  }
+}
+.mg-go-spin {
+  font-size: 16px;
+  font-weight: 900;
+  padding: 12px 24px;
+}
+.mg-roster-area {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: #fff;
+  padding: 12px;
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.6;
+  box-sizing: border-box;
+}
+.mg-wheel-edit-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
 @media (max-width: 640px) {
   .mg-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; }
   .mg-top { gap: 8px; padding: 10px 12px; }
@@ -1146,4 +1530,150 @@
   .mg-ribbon { padding: 9px 30px; letter-spacing: 2px; }
   .mg-hero::before { border-width: 2px; }
   .mg-mark { display: none; }
+}
+
+/* ========================================================
+   FULLSCREEN PROJECTOR / TV VIEW (MÁY CHIẾU LỚP HỌC)
+   Phóng to toàn bộ cỡ chữ để học sinh cuối lớp nhìn rõ 100%
+   ======================================================== */
+:fullscreen .mg-panel,
+:-webkit-full-screen .mg-panel,
+.mg.is-fullscreen .mg-panel {
+  max-width: min(1200px, 94vw);
+  padding: clamp(36px, 5vh, 60px) clamp(28px, 4.5vw, 68px);
+}
+
+:fullscreen .mg-panel-title,
+:-webkit-full-screen .mg-panel-title,
+.mg.is-fullscreen .mg-panel-title {
+  font-size: clamp(30px, 3.2vw, 46px);
+  margin: 18px 0 12px;
+}
+
+:fullscreen .mg-prompt,
+:-webkit-full-screen .mg-prompt,
+.mg.is-fullscreen .mg-prompt {
+  font-size: clamp(34px, 4.2vw, 56px);
+  line-height: 1.45;
+  margin: 16px 0 26px;
+}
+
+:fullscreen .mg-answer,
+:-webkit-full-screen .mg-answer,
+.mg.is-fullscreen .mg-answer {
+  padding: 24px 32px;
+  margin: 18px 0 22px;
+}
+
+:fullscreen .mg-answer p,
+:-webkit-full-screen .mg-answer p,
+.mg.is-fullscreen .mg-answer p {
+  font-size: clamp(28px, 3.6vw, 46px);
+  line-height: 1.45;
+}
+
+:fullscreen .mg-answer-tag,
+:-webkit-full-screen .mg-answer-tag,
+.mg.is-fullscreen .mg-answer-tag {
+  font-size: 18px;
+  padding: 6px 24px;
+}
+
+:fullscreen .mg-badge,
+:-webkit-full-screen .mg-badge,
+.mg.is-fullscreen .mg-badge {
+  font-size: 18px;
+  padding: 9px 24px;
+}
+
+:fullscreen .mg-category-tag,
+:-webkit-full-screen .mg-category-tag,
+.mg.is-fullscreen .mg-category-tag {
+  font-size: 18px;
+  padding: 8px 24px;
+}
+
+:fullscreen .mg-timer-num,
+:-webkit-full-screen .mg-timer-num,
+.mg.is-fullscreen .mg-timer-num {
+  font-size: clamp(50px, 5.5vw, 78px);
+  min-width: 120px;
+}
+
+:fullscreen .mg-timer-bar,
+:-webkit-full-screen .mg-timer-bar,
+.mg.is-fullscreen .mg-timer-bar {
+  height: 24px;
+}
+
+:fullscreen .mg-panel-actions .mg-btn,
+:-webkit-full-screen .mg-panel-actions .mg-btn,
+.mg.is-fullscreen .mg-panel-actions .mg-btn {
+  font-size: clamp(20px, 2.2vw, 28px);
+  padding: 16px 40px;
+}
+
+:fullscreen .mg-modal-player,
+:-webkit-full-screen .mg-modal-player,
+.mg.is-fullscreen .mg-modal-player {
+  font-size: clamp(24px, 2.8vw, 36px);
+}
+
+:fullscreen .mg-wheel-modal,
+:-webkit-full-screen .mg-wheel-modal,
+.mg.is-fullscreen .mg-wheel-modal {
+  max-width: min(1080px, 96vw);
+  max-height: min(94vh, 96dvh);
+  padding: clamp(16px, 3vh, 32px) clamp(20px, 3vw, 40px);
+}
+
+:fullscreen .mg-wheel-stage,
+:-webkit-full-screen .mg-wheel-stage,
+.mg.is-fullscreen .mg-wheel-stage {
+  width: min(380px, 48vh, 38vw);
+  height: min(380px, 48vh, 38vw);
+}
+
+:fullscreen .mg-winner-card,
+:-webkit-full-screen .mg-winner-card,
+.mg.is-fullscreen .mg-winner-card {
+  padding: clamp(18px, 2.8vh, 28px) clamp(20px, 2.5vw, 32px);
+}
+
+:fullscreen .mg-winner-sub,
+:-webkit-full-screen .mg-winner-sub,
+.mg.is-fullscreen .mg-winner-sub {
+  font-size: 20px;
+}
+
+:fullscreen .mg-winner-name,
+:-webkit-full-screen .mg-winner-name,
+.mg.is-fullscreen .mg-winner-name {
+  font-size: clamp(38px, 4.8vw, 60px);
+}
+
+:fullscreen .mg-winner-actions .mg-btn,
+:-webkit-full-screen .mg-winner-actions .mg-btn,
+.mg.is-fullscreen .mg-winner-actions .mg-btn {
+  font-size: clamp(20px, 2.4vw, 28px);
+  padding: 16px 40px;
+}
+
+:fullscreen .mg-spin,
+:-webkit-full-screen .mg-spin,
+.mg.is-fullscreen .mg-spin {
+  font-size: clamp(24px, 2.6vw, 38px);
+  padding: 20px 52px;
+}
+
+:fullscreen .mg-spin-sub,
+:-webkit-full-screen .mg-spin-sub,
+.mg.is-fullscreen .mg-spin-sub {
+  font-size: clamp(17px, 1.8vw, 24px);
+}
+
+:fullscreen .mg-cell-no,
+:-webkit-full-screen .mg-cell-no,
+.mg.is-fullscreen .mg-cell-no {
+  font-size: 26px;
 }

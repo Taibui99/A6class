@@ -20,12 +20,14 @@ import {
 import { isVideoFile, titleFromFileName, uploadVideo } from "@/lib/minigame-20-10/upload";
 import { RebusIcon } from "@/lib/minigame-20-10/rebus-icons";
 import { GiftBox } from "@/lib/minigame-20-10/gift-boxes";
+import { ROSTER } from "@/lib/competition/config";
 import {
   cycleSoundMode,
   getSoundMode,
   sfxBlip,
   sfxClick,
   sfxExpire,
+  sfxFanfare,
   sfxGift,
   sfxLand,
   sfxOpen,
@@ -33,6 +35,7 @@ import {
   sfxSecond,
   sfxStart,
   sfxTickStep,
+  sfxWheelTick,
   soundLabel,
   startMusic,
   stopMusic,
@@ -78,116 +81,11 @@ function Confetti({ dense = false }: { dense?: boolean }) {
   );
 }
 
-function HeartSvg({ size = 26, color = "#ff4d6d" }: { size?: number; color?: string }) {
+function StarSvg({ size = 26, color = "#ffd166" }: { size?: number; color?: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 20 20" fill={color} aria-hidden="true">
-      <path d="M10 18C4 12.5 0 8.8 0 5.5 0 2.5 2.3 0 5.2 0 7 0 8.9 1 10 2.7 11.1 1 13 0 14.8 0 17.7 0 20 2.5 20 5.5c0 3.3-4 7-10 12.5z" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={color} aria-hidden="true">
+      <path d="M12 1.5l3.2 6.5 7.2 1-5.2 5.1 1.2 7.2-6.4-3.4-6.4 3.4 1.2-7.2-5.2-5.1 7.2-1z" />
     </svg>
-  );
-}
-
-/* Hoa hồng 20/10 — vẽ tay 6 cánh. */
-function FlowerSvg({ size = 40, color = "#ff4d6d", leaf = "#2fb36b" }: { size?: number; color?: string; leaf?: string }) {
-  const petals = [0, 60, 120, 180, 240, 300];
-  return (
-    <svg width={size} height={size} viewBox="0 0 40 40" aria-hidden="true">
-      <path d="M20 40 L20 24" stroke={leaf} strokeWidth="3" strokeLinecap="round" />
-      <path d="M20 32 Q26 31 27 28" stroke={leaf} strokeWidth="2.5" fill="none" strokeLinecap="round" />
-      <ellipse cx="27" cy="28" rx="4" ry="2.2" fill={leaf} transform="rotate(20 27 28)" />
-      {petals.map((deg) => (
-        <ellipse key={deg} cx="20" cy="14" rx="7" ry="4.4" fill={color} transform={`rotate(${deg} 20 14)`} opacity={0.95} />
-      ))}
-      <circle cx="20" cy="14" r="5" fill="#ffe08a" />
-      <circle cx="20" cy="14" r="2.4" fill="#ffb703" />
-    </svg>
-  );
-}
-
-
-/* Bảng màu hồng 20/10 */
-const ROSES = [
-  { c: "#ff2d6f", d: "#a80d3c" },
-  { c: "#ff6fb5", d: "#c9145c" },
-  { c: "#ff9f43", d: "#c25a09" },
-  { c: "#ffd166", d: "#d98a0b" },
-  { c: "#ff4d6d", d: "#b01038" },
-];
-
-/* Hoa hồng 20/10 — vẽ tay nhiều lớp cánh, không dùng icon. */
-function RoseSvg({
-  size = 64,
-  c = "#ff2d6f",
-  d = "#a80d3c",
-  leaf = "#2fb36b",
-}: {
-  size?: number;
-  c?: string;
-  d?: string;
-  leaf?: string;
-}) {
-  const ring = (n: number, r: number, rx: number, ry: number, rot: number, fill: string) =>
-    Array.from({ length: n }, (_, i) => (
-      <ellipse
-        key={`${r}-${i}`}
-        cx={50}
-        cy={50 - r}
-        rx={rx}
-        ry={ry}
-        fill={fill}
-        transform={`rotate(${rot + (360 / n) * i} 50 50)`}
-      />
-    ));
-  return (
-    <svg viewBox="0 0 100 100" width={size} height={size} className="gb-rose" aria-hidden="true">
-      <ellipse cx="21" cy="79" rx="17" ry="9" fill={leaf} transform="rotate(-24 21 79)" />
-      <ellipse cx="79" cy="81" rx="17" ry="9" fill={leaf} transform="rotate(24 79 81)" />
-      {ring(7, 31, 18, 15, 12, d)}
-      {ring(6, 22, 15, 12, 42, c)}
-      {ring(5, 13, 11, 9, 14, "#ffb9d0")}
-      <circle cx="50" cy="50" r="10" fill={d} />
-      <path d="M50 42c8 0 13 5 13 11s-6 11-13 11-13-5-13-11" fill="none" stroke={c} strokeWidth="4" strokeLinecap="round" />
-      <path d="M50 47c5 0 8 3 8 6s-4 6-8 6" fill="none" stroke="#fff" strokeOpacity=".5" strokeWidth="3" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-/* Mưa cánh hoa hồng 20/10 */
-function PetalRain({ count = 26, subtle = false }: { count?: number; subtle?: boolean }) {
-  const petals = Array.from({ length: count }, (_, i) => ({
-    i,
-    x: (i * 37 + 5) % 100,
-    delay: -((i * 1.9) % 16),
-    dur: 12 + ((i * 7) % 11),
-    s: 0.55 + ((i * 5) % 12) / 16,
-    rot: (i * 47) % 360,
-    drift: ((i * 13) % 44) - 22,
-    c: ["#ff5f8f", "#ff8fab", "#ffb3cd", "#ffd166", "#ff2d6f", "#fff0f5"][i % 6],
-  }));
-  return (
-    <div className={`mg-petals${subtle ? " is-subtle" : ""}`} aria-hidden="true">
-      {petals.map((p) => (
-        <span
-          key={p.i}
-          className="mg-petal"
-          style={
-            {
-              left: `${p.x}%`,
-              width: `${26 * p.s}px`,
-              height: `${26 * p.s}px`,
-              color: p.c,
-              "--delay": `${p.delay}s`,
-              "--dur": `${p.dur}s`,
-              "--rot": `${p.rot}deg`,
-              "--drift": `${p.drift}vw`,
-            } as unknown as React.CSSProperties
-          }
-        >
-          <svg viewBox="0 0 48 48" width="100%" height="100%">
-            <path d="M24 5C14 0 2 5 2 15c0 10 10 18 22 27 12-9 22-17 22-27C46 5 34 0 24 5z" fill="currentColor" />
-          </svg>
-        </span>
-      ))}
-    </div>
   );
 }
 
@@ -199,7 +97,84 @@ function SparkleSvg({ size = 26, color = "#ffd166" }: { size?: number; color?: s
   );
 }
 
-/* Rèm hiệu ứng 20/10 trong lúc quay: tim, lấp lánh, hộp quà bay lên. */
+/* Icon Túi mù bí ẩn */
+function BlindBagSvg({
+  size = 48,
+  color = "#a259ff",
+  accent = "#ffd166",
+}: {
+  size?: number;
+  color?: string;
+  accent?: string;
+}) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" aria-hidden="true">
+      <path d="M20 20 L80 20 L85 86 L15 86 Z" fill={color} stroke={accent} strokeWidth="3.5" rx="6" />
+      <path d="M15 20 L22 10 L29 20 L36 10 L43 20 L50 10 L57 20 L64 10 L71 20 L78 10 L85 20" stroke={accent} strokeWidth="3" fill={color} />
+      <circle cx="50" cy="53" r="18" fill="#ffffff22" stroke={accent} strokeWidth="2" strokeDasharray="3 3" />
+      <path d="M50 42 L53 49 L60 50 L55 55 L56 62 L50 58 L44 62 L45 55 L40 50 L47 49 Z" fill={accent} />
+    </svg>
+  );
+}
+
+/* Bảng màu túi mù rực rỡ */
+const BAG_COLORS = [
+  { c: "#a259ff", a: "#ffd166" },
+  { c: "#06d6a0", a: "#ffffff" },
+  { c: "#3a86ff", a: "#ffd166" },
+  { c: "#ff9f1c", a: "#ffffff" },
+  { c: "#ff5c8a", a: "#ffd166" },
+  { c: "#64dfdf", a: "#ffffff" },
+];
+
+/* Mưa hạt lấp lánh & charm túi mù */
+function CharmRain({ count = 26, subtle = false }: { count?: number; subtle?: boolean }) {
+  const charms = Array.from({ length: count }, (_, i) => ({
+    i,
+    x: (i * 37 + 5) % 100,
+    delay: -((i * 1.9) % 16),
+    dur: 10 + ((i * 7) % 9),
+    s: 0.6 + ((i * 5) % 12) / 16,
+    rot: (i * 47) % 360,
+    drift: ((i * 13) % 44) - 22,
+    c: ["#ffd166", "#06d6a0", "#a259ff", "#3a86ff", "#ff5c8a", "#fff0a3"][i % 6],
+    kind: i % 3,
+  }));
+  return (
+    <div className={`mg-petals${subtle ? " is-subtle" : ""}`} aria-hidden="true">
+      {charms.map((p) => (
+        <span
+          key={p.i}
+          className="mg-petal"
+          style={
+            {
+              left: `${p.x}%`,
+              width: `${24 * p.s}px`,
+              height: `${24 * p.s}px`,
+              color: p.c,
+              "--delay": `${p.delay}s`,
+              "--dur": `${p.dur}s`,
+              "--rot": `${p.rot}deg`,
+              "--drift": `${p.drift}vw`,
+            } as unknown as React.CSSProperties
+          }
+        >
+          {p.kind === 0 ? (
+            <StarSvg size={22} color={p.c} />
+          ) : p.kind === 1 ? (
+            <SparkleSvg size={22} color={p.c} />
+          ) : (
+            <svg viewBox="0 0 20 20" width="100%" height="100%" fill={p.c}>
+              <polygon points="10,0 20,10 10,20 0,10" />
+            </svg>
+          )}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+/* Rèm hiệu ứng trong lúc bốc túi mù */
 function SpinCurtain() {
   const items = Array.from({ length: 24 }, (_, i) => ({
     i,
@@ -225,18 +200,18 @@ function SpinCurtain() {
           }
         >
           {it.i % 3 === 0 ? (
-            <HeartSvg size={40} color={it.i % 2 ? "#ff8fab" : "#ff4d6d"} />
+            <BlindBagSvg size={42} color="#a259ff" accent="#ffd166" />
           ) : it.i % 3 === 1 ? (
-            <SparkleSvg size={34} color={it.i % 2 ? "#ffd166" : "#fff0a3"} />
+            <SparkleSvg size={34} color={it.i % 2 ? "#ffd166" : "#06d6a0"} />
           ) : (
             <GiftBox index={(it.i * 7) % BOX_COUNT} size={64} />
           )}
         </span>
       ))}
       <span className="mg-curtain-label">
-        <HeartSvg size={30} color="#ff8fab" />
-        ĐANG QUAY…
-        <HeartSvg size={30} color="#ff8fab" />
+        <SparkleSvg size={30} color="#ffd166" />
+        ĐANG BỐC TÚI MÙ…
+        <SparkleSvg size={30} color="#06d6a0" />
       </span>
     </div>
   );
@@ -287,13 +262,29 @@ export default function Minigame() {
   const [pending, setPending] = useState<PendingVideo[]>([]);
   const [importing, setImporting] = useState(false);
   const [importMsg, setImportMsg] = useState<string | null>(null);
-  /* 0 tắt · 1 hiệu ứng · 2 hiệu ứng + nhạc nền (mặc định: 2) */
-  const [snd, setSnd] = useState<SoundMode>(2);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [currentPlayer, setCurrentPlayer] = useState<string | null>(null);
+  const [wheelMode, setWheelMode] = useState<"next_answer" | "pick_gift" | "general">("general");
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  /* 0 tắt · 1 bật hiệu ứng âm thanh (mặc định: 1) */
+  const [snd, setSnd] = useState<SoundMode>(1);
 
   const rootRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<number | null>(null);
   const cellRefs = useRef<Record<number, HTMLButtonElement | null>>({});
   const landingRef = useRef(false);
+
+  useEffect(() => {
+    const handleFs = () => {
+      setIsFullscreen(Boolean(document.fullscreenElement));
+    };
+    document.addEventListener("fullscreenchange", handleFs);
+    document.addEventListener("webkitfullscreenchange", handleFs);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFs);
+      document.removeEventListener("webkitfullscreenchange", handleFs);
+    };
+  }, []);
 
   useEffect(() => {
     let d = emptyData();
@@ -349,9 +340,9 @@ export default function Minigame() {
     };
   }, []);
 
-  /* Nhạc nền chỉ chạy ở màn bìa/chơi và khi không mở thẻ nội dung. */
+  /* Quản lý nhạc nền (nếu có) */
   useEffect(() => {
-    if (snd === 2 && stage !== "edit" && curIdx === null && !helpOpen) startMusic();
+    if (snd === 1 && stage !== "edit" && curIdx === null && !helpOpen) startMusic();
     else stopMusic();
     return () => stopMusic();
   }, [snd, stage, curIdx, helpOpen]);
@@ -383,20 +374,22 @@ export default function Minigame() {
     setExpired(false);
     setVideoEnded(true);
     setAnswerShown(false);
+    setCurrentPlayer(null);
   }
 
   function openBox(i: number) {
     const b = data.boxes[i];
     if (!b) return;
     sfxOpen();
-    if (b.type === "gift") window.setTimeout(sfxGift, 220);
+    if (b.type === "gift" || b.type === "special") window.setTimeout(sfxGift, 220);
     setOpened((o) => o.map((v, idx) => (idx === i ? true : v)));
     setPicked(null);
     setHighlight(null);
     setCurIdx(i);
-    /* Hộp có video → chờ video xong mới bắt đầu đếm; hộp Quà thì không đếm. */
+    /* Hộp có video → chờ video xong mới bắt đầu đếm; hộp Quà hoặc Đặc biệt thì không đếm. */
+    const noTimer = b.type === "gift" || b.type === "special" || b.secs === 0;
     setVideoEnded(!b.video);
-    setTimeLeft(!b.video && b.type !== "gift" ? b.secs : null);
+    setTimeLeft(!b.video && !noTimer ? b.secs : null);
     setAnswerShown(false);
     setExpired(false);
     setCelebrate(true);
@@ -453,12 +446,15 @@ export default function Minigame() {
     setExpired(false);
     setVideoEnded(true);
     setAnswerShown(false);
+    setCurrentPlayer(null);
   }
 
   /* Video kết thúc (hoặc bỏ qua) → mới bắt đầu đếm ngược. */
   function endVideo() {
     setVideoEnded(true);
-    if (curBox && curBox.type !== "gift") setTimeLeft(curBox.secs);
+    if (curBox && curBox.type !== "gift" && curBox.type !== "special" && curBox.secs > 0) {
+      setTimeLeft(curBox.secs);
+    }
   }
 
   function updateBox(i: number, patch: Partial<BoxItem>) {
@@ -554,18 +550,18 @@ export default function Minigame() {
     sfxGift();
   }
 
-  /* Xóa hết câu hỏi, đáp án và video trên 50 hộp (đặt về mặc định). */
+  /* Xóa hết câu hỏi, đáp án và video trên 100 túi mù (đặt về mặc định). */
   function resetEverything() {
     if (
       !window.confirm(
-        "Xóa HẾT câu hỏi, đáp án và video trên 50 hộp? Thao tác này không hoàn tác được.",
+        "Xóa HẾT câu hỏi, đáp án và video trên 100 túi mù? Thao tác này không hoàn tác được.",
       )
     ) {
       return;
     }
     persist({ ...data, boxes: defaultBoxes() });
     setPending([]);
-    setImportMsg("Đã xóa hết nội dung 50 hộp — về mặc định.");
+    setImportMsg("Đã xóa hết nội dung 100 túi mù — về mặc định.");
     setEditIdx(null);
   }
 
@@ -597,7 +593,7 @@ export default function Minigame() {
   }
 
   useEffect(() => {
-    if (curIdx === null || expired || timeLeft === null) return;
+    if (curIdx === null || expired || timeLeft === null || answerShown) return;
     if (timeLeft <= 0) {
       setExpired(true);
       return;
@@ -605,7 +601,7 @@ export default function Minigame() {
     sfxSecond(timeLeft <= 10);
     const id = window.setTimeout(() => setTimeLeft((t) => (t === null ? null : t - 1)), 1000);
     return () => window.clearTimeout(id);
-  }, [curIdx, timeLeft, expired]);
+  }, [curIdx, timeLeft, expired, answerShown]);
 
   useEffect(() => {
     if (expired) sfxExpire();
@@ -645,53 +641,70 @@ export default function Minigame() {
   if (stage === "cover") {
     const floatItems = [0, 3, 7, 11, 14, 18, 22, 26, 31, 36, 40, 45];
     return (
-      <div className="mg" ref={rootRef}>
-        <PetalRain count={30} />
+      <div className={`mg ${isFullscreen ? "is-fullscreen" : ""}`} ref={rootRef}>
+        <CharmRain count={32} />
         <div className="mg-cover">
           <Confetti />
           <div className="mg-garland" aria-hidden="true">
             {Array.from({ length: 11 }).map((_, i) => {
-              const p = ROSES[i % ROSES.length];
+              const p = BAG_COLORS[i % BAG_COLORS.length];
               return (
                 <span key={i} style={{ ["--d" as string]: `${i * 0.32}s` }}>
-                  <RoseSvg size={44 + (i % 3) * 16} c={p.c} d={p.d} />
+                  {i % 2 === 0 ? (
+                    <BlindBagSvg size={44 + (i % 3) * 10} color={p.c} accent={p.a} />
+                  ) : (
+                    <StarSvg size={36 + (i % 3) * 8} color={p.a} />
+                  )}
                 </span>
               );
             })}
           </div>
           <div className="mg-float" aria-hidden="true">
             {floatItems.map((i, k) => {
-              const p = ROSES[k % ROSES.length];
+              const p = BAG_COLORS[k % BAG_COLORS.length];
               return (
                 <span key={i} className="mg-float-box" style={{ ["--d" as string]: `${(i % 7) * 0.7}s` }}>
-                  {k % 3 === 1 ? <RoseSvg size={74} c={p.c} d={p.d} /> : <GiftBox index={i} size={70} />}
+                  {k % 3 === 1 ? (
+                    <BlindBagSvg size={66} color={p.c} accent={p.a} />
+                  ) : (
+                    <GiftBox index={i} size={70} />
+                  )}
                 </span>
               );
             })}
           </div>
-          <div className="mg-ribbon">CHÚC MỪNG NGÀY PHỤ NỮ VIỆT NAM</div>
+          <div className="mg-ribbon">TRÒ CHƠI BỐC TÚI MÙ · LỚP 12A6</div>
 
           <div className="mg-hero">
             <span className="mg-hero-rose">
-              <RoseSvg size={74} c="#ff2d6f" d="#a80d3c" />
+              <SparkleSvg size={54} color="#ffd166" />
             </span>
-            <span className="mg-hero-num">20/10</span>
+            <span className="mg-hero-num">12A6</span>
             <span className="mg-hero-rose">
-              <RoseSvg size={74} c="#ffd166" d="#d98a0b" />
+              <SparkleSvg size={54} color="#06d6a0" />
             </span>
           </div>
 
           <p className="mg-eyebrow">
-            <RoseSvg size={17} c="#ff6fb5" d="#c9145c" />
-            LỚP 12A6 · 20 THÁNG 10 NĂM 2026
-            <RoseSvg size={17} c="#ffd166" d="#d98a0b" />
+            <StarSvg size={18} color="#ffd166" />
+            50 TÚI MÙ BÍ ẨN · XÉ LÀ TRÚNG · VUI BẤT NGỜ
+            <StarSvg size={18} color="#06d6a0" />
           </p>
 
           <h1 className="mg-title">{data.title}</h1>
           <p className="mg-wish">{data.wish}</p>
           <div className="mg-actions">
             <button className="mg-btn mg-primary" onClick={start}>
-              BẮT ĐẦU CHƠI
+              BẮT ĐẦU XÉ TÚI
+            </button>
+            <button
+              className="mg-btn mg-picker-btn"
+              onClick={() => {
+                setWheelMode("general");
+                setPickerOpen(true);
+              }}
+            >
+              🎯 Quay chọn người
             </button>
             <button className="mg-btn" onClick={() => setStage("edit")}>
               Soạn nội dung
@@ -701,16 +714,27 @@ export default function Minigame() {
             </button>
             {soundBtn}
           </div>
-          <p className="mg-hint">Enter bắt đầu · Space quay · F toàn màn hình · H hướng dẫn · Esc đóng thẻ</p>
+          <p className="mg-hint">Enter bắt đầu · Space bốc túi · F toàn màn hình · H hướng dẫn · Esc đóng thẻ</p>
         </div>
         {helpOpen && <Help onClose={() => setHelpOpen(false)} />}
+        {pickerOpen && (
+          <StudentPickerModal
+            mode={wheelMode}
+            onClose={() => setPickerOpen(false)}
+            onPickDone={(name) => {
+              setCurrentPlayer(name);
+              setPickerOpen(false);
+              start();
+            }}
+          />
+        )}
       </div>
     );
   }
 
   if (stage === "edit") {
     return (
-      <div className="mg" ref={rootRef}>
+      <div className={`mg ${isFullscreen ? "is-fullscreen" : ""}`} ref={rootRef}>
         <div className="mg-top">
           <button className="mg-btn" onClick={() => setStage("cover")}>
             Về bìa
@@ -827,9 +851,10 @@ export default function Minigame() {
                           value={it.type}
                           onChange={(e) => patchPending(it.key, { type: e.target.value as BoxType })}
                         >
-                          <option value="truth">Thật — câu hỏi</option>
-                          <option value="dare">Thách — thử thách</option>
-                          <option value="gift">Quà — không đếm giờ</option>
+                          <option value="truth">Thật — câu hỏi / thú tội</option>
+                          <option value="dare">Thách — thử thách làm ngay</option>
+                          <option value="gift">Quà — may mắn không đếm giờ</option>
+                          <option value="special">Đặc biệt — thẻ bảo bối / quyền lực</option>
                         </select>
                       </label>
                       <label>
@@ -852,7 +877,7 @@ export default function Minigame() {
 
                 <div className="mg-import-actions">
                   <button className="mg-btn mg-primary" disabled={importing} onClick={distributeVideos}>
-                    PHÂN BỐ NGẪU NHIÊN VÀO 50 HỘP
+                    PHÂN BỐ NGẪU NHIÊN VÀO 100 TÚI MÙ
                   </button>
                   <button
                     className="mg-btn"
@@ -870,7 +895,7 @@ export default function Minigame() {
           </section>
 
           <section className="mg-card mg-boxcard">
-            <h2>Nội dung 50 hộp</h2>
+            <h2>Nội dung 100 túi mù</h2>
             <p className="mg-note">
               Video: dùng mục <b>Nhập video câu hỏi từ folder</b> ở trên cho nhanh, hoặc tự đặt file <b>.mp4</b> vào{" "}
               <b>public/videos/</b> rồi điền đường dẫn dạng <b>/videos/clip1.mp4</b>. Trình duyệt chỉ đếm ngược{" "}
@@ -910,10 +935,20 @@ export default function Minigame() {
                     value={data.boxes[editIdx].type}
                     onChange={(e) => updateBox(editIdx, { type: e.target.value as BoxType })}
                   >
-                    <option value="truth">Thật — hỏi/thú tội</option>
+                    <option value="truth">Thật — hỏi / thú tội</option>
                     <option value="dare">Thách — làm ngay (thường có video)</option>
-                    <option value="gift">Quà — không đếm giờ</option>
+                    <option value="gift">Quà — may mắn không đếm giờ</option>
+                    <option value="special">Đặc biệt — thẻ bảo bối / quyền lực</option>
                   </select>
+                </label>
+
+                <label>
+                  Thể loại / Môn học
+                  <input
+                    value={data.boxes[editIdx].category ?? ""}
+                    placeholder="VD: 📐 TOÁN 12, 📖 NGỮ VĂN 12, ⚡ VẬT LÍ 12..."
+                    onChange={(e) => updateBox(editIdx, { category: e.target.value.trim() || undefined })}
+                  />
                 </label>
 
                 <label>
@@ -983,13 +1018,27 @@ export default function Minigame() {
 
   // play
   return (
-    <div className="mg" ref={rootRef}>
-      <PetalRain count={22} subtle />
+    <div className={`mg ${isFullscreen ? "is-fullscreen" : ""}`} ref={rootRef}>
+      <CharmRain count={22} subtle />
       <div className="mg-top">
         <span className="mg-mark">
-          <RoseSvg size={20} c="#ff2d6f" d="#a80d3c" />
-          20/10 · 12A6
+          <SparkleSvg size={18} color="#ffd166" />
+          XÉ TÚI MÙ · 12A6
         </span>
+        <button
+          className="mg-btn mg-picker-btn"
+          onClick={() => {
+            setWheelMode("general");
+            setPickerOpen(true);
+          }}
+        >
+          🎯 QUAY CHỌN NGƯỜI
+        </button>
+        {currentPlayer && (
+          <span className="mg-cur-player-badge">
+            Lượt: <b>{currentPlayer}</b>
+          </span>
+        )}
         <button className="mg-btn" onClick={() => setStage("cover")}>
           Về bìa
         </button>
@@ -997,7 +1046,7 @@ export default function Minigame() {
           Soạn
         </button>
         <span className="mg-count">
-          {openedCount}/{BOX_COUNT} hộp đã mở
+          {openedCount}/{BOX_COUNT} túi mù đã xé
         </span>
         <div className="mg-top-spacer" />
         {soundBtn}
@@ -1015,31 +1064,51 @@ export default function Minigame() {
       <div className="mg-stage">
         <div className="mg-spinbar">
           <button
-            className="mg-spin"
-            onClick={spin}
-            disabled={picking || landingRef.current || curIdx !== null || picked !== null || allDone}
+            className={`mg-spin ${picked !== null ? "is-ready-to-open" : ""}`}
+            onClick={() => {
+              if (picked !== null) {
+                openBox(picked);
+              } else {
+                spin();
+              }
+            }}
+            disabled={picking || landingRef.current || curIdx !== null || allDone}
           >
             <span className="mg-spin-rose">
-              <RoseSvg size={32} c="#ff2d6f" d="#a80d3c" />
+              <BlindBagSvg size={32} color="#a259ff" accent="#ffd166" />
             </span>
             {allDone
-              ? "ĐÃ MỞ HẾT 50 HỘP"
+              ? "ĐÃ XÉ HẾT 100 TÚI MÙ"
               : picking
-                ? "ĐANG QUAY…"
+                ? "ĐANG BỐC TÚI MÙ…"
                 : picked !== null
-                  ? `ĐÃ TRÚNG HỘP #${picked + 1}`
-                  : "QUAY HỘP QUÀ"}
+                  ? `✂️ XÉ TÚI MÙ #${picked + 1} NGAY!`
+                  : currentPlayer
+                    ? `🎲 BỐC TÚI MÙ CHO ${currentPlayer.toUpperCase()}`
+                    : "🎲 BỐC TÚI MÙ NGẪU NHIÊN"}
             <span className="mg-spin-rose">
-              <RoseSvg size={32} c="#ffd166" d="#d98a0b" />
+              <SparkleSvg size={32} color="#ffd166" />
             </span>
           </button>
           <p className="mg-spin-sub">
             {allDone
-              ? "Chơi lại để mở 50 hộp mới nhé!"
+              ? "Chơi lại để chuẩn bị 100 túi mù mới nhé!"
               : picked !== null
-                ? "↓↓↓ Hộp vừa trúng đang phát sáng ở dưới — bấm vào nó để mở quà! ↓↓↓"
-                : "Bấm hoặc nhấn Space để quay ngẫu nhiên 1 hộp bí ẩn"}
+                ? "Bấm nút lớn ở trên hoặc click vào túi mù phát sáng bên dưới để xé túi!"
+                : currentPlayer
+                  ? `Đang đến lượt ${currentPlayer} — bấm nút hoặc nhấn Space để bốc túi mù!`
+                  : "Bấm nút hoặc nhấn Space để bốc ngẫu nhiên 1 túi mù bí ẩn"}
           </p>
+          <button
+            type="button"
+            className="mg-picker-link"
+            onClick={() => {
+              setWheelMode("general");
+              setPickerOpen(true);
+            }}
+          >
+            🎯 {currentPlayer ? `Đổi người khác? Bấm Vòng Quay Chọn Người (Hiện tại: ${currentPlayer})` : "Chưa biết gọi ai? Bấm Vòng Quay Chọn Người 12A6!"}
+          </button>
         </div>
 
         <div className="mg-grid">
@@ -1060,13 +1129,13 @@ export default function Minigame() {
                   if (picked !== null && picked !== i) return;
                   openBox(i);
                 }}
-                title={isOpen ? "Đã mở" : isPicked ? "Trúng rồi — bấm để mở!" : `Hộp #${i + 1}`}
+                title={isOpen ? "Đã xé" : isPicked ? "Trúng rồi — bấm để xé!" : `Túi #${i + 1}`}
               >
                 <GiftBox index={i} size={150} />
                 <span className="mg-cell-no">{i + 1}</span>
                 {isPicked && (
                   <span className="mg-pick-call">
-                    <HeartSvg size={15} color="#fff" /> TRÚNG NÀY — BẤM ĐỂ MỞ
+                    <SparkleSvg size={15} color="#ffd166" /> TRÚNG NÀY — BẤM ĐỂ XÉ
                   </span>
                 )}
               </button>
@@ -1084,15 +1153,23 @@ export default function Minigame() {
             onClick={(e) => e.stopPropagation()}
           >
             <span className="mg-panel-rose is-l">
-              <RoseSvg size={56} c="#ff2d6f" d="#a80d3c" />
+              <BlindBagSvg size={52} color="#a259ff" accent="#ffd166" />
             </span>
             <span className="mg-panel-rose is-r">
-              <RoseSvg size={56} c="#ffd166" d="#d98a0b" />
+              <SparkleSvg size={48} color="#06d6a0" />
             </span>
             <span className="mg-badge" style={{ ["--c" as string]: TYPE_META[curBox.type].color }}>
               <i className="mg-badge-dot" aria-hidden="true" />
-              {TYPE_META[curBox.type].label} · Hộp {curIdx + 1}
+              {TYPE_META[curBox.type].label} · Túi #{curIdx + 1}
             </span>
+            {curBox.category && (
+              <span className="mg-category-tag">{curBox.category}</span>
+            )}
+            {currentPlayer && (
+              <p className="mg-modal-player">
+                🎯 Lượt của: <b>{currentPlayer}</b>
+              </p>
+            )}
             {curBox.icon && (
               <div className="mg-rebus">
                 <RebusIcon icon={curBox.icon} size={80} />
@@ -1121,24 +1198,78 @@ export default function Minigame() {
               </div>
             )}
 
-            {curBox.type !== "gift" && videoEnded && !expired && (
-              <div className={`mg-timer ${timeLeft !== null && timeLeft <= 10 ? "is-urgent" : ""}`}>
-                <span className="mg-timer-num">{timeLeft === null ? "—" : formatTime(timeLeft)}</span>
+            {curBox.type !== "gift" && curBox.type !== "special" && curBox.secs > 0 && videoEnded && !expired && (
+              <div
+                className={`mg-timer ${timeLeft !== null && timeLeft <= 10 && !answerShown ? "is-urgent" : ""} ${
+                  answerShown ? "is-stopped" : ""
+                }`}
+              >
+                <span className="mg-timer-num">
+                  {timeLeft === null ? "—" : formatTime(timeLeft)}
+                  {answerShown && <span className="mg-timer-stopped-badge">✓ ĐÃ DỪNG</span>}
+                </span>
                 <span className="mg-timer-bar">
                   <i style={{ transform: `scaleX(${timeLeft !== null && curBox.secs ? timeLeft / curBox.secs : 1})` }} />
                 </span>
               </div>
             )}
 
-            {curBox.title.trim() && <h2 className="mg-panel-title">{curBox.title}</h2>}
-            {curBox.prompt?.trim() &&
-              curBox.prompt.trim().toLowerCase() !== curBox.title.trim().toLowerCase() && (
-                <p className="mg-prompt">{curBox.prompt}</p>
-              )}
-
-            <p className="mg-kind-hint" style={{ ["--c" as string]: TYPE_META[curBox.type].color }}>
-              {TYPE_META[curBox.type].hint}
-            </p>
+            {curBox.category === "🎡 VÒNG QUAY 12A6" ? (
+              <div className="mg-wheel-box-view">
+                <div className="mg-wheel-box-icon">🎡</div>
+                <h2 className="mg-panel-title">{curBox.title}</h2>
+                <p className="mg-prompt">
+                  {curBox.prompt || "Chúc mừng bạn mở trúng Vòng Quay 12A6! Hãy chọn chế độ quay bên dưới:"}
+                </p>
+                <div className="mg-wheel-box-choices">
+                  <button
+                    type="button"
+                    className="mg-wheel-choice-btn is-answer"
+                    onClick={() => {
+                      setWheelMode("next_answer");
+                      setPickerOpen(true);
+                    }}
+                  >
+                    <span className="mg-choice-icon">🎯</span>
+                    <span className="mg-choice-text">
+                      <b>QUAY BẠN TRẢ LỜI TIẾP THEO</b>
+                      <small>Chọn ngẫu nhiên 1 bạn gánh câu hỏi tiếp theo</small>
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    className="mg-wheel-choice-btn is-gift"
+                    onClick={() => {
+                      setWheelMode("pick_gift");
+                      setPickerOpen(true);
+                    }}
+                  >
+                    <span className="mg-choice-icon">🎁</span>
+                    <span className="mg-choice-text">
+                      <b>QUAY BẠN BỐC HỘP QUÀ TIẾP THEO</b>
+                      <small>Chọn ngẫu nhiên 1 bạn lên bốc hộp quà may mắn</small>
+                    </span>
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                {curBox.type !== "truth" && curBox.title.trim() && (
+                  <h2 className="mg-panel-title">{curBox.title}</h2>
+                )}
+                {curBox.type === "truth" ? (
+                  <p className="mg-prompt">{curBox.prompt?.trim() || curBox.title}</p>
+                ) : (
+                  curBox.prompt?.trim() &&
+                  curBox.prompt.trim().toLowerCase() !== curBox.title.trim().toLowerCase() && (
+                    <p className="mg-prompt">{curBox.prompt}</p>
+                  )
+                )}
+                <p className="mg-kind-hint" style={{ ["--c" as string]: TYPE_META[curBox.type].color }}>
+                  {TYPE_META[curBox.type].hint}
+                </p>
+              </>
+            )}
 
             {expired && <p className="mg-expired">HẾT GIỜ!</p>}
 
@@ -1158,11 +1289,15 @@ export default function Minigame() {
               <button className="mg-btn mg-primary" onClick={closeModal}>
                 {expired
                   ? "Đóng hộp"
-                  : curBox.type === "gift"
-                    ? "Nhận quà →"
-                    : curBox.type === "dare"
-                      ? "Đã làm xong →"
-                      : "Trả lời xong →"}
+                  : curBox.category === "🎡 VÒNG QUAY 12A6"
+                    ? "Đóng vòng quay →"
+                    : curBox.type === "gift"
+                      ? "Nhận quà →"
+                      : curBox.type === "special"
+                        ? "Kích hoạt hiệu ứng →"
+                        : curBox.type === "dare"
+                          ? "Đã làm xong →"
+                          : "Trả lời xong →"}
               </button>
             </div>
           </div>
@@ -1171,6 +1306,17 @@ export default function Minigame() {
 
       {celebrate && <Burst />}
       {helpOpen && <Help onClose={() => setHelpOpen(false)} />}
+      {pickerOpen && (
+        <StudentPickerModal
+          mode={wheelMode}
+          onClose={() => setPickerOpen(false)}
+          onPickDone={(name) => {
+            setCurrentPlayer(name);
+            setCurIdx(null);
+            setPickerOpen(false);
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -1180,55 +1326,398 @@ function Help({ onClose }: { onClose: () => void }) {
     <div className="mg-modal" onClick={onClose}>
       <div className="mg-panel mg-help" onClick={(e) => e.stopPropagation()}>
         <h3>
-          <FlowerSvg size={26} color="#ff4d6d" /> THẬT HAY THÁCH 20/10 — CÁCH CHƠI
+          <SparkleSvg size={26} color="#ffd166" /> TÚI MÙ ĐỐ VUI 12A6 — CÁCH CHƠI
         </h3>
         <ol>
           <li>
-            <b>Bước 1:</b> bấm <b>BẮT ĐẦU CHƠI</b> ở bìa, rồi <kbd>F</kbd> để chiếu toàn màn hình lên TV/máy chiếu.
+            <b>Bước 1:</b> bấm <b>BẮT ĐẦU XÉ TÚI</b> ở bìa, rồi nhấn <kbd>F</kbd> để chiếu toàn màn hình lên TV/máy chiếu.
           </li>
           <li>
-            <b>Bước 2:</b> bấm nút lớn <b>QUAY HỘP QUÀ</b> (hoặc nhấn <kbd>Space</kbd>). Màn hình hiện hiệu ứng
-            tim/lấp lánh/hộp quà bay, dải sáng chạy qua các hộp rồi dừng trên <b>1 hộp bí ẩn ngẫu nhiên</b>.
+            <b>Bước 2:</b> bấm nút lớn <b>🎲 BỐC TÚI MÙ NGẪU NHIÊN</b> (hoặc nhấn <kbd>Space</kbd>). Dải sáng chạy qua 100 chiếc túi mù rồi dừng trên <b>1 túi mù may mắn</b>. Hoặc bấm <b>🎯 QUAY CHỌN NGƯỜI</b> để chọn ngẫu nhiên một bạn trong lớp lên xé túi!
           </li>
           <li>
-            <b>Bước 3:</b> màn hình <b>tự cuộn tới hộp vừa trúng</b>, hộp đó <b>phát sáng và nhấp nháy</b> lên — cả lớp
-            nhìn thấy rõ. Bây giờ mới <b>bấm vào hộp đó</b> để mở.
+            <b>Bước 3:</b> màn hình <b>tự cuộn tới túi mù vừa trúng</b>, túi đó <b>phát sáng và nhấp nháy</b> — bạn có thể <b>bấm nút lớn '✂️ XÉ TÚI MÙ NGAY' ở trên</b> hoặc bấm thẳng vào túi đó (hoặc nhấn <kbd>Space</kbd> / <kbd>Enter</kbd>) để xé túi.
           </li>
           <li>
-            <b>Bước 4:</b> hộp mở ra chứa 1 trong 3 kiểu — <b>THẬT</b> (trả lời thật thà), <b>THÁCH</b> (phải làm ngay
-            tại chỗ, thường kèm <b>video</b>) hoặc <b>QUÀ</b> (quà may mắn 20/10).
+            <b>Bước 4:</b> túi mù mở ra chứa các câu hỏi đa dạng: <b>TOÁN - LÍ - VĂN - ANH 12 (giữa kì 1)</b>, <b>ĐỐ MẸO DÂN GIAN</b>, <b>ĐỐ MẸO XÀM XÀM BỰA</b>, <b>THỬ THÁCH & HÌNH PHẠT</b> hoặc <b>QUÀ MAY MẮN & BẢO BỐI</b> lấy quà liền tay!
           </li>
           <li>
-            <b>Bước 5:</b> nếu hộp có <b>video</b>, xem hết video (hoặc bấm <b>Bỏ qua video</b>) thì{" "}
-            <b>đồng hồ đếm ngược mới bắt đầu</b>. Hết giờ sẽ hiện chữ <b>HẾT GIỜ!</b>
+            <b>Bước 5:</b> nếu túi có <b>video</b>, xem hết video (hoặc bấm <b>Bỏ qua video</b>) thì <b>đồng hồ đếm ngược mới bắt đầu</b>.
           </li>
           <li>
-            <b>Bước 6:</b> giáo viên xác nhận bên ngoài xong, bấm <b>HIỆN ĐÁP ÁN</b> để cả lớp thấy đáp án (chỉ hiện
-            với hộp có điền đáp án).
+            <b>Hộp quà Vòng Quay & Trợ giúp:</b> Mở trúng <b>🎡 Vòng Quay May Mắn</b> sẽ kích hoạt 2 lựa chọn: <b>🎯 Quay ngẫu nhiên 1 bạn trả lời tiếp theo</b> hoặc <b>🎁 Quay ngẫu nhiên 1 bạn lên bốc hộp quà</b>. Các <b>Hộp quà Cô Chủ Nhiệm</b> và <b>Hộp quà Bạn bè</b> mang lại phần quà ăn vặt và đặc quyền cứu nguy trực tiếp từ Cô và đồng đội!
           </li>
           <li>
-            <b>Bước 7:</b> bấm <b>Trả lời xong / Đã làm xong / Nhận quà / Đóng hộp</b> để đóng hộp.
+            <b>Bước 6:</b> quản trò / cả lớp xác nhận xong, bấm <b>HIỆN ĐÁP ÁN</b> để xem đáp án (với các câu đố vui).
           </li>
           <li>
-            <b>Hộp đã mở</b> sẽ mờ đi và không mở lại được. Mở lần lượt đến khi hết <b>50 hộp</b>.
+            <b>Bước 7:</b> bấm <b>Đã xé xong túi này / Nhận quà / Kích hoạt bảo bối</b> để đóng túi.
           </li>
           <li>
-            <b>Soạn video:</b> vào <b>Soạn nội dung</b> → mục <b>Nhập video câu hỏi từ folder</b> — chọn folder, nhập
-            câu hỏi + đáp án từng video, bấm <b>PHÂN BỐ NGẪU NHIÊN</b> để hệ thống gán vào hộp quà bất kỳ (chỉ chạy
-            ở bản local).
+            <b>Túi mù đã xé</b> sẽ mờ đi và không mở lại được. Mở lần lượt đến khi hết <b>100 túi mù</b>.
           </li>
           <li>
-            <b>Âm thanh:</b> nút <b>ÂM THANH</b> ở thanh trên cùng chuyển 3 mức — <b>TẮT</b> ·{" "}
-            <b>HIỆU ỨNG</b> · <b>HIỆU ỨNG + NHẠC NỀN</b>.
-          </li>
-          <li>
-            <b>Mẹo:</b> <kbd>Space</kbd> quay/mở · <kbd>F</kbd> toàn màn hình · <kbd>H</kbd> hướng dẫn ·{" "}
-            <kbd>Esc</kbd> đóng thẻ.
+            <b>Mẹo:</b> <kbd>Space</kbd> bốc túi/xé túi · <kbd>F</kbd> toàn màn hình · <kbd>H</kbd> hướng dẫn · <kbd>Esc</kbd> đóng thẻ.
           </li>
         </ol>
         <button className="mg-btn mg-primary" onClick={onClose}>
           Đã hiểu
         </button>
+      </div>
+    </div>
+  );
+}
+
+const WHEEL_STORAGE_KEY = "mg_12a6_students_v1";
+const WHEEL_COLORS = [
+  "#ff007a",
+  "#7928ca",
+  "#0070f3",
+  "#00dfd8",
+  "#06d6a0",
+  "#ffd166",
+  "#ff9f1c",
+  "#ff5c8a",
+];
+
+function getStoredStudents(): string[] {
+  if (typeof window === "undefined") return ROSTER.map((r) => r.name);
+  try {
+    const raw = localStorage.getItem(WHEEL_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch {
+    /* fallback */
+  }
+  return ROSTER.map((r) => r.name);
+}
+
+function wheelDisplayName(fullName: string): string {
+  const parts = fullName.trim().split(/\s+/);
+  if (parts.length <= 2) return fullName;
+  return parts.slice(-2).join(" ");
+}
+
+function StudentPickerModal({
+  mode = "general",
+  onClose,
+  onPickDone,
+}: {
+  mode?: "next_answer" | "pick_gift" | "general";
+  onClose: () => void;
+  onPickDone: (studentName: string) => void;
+}) {
+  const [students, setStudents] = useState<string[]>(getStoredStudents);
+  const [tab, setTab] = useState<"wheel" | "roster">("wheel");
+  const [rosterText, setRosterText] = useState(() => students.join("\n"));
+  const [rotation, setRotation] = useState(0);
+  const [spinning, setSpinning] = useState(false);
+  const [winner, setWinner] = useState<string | null>(null);
+  const spinTimerRef = useRef<number | null>(null);
+  const tickIntervalRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (spinTimerRef.current) window.clearTimeout(spinTimerRef.current);
+      if (tickIntervalRef.current) window.clearInterval(tickIntervalRef.current);
+    };
+  }, []);
+
+  const count = students.length;
+  const step = 360 / Math.max(1, count);
+
+  function spinWheel() {
+    if (spinning || count === 0) return;
+    setWinner(null);
+    setSpinning(true);
+
+    const winIdx = Math.floor(Math.random() * count);
+    const winName = students[winIdx];
+
+    // Góc tâm của phần tử trúng tính từ đỉnh 12 giờ
+    const midAngle = (winIdx + 0.5) * step;
+
+    // Tính độ xoay để midAngle kết thúc đúng ngay tại kim chỉ ở vị trí 12h (0 độ)
+    const curMod = rotation % 360;
+    let delta = (360 - ((midAngle + curMod) % 360)) % 360;
+    if (delta < 0) delta += 360;
+
+    const extraRounds = 5 * 360;
+    const nextRotation = rotation + extraRounds + delta;
+    setRotation(nextRotation);
+
+    // Tiếng tạch tạch theo nhịp quay
+    let tickCount = 0;
+    const maxTicks = 26;
+    const tickInterval = window.setInterval(() => {
+      sfxWheelTick();
+      tickCount++;
+      if (tickCount >= maxTicks) {
+        window.clearInterval(tickInterval);
+      }
+    }, 150);
+    tickIntervalRef.current = tickInterval;
+
+    // Kết thúc vòng quay và xướng tên
+    spinTimerRef.current = window.setTimeout(() => {
+      setSpinning(false);
+      setWinner(winName);
+      sfxFanfare();
+    }, 4200);
+  }
+
+  function handleSaveRoster() {
+    const list = rosterText
+      .split(/[\n,]+/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+    if (!list.length) {
+      alert("Danh sách học sinh không được để trống!");
+      return;
+    }
+    setStudents(list);
+    try {
+      localStorage.setItem(WHEEL_STORAGE_KEY, JSON.stringify(list));
+    } catch {
+      /* ignore */
+    }
+    setTab("wheel");
+    setWinner(null);
+  }
+
+  function handleResetDefault() {
+    const defaults = ROSTER.map((r) => r.name);
+    setStudents(defaults);
+    setRosterText(defaults.join("\n"));
+    try {
+      localStorage.setItem(WHEEL_STORAGE_KEY, JSON.stringify(defaults));
+    } catch {
+      /* ignore */
+    }
+  }
+
+  return (
+    <div className="mg-modal" onClick={onClose}>
+      <div className="mg-panel mg-wheel-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="mg-wheel-header">
+          <h3>
+            {mode === "next_answer"
+              ? "🎯 VÒNG QUAY CHỌN BẠN TRẢ LỜI TIẾP THEO · 12A6"
+              : mode === "pick_gift"
+                ? "🎁 VÒNG QUAY CHỌN BẠN BỐC HỘP QUÀ TIẾP THEO · 12A6"
+                : "🎯 VÒNG QUAY CHỌN NGƯỜI CHƠI · 12A6"}
+          </h3>
+          <div className="mg-wheel-tabs">
+            <button
+              type="button"
+              className={`mg-btn ${tab === "wheel" ? "mg-primary" : ""}`}
+              onClick={() => setTab("wheel")}
+            >
+              🎡 Vòng quay ({students.length})
+            </button>
+            <button
+              type="button"
+              className={`mg-btn ${tab === "roster" ? "mg-primary" : ""}`}
+              onClick={() => {
+                setRosterText(students.join("\n"));
+                setTab("roster");
+              }}
+            >
+              ✏️ Sửa danh sách học sinh
+            </button>
+          </div>
+        </div>
+
+        {tab === "wheel" ? (
+          <div className="mg-wheel-body">
+            <div className="mg-wheel-col mg-wheel-col-stage">
+              <div className="mg-wheel-stage">
+                <div className="mg-wheel-pointer" />
+                <div
+                  className="mg-wheel-disc"
+                  style={{
+                    transform: `rotate(${rotation}deg)`,
+                    transition: spinning
+                      ? "transform 4.2s cubic-bezier(0.15, 0.85, 0.25, 1)"
+                      : "none",
+                  }}
+                >
+                  <svg viewBox="0 0 300 300" width="100%" height="100%">
+                    <circle cx="150" cy="150" r="148" fill="#121829" stroke="#7928ca" strokeWidth="4" />
+                    {students.map((name, i) => {
+                      const startAngle = (i * step * Math.PI) / 180;
+                      const endAngle = ((i + 1) * step * Math.PI) / 180;
+                      const R = 144;
+                      const x1 = 150 + R * Math.sin(startAngle);
+                      const y1 = 150 - R * Math.cos(startAngle);
+                      const x2 = 150 + R * Math.sin(endAngle);
+                      const y2 = 150 - R * Math.cos(endAngle);
+                      const largeArc = step > 180 ? 1 : 0;
+                      const pathData = `M 150 150 L ${x1.toFixed(2)} ${y1.toFixed(2)} A ${R} ${R} 0 ${largeArc} 1 ${x2.toFixed(2)} ${y2.toFixed(2)} Z`;
+                      const midAngle = (i + 0.5) * step;
+                      const color = WHEEL_COLORS[i % WHEEL_COLORS.length];
+                      const shortName = wheelDisplayName(name);
+                      return (
+                        <g key={`${name}-${i}`}>
+                          <path d={pathData} fill={color} stroke="#0d111d" strokeWidth="1.5" />
+                          <g transform={`rotate(${midAngle - 90}, 150, 150)`}>
+                            <text
+                              x="278"
+                              y="153"
+                              textAnchor="end"
+                              fill="#ffffff"
+                              fontSize={count > 30 ? "9px" : count > 20 ? "10.5px" : "12px"}
+                              fontWeight="800"
+                              style={{
+                                textShadow: "0 1px 3px rgba(0,0,0,0.8)",
+                                userSelect: "none",
+                              }}
+                            >
+                              {shortName}
+                            </text>
+                          </g>
+                        </g>
+                      );
+                    })}
+                    {/* Tâm vòng quay */}
+                    <circle cx="150" cy="150" r="26" fill="#0d111d" stroke="#ffd166" strokeWidth="3" />
+                    <circle cx="150" cy="150" r="12" fill="#ffd166" />
+                    <text
+                      x="150"
+                      y="153"
+                      textAnchor="middle"
+                      fill="#0d111d"
+                      fontSize="9px"
+                      fontWeight="900"
+                    >
+                      12A6
+                    </text>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div className="mg-wheel-col mg-wheel-col-info">
+              {winner ? (
+                <div className="mg-winner-card">
+                  <span className="mg-winner-sub">
+                    {mode === "next_answer"
+                      ? "🎯 ĐÃ CHỌN ĐƯỢC BẠN TRẢ LỜI CÂU HỎI TIẾP THEO"
+                      : mode === "pick_gift"
+                        ? "🎁 ĐÃ CHỌN ĐƯỢC BẠN LÊN BỐC HỘP QUÀ TIẾP THEO"
+                        : "🎉 NGƯỜI CHƠI MAY MẮN TIẾP THEO"}
+                  </span>
+                  <div className="mg-winner-name">{winner}</div>
+                  <p className="mg-winner-desc">
+                    {mode === "next_answer"
+                      ? `👉 Bạn ${winner} sẽ là người trả lời câu hỏi tiếp theo của lớp!`
+                      : mode === "pick_gift"
+                        ? `👉 Mời bạn ${winner} lên chọn và xé 1 túi mù may mắn tiếp theo!`
+                        : `👉 Lượt chơi tiếp theo sẽ dành cho ${winner}!`}
+                  </p>
+                  <div className="mg-winner-actions">
+                    {mode === "next_answer" ? (
+                      <button
+                        type="button"
+                        className="mg-btn mg-primary"
+                        onClick={() => onPickDone(winner)}
+                      >
+                        🎯 BỐC CÂU HỎI CHO {winner.toUpperCase()} NGAY
+                      </button>
+                    ) : mode === "pick_gift" ? (
+                      <button
+                        type="button"
+                        className="mg-btn mg-primary"
+                        onClick={() => onPickDone(winner)}
+                      >
+                        🎁 ĐỂ {winner.toUpperCase()} BỐC HỘP QUÀ NGAY
+                      </button>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          className="mg-btn mg-primary"
+                          onClick={() => onPickDone(winner)}
+                        >
+                          🎯 Đặt {winner} trả lời tiếp theo
+                        </button>
+                        <button
+                          type="button"
+                          className="mg-btn"
+                          onClick={() => onPickDone(winner)}
+                        >
+                          🎁 Đặt {winner} bốc hộp quà
+                        </button>
+                      </>
+                    )}
+                    <button
+                      type="button"
+                      className="mg-btn"
+                      onClick={() => {
+                        setWinner(null);
+                        spinWheel();
+                      }}
+                    >
+                      🎲 Quay lại
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="mg-wheel-idle-card">
+                  <div className="mg-idle-badge">
+                    {mode === "next_answer"
+                      ? "🎯 Chế độ: Chọn người trả lời câu hỏi"
+                      : mode === "pick_gift"
+                        ? "🎁 Chế độ: Chọn người bốc hộp quà"
+                        : "🎡 Vòng quay chọn người ngẫu nhiên"}
+                  </div>
+                  <h4>Sẵn sàng tìm ra bạn may mắn!</h4>
+                  <p>Bấm nút bên dưới để vòng quay chọn ngẫu nhiên 1 trong {students.length} bạn học sinh 12A6.</p>
+                  <button
+                    type="button"
+                    className="mg-btn mg-primary mg-spin-wheel-btn"
+                    disabled={spinning}
+                    onClick={spinWheel}
+                  >
+                    {spinning ? "ĐANG QUAY..." : "🎲 BẤM ĐỂ QUAY CHỌN NGƯỜI"}
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="mg-roster-area">
+            <p className="mg-note">
+              Mỗi bạn một dòng (hoặc cách nhau bằng dấu phẩy). Bạn có thể thêm bớt hoặc xóa bạn vắng mặt.
+            </p>
+            <textarea
+              className="mg-roster-input"
+              rows={12}
+              value={rosterText}
+              onChange={(e) => setRosterText(e.target.value)}
+              placeholder="Nhập tên học sinh, mỗi người một dòng..."
+            />
+            <div className="mg-wheel-edit-actions">
+              <button type="button" className="mg-btn mg-primary" onClick={handleSaveRoster}>
+                💾 Lưu danh sách này ({rosterText.split(/[\n,]+/).filter(Boolean).length} bạn)
+              </button>
+              <button type="button" className="mg-btn" onClick={handleResetDefault}>
+                🔄 Khôi phục 36 bạn 12A6 gốc
+              </button>
+              <button type="button" className="mg-btn" onClick={() => setTab("wheel")}>
+                Hủy
+              </button>
+            </div>
+          </div>
+        )}
+
+        <div style={{ marginTop: 18 }}>
+          <button type="button" className="mg-btn" onClick={onClose}>
+            Đóng vòng quay
+          </button>
+        </div>
       </div>
     </div>
   );

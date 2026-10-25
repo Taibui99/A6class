@@ -5,9 +5,9 @@ import Minigame from "@/components/minigame-20-10/Minigame";
 import "./minigame.css";
 
 export const metadata: Metadata = {
-  title: "Thật hay Thách 20/10 · Lớp 12A6",
+  title: "Túi Mù Đố Vui 12A6 · Toán Lí Văn Anh",
   description:
-    "Game Thật hay Thách mừng ngày Phụ nữ Việt Nam 20/10 — 50 hộp quà riêng biệt, quay ngẫu nhiên thật sự để mở câu Thật, màn Thách và Quà may mắn, có đếm ngược.",
+    "Game Xé Túi Mù Đố Vui dành riêng cho tập thể lớp 12A6 — 100 túi mù quay ngẫu nhiên: Kiến thức Toán Lí Văn Anh 12 (giữa kì 1), Đố mẹo dân gian, Đố mẹo xàm xàm bựa, Thử thách lầy lội và Thẻ bảo bối lấy quà liền tay. Tích hợp vòng quay chọn người chơi.",
 };
 
 export default function Minigame2010Page() {
