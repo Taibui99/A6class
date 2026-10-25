@@ -348,6 +348,14 @@
 .mg-saved {
   font-size: 13px;
   color: #ffffffaa;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.mg-saved.is-cloud {
+  color: #7cf5c0;
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(124, 245, 192, 0.4);
 }
 
 /* ---------- Stage / spin ---------- */

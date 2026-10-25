@@ -100,6 +100,15 @@ export const HUB_PATH = "/apps";
 export function internalTools(): InternalTool[] {
   return [
     {
+      id: "minigame",
+      name: "Minigame Lớp 12A6",
+      summary: "Tổng hợp các trò chơi tương tác của lớp: 100 Túi Mù, Vòng Quay May Mắn, Nhanh Như Chớp...",
+      href: "/apps/minigame",
+      icon: "trophy",
+      accent: "amber",
+      external: false,
+    },
+    {
       id: "competition",
       name: "Thi đua lớp",
       summary: "Chấm điểm hằng tuần, xếp hạng tổ, vinh danh Top 1",

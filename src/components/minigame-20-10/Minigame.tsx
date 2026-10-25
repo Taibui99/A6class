@@ -268,11 +268,62 @@ export default function Minigame() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   /* 0 tắt · 1 bật hiệu ứng âm thanh (mặc định: 1) */
   const [snd, setSnd] = useState<SoundMode>(1);
+  const [syncStatus, setSyncStatus] = useState<"idle" | "saving" | "synced" | "error">("idle");
 
   const rootRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<number | null>(null);
+  const saveTimeoutRef = useRef<number | null>(null);
   const cellRefs = useRef<Record<number, HTMLButtonElement | null>>({});
   const landingRef = useRef(false);
+
+  const saveToServer = useCallback(async (newData?: MinigameData, newRoster?: string[]) => {
+    setSyncStatus("saving");
+    try {
+      let roster = newRoster;
+      if (!roster && typeof window !== "undefined") {
+        try {
+          const raw = localStorage.getItem(WHEEL_STORAGE_KEY);
+          if (raw) roster = JSON.parse(raw);
+        } catch {}
+      }
+      const payload: Record<string, unknown> = {};
+      if (newData) payload.data = newData;
+      if (roster) payload.wheelRoster = roster;
+
+      const res = await fetch("/api/minigame-20-10/config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const json = await res.json();
+      if (json?.ok) {
+        setSyncStatus("synced");
+      } else {
+        setSyncStatus("error");
+      }
+    } catch {
+      setSyncStatus("error");
+    }
+  }, []);
+
+  const persist = useCallback(
+    (next: MinigameData) => {
+      setData(next);
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      } catch {
+        /* hết dung lượng thì thôi */
+      }
+      if (saveTimeoutRef.current !== null) {
+        window.clearTimeout(saveTimeoutRef.current);
+      }
+      setSyncStatus("saving");
+      saveTimeoutRef.current = window.setTimeout(() => {
+        saveToServer(next);
+      }, 1000);
+    },
+    [saveToServer],
+  );
 
   useEffect(() => {
     const handleFs = () => {
@@ -306,6 +357,47 @@ export default function Minigame() {
       /* dữ liệu hỏng → dùng mặc định */
     }
     setData(d);
+
+    // Tự động tải dữ liệu câu hỏi và vòng quay mới nhất từ Cloud Server
+    let cancelled = false;
+    async function loadServerConfig() {
+      try {
+        const res = await fetch("/api/minigame-20-10/config");
+        const json = await res.json();
+        if (!cancelled && json?.ok && json.config) {
+          const serverData = json.config.data;
+          const serverWheel = json.config.wheelRoster;
+          if (serverData && Array.isArray(serverData.boxes) && serverData.boxes.length > 0) {
+            setData(serverData);
+            try {
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(serverData));
+            } catch {}
+          }
+          if (Array.isArray(serverWheel) && serverWheel.length > 0) {
+            try {
+              localStorage.setItem(WHEEL_STORAGE_KEY, JSON.stringify(serverWheel));
+            } catch {}
+          }
+          setSyncStatus("synced");
+        }
+      } catch (e) {
+        console.warn("Could not load minigame config from server:", e);
+      }
+    }
+    loadServerConfig();
+
+    if (typeof window !== "undefined") {
+      const p = new URLSearchParams(window.location.search);
+      if (p.get("tab") === "edit") {
+        setStage("edit");
+      } else if (p.get("wheel") === "1") {
+        setPickerOpen(true);
+      }
+    }
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -347,14 +439,7 @@ export default function Minigame() {
     return () => stopMusic();
   }, [snd, stage, curIdx, helpOpen]);
 
-  const persist = useCallback((next: MinigameData) => {
-    setData(next);
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    } catch {
-      /* hết dung lượng thì thôi */
-    }
-  }, []);
+
 
   const openedCount = opened.filter(Boolean).length;
   const allDone = openedCount >= BOX_COUNT;
@@ -757,6 +842,7 @@ export default function Minigame() {
               setPickerOpen(false);
               start();
             }}
+            onSyncRoster={(roster) => saveToServer(undefined, roster)}
           />
         )}
       </div>
@@ -774,6 +860,13 @@ export default function Minigame() {
             Chơi
           </button>
           {soundBtn}
+          <button
+            className="mg-btn"
+            onClick={() => saveToServer(data)}
+            title="Lưu dữ liệu lên Cloud Server ngay lập tức"
+          >
+            {syncStatus === "saving" ? "⏳ Đang lưu Server..." : "☁️ Lưu Server"}
+          </button>
           <button className="mg-btn" onClick={exportJson} title="Xuất file JSON để chuyển sang máy chiếu hoặc sao lưu">
             📥 Xuất JSON
           </button>
@@ -784,7 +877,13 @@ export default function Minigame() {
           <button className="mg-btn" onClick={resetEverything}>
             XÓA HẾT NỘI DUNG
           </button>
-          <span className="mg-saved">Lưu tự động trên máy này</span>
+          <span className={`mg-saved ${syncStatus === "synced" ? "is-cloud" : ""}`}>
+            {syncStatus === "saving"
+              ? "⏳ Đang đồng bộ Server..."
+              : syncStatus === "synced"
+                ? "☁️ Đã lưu & đồng bộ Server"
+                : "Tự động lưu máy & Server"}
+          </span>
         </div>
         <div className="mg-edit">
           <section className="mg-card">
@@ -1373,6 +1472,7 @@ export default function Minigame() {
             setCurIdx(null);
             setPickerOpen(false);
           }}
+          onSyncRoster={(roster) => saveToServer(undefined, roster)}
         />
       )}
     </div>
@@ -1462,10 +1562,12 @@ function StudentPickerModal({
   mode = "general",
   onClose,
   onPickDone,
+  onSyncRoster,
 }: {
   mode?: "next_answer" | "pick_gift" | "general";
   onClose: () => void;
   onPickDone: (studentName: string) => void;
+  onSyncRoster?: (roster: string[]) => void;
 }) {
   const [students, setStudents] = useState<string[]>(getStoredStudents);
   const [tab, setTab] = useState<"wheel" | "roster">("wheel");
@@ -1541,6 +1643,7 @@ function StudentPickerModal({
     } catch {
       /* ignore */
     }
+    onSyncRoster?.(list);
     setTab("wheel");
     setWinner(null);
   }
@@ -1554,6 +1657,7 @@ function StudentPickerModal({
     } catch {
       /* ignore */
     }
+    onSyncRoster?.(defaults);
   }
 
   return (

@@ -220,6 +220,41 @@ export default async function HubPage() {
         </header>
       )}
 
+      {/* ── Minigame Hub Banner ─────────────────────────────── */}
+      <section className="relative overflow-hidden rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-rose-500/10 to-violet-500/10 p-5 shadow-sm transition hover:border-amber-500/50 sm:p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-start gap-4">
+            <span className="grid size-13 shrink-0 place-items-center rounded-2xl bg-amber-500/20 text-3xl shadow-inner">
+              🎮
+            </span>
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="rounded-full bg-amber-500/20 px-2.5 py-0.5 text-[11px] font-extrabold uppercase tracking-wide text-amber-500">
+                  Kho trò chơi lớp học
+                </span>
+                <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[11px] font-bold text-emerald-500">
+                  ☁️ Tự động đồng bộ Cloud Server
+                </span>
+              </div>
+              <h2 className="mt-1.5 text-lg font-black text-text sm:text-xl">
+                Minigame & Vòng Quay May Mắn 12A6
+              </h2>
+              <p className="mt-1 text-sm text-text-secondary">
+                100 Túi Mù Suy Luận Logic & Toán Lí, Vòng Quay 36 bạn, Nhanh Như Chớp... Tự động lưu trên Cloud, mở trên máy chiếu là chơi ngay!
+              </p>
+            </div>
+          </div>
+          <div className="flex shrink-0 items-center gap-2">
+            <Link
+              href="/apps/minigame"
+              className="inline-flex h-11 items-center gap-2 rounded-xl bg-amber-500 px-5 text-sm font-bold text-slate-950 shadow-md shadow-amber-500/25 transition hover:-translate-y-0.5 hover:bg-amber-400"
+            >
+              Vào Kho Minigame 🚀
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* ── Kho công cụ ────────────────────────────────────────── */}
       <section aria-labelledby="kho-cong-cu" className="space-y-3 border-t border-border pt-6">
         <h2 id="kho-cong-cu" className="text-sm font-bold text-text">
