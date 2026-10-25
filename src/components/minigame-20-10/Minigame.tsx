@@ -242,6 +242,13 @@ function Burst() {
   );
 }
 
+export const TEAMS = [
+  { id: 1, name: "Tổ 1", color: "#ff4d6d", lightColor: "rgba(255, 77, 109, 0.15)", border: "rgba(255, 77, 109, 0.4)", badge: "🔴 Tổ 1" },
+  { id: 2, name: "Tổ 2", color: "#00b4d8", lightColor: "rgba(0, 180, 216, 0.15)", border: "rgba(0, 180, 216, 0.4)", badge: "🔵 Tổ 2" },
+  { id: 3, name: "Tổ 3", color: "#ffb703", lightColor: "rgba(255, 183, 3, 0.15)", border: "rgba(255, 183, 3, 0.4)", badge: "🟡 Tổ 3" },
+  { id: 4, name: "Tổ 4", color: "#10b981", lightColor: "rgba(16, 185, 129, 0.15)", border: "rgba(16, 185, 129, 0.4)", badge: "🟢 Tổ 4" },
+];
+
 export default function Minigame() {
   const [stage, setStage] = useState<Stage>("cover");
   const [data, setData] = useState<MinigameData>(() => emptyData());
@@ -267,6 +274,24 @@ export default function Minigame() {
   const [wheelMode, setWheelMode] = useState<"next_answer" | "pick_gift" | "general">("general");
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [mcQrOpen, setMcQrOpen] = useState(false);
+  const [leaderboardOpen, setLeaderboardOpen] = useState(false);
+  /* 4 Tổ tham gia thi đấu xoay vòng từ trái sang phải */
+  const [currentTeam, setCurrentTeam] = useState<number>(() => {
+    if (typeof window === "undefined") return 1;
+    const s = localStorage.getItem("mg_12a6_cur_team");
+    return s ? Number(s) || 1 : 1;
+  });
+  const [scores, setScores] = useState<Record<number, number>>(() => {
+    if (typeof window === "undefined") return { 1: 0, 2: 0, 3: 0, 4: 0 };
+    try {
+      const s = localStorage.getItem("mg_12a6_scores");
+      if (s) {
+        const parsed = JSON.parse(s);
+        return { 1: parsed[1] ?? 0, 2: parsed[2] ?? 0, 3: parsed[3] ?? 0, 4: parsed[4] ?? 0 };
+      }
+    } catch {}
+    return { 1: 0, 2: 0, 3: 0, 4: 0 };
+  });
   /* 0 tắt · 1 bật hiệu ứng âm thanh (mặc định: 1) */
   const [snd, setSnd] = useState<SoundMode>(1);
   const [syncStatus, setSyncStatus] = useState<"idle" | "saving" | "synced" | "error">("idle");
@@ -282,6 +307,49 @@ export default function Minigame() {
       console.warn("[minigame] broadcast error", err);
     }
   }, []);
+
+  const addScore = useCallback((teamId: number, delta: number = 1) => {
+    setScores((prev) => {
+      const next = { ...prev, [teamId]: Math.max(0, (prev[teamId] || 0) + delta) };
+      try {
+        localStorage.setItem("mg_12a6_scores", JSON.stringify(next));
+      } catch {}
+      broadcastLiveState({ scores: next });
+      return next;
+    });
+  }, [broadcastLiveState]);
+
+  const setTeam = useCallback((teamId: number) => {
+    setCurrentTeam(teamId);
+    try {
+      localStorage.setItem("mg_12a6_cur_team", String(teamId));
+    } catch {}
+    broadcastLiveState({ currentTeam: teamId });
+  }, [broadcastLiveState]);
+
+  const nextTeam = useCallback(() => {
+    setCurrentTeam((prev) => {
+      const nxt = (prev % 4) + 1;
+      try {
+        localStorage.setItem("mg_12a6_cur_team", String(nxt));
+      } catch {}
+      broadcastLiveState({ currentTeam: nxt });
+      return nxt;
+    });
+  }, [broadcastLiveState]);
+
+  const resetScores = useCallback(() => {
+    if (window.confirm("Bạn có chắc chắn muốn đặt lại điểm số của 4 tổ về 0 không?")) {
+      const init = { 1: 0, 2: 0, 3: 0, 4: 0 };
+      setScores(init);
+      setCurrentTeam(1);
+      try {
+        localStorage.setItem("mg_12a6_scores", JSON.stringify(init));
+        localStorage.setItem("mg_12a6_cur_team", "1");
+      } catch {}
+      broadcastLiveState({ scores: init, currentTeam: 1 });
+    }
+  }, [broadcastLiveState]);
 
   const rootRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<number | null>(null);
@@ -515,6 +583,8 @@ export default function Minigame() {
         secs: b.secs,
       },
       currentPlayer,
+      currentTeam,
+      scores,
       timeLeft: !b.video && !noTimer ? b.secs : null,
       expired: false,
       answerShown: false,
@@ -806,6 +876,16 @@ export default function Minigame() {
             closeModal();
           } else if (cmd === "spin_wheel") {
             setPickerOpen(true);
+          } else if (cmd === "next_team") {
+            nextTeam();
+          } else if (cmd === "score_team_1") {
+            addScore(1, 1);
+          } else if (cmd === "score_team_2") {
+            addScore(2, 1);
+          } else if (cmd === "score_team_3") {
+            addScore(3, 1);
+          } else if (cmd === "score_team_4") {
+            addScore(4, 1);
           }
         }
       } catch {
@@ -813,7 +893,7 @@ export default function Minigame() {
       }
     }, 1000);
     return () => window.clearInterval(interval);
-  }, [closeModal]);
+  }, [closeModal, nextTeam, addScore]);
 
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
@@ -877,7 +957,7 @@ export default function Minigame() {
               );
             })}
           </div>
-          <div className="mg-ribbon">TRÒ CHƠI BỐC TÚI MÙ · LỚP 12A6</div>
+          <div className="mg-ribbon">🎁 HỘP QUÀ BÍ ẨN 12A6 · 4 TỔ TRANH TÀI</div>
 
           <div className="mg-hero">
             <span className="mg-hero-rose">
@@ -891,12 +971,37 @@ export default function Minigame() {
 
           <p className="mg-eyebrow">
             <StarSvg size={18} color="#ffd166" />
-            50 TÚI MÙ BÍ ẨN · XÉ LÀ TRÚNG · VUI BẤT NGỜ
+            4 TỔ LÀ 4 ĐỘI CHƠI · LẦN LƯỢT TỪ TRÁI SANG PHẢI · TRANH GIẢI NHẤT - NHÌ - BA
             <StarSvg size={18} color="#06d6a0" />
           </p>
 
-          <h1 className="mg-title">{data.title}</h1>
+          <h1 className="mg-title">{data.title || "HỘP QUÀ BÍ ẨN 12A6"}</h1>
           <p className="mg-wish">{data.wish}</p>
+
+          {/* Tóm tắt nhanh 4 quy tắc và luật chơi trên bìa */}
+          <div className="mg-rules-summary">
+            <div className="mg-rule-card">
+              <span className="mg-rule-badge">1. ĐỘI HÌNH</span>
+              <h4>4 Tổ là 4 Đội</h4>
+              <p>Chơi lần lượt từ trái sang phải: <b>Tổ 1 ➔ Tổ 2 ➔ Tổ 3 ➔ Tổ 4</b>.</p>
+            </div>
+            <div className="mg-rule-card">
+              <span className="mg-rule-badge">2. LƯỢT CHƠI</span>
+              <h4>1 Người Mỗi Lượt</h4>
+              <p>Khi đến lượt tổ mình, từng thành viên trong tổ lần lượt tham gia.</p>
+            </div>
+            <div className="mg-rule-card">
+              <span className="mg-rule-badge">3. ĐIỂM & QUÀ</span>
+              <h4>+1 Điểm / Thưởng Quà</h4>
+              <p>Trả lời đúng <b>+1 điểm</b>. Thử thách thành công nhận <b>Quà hoặc +1 điểm</b>.</p>
+            </div>
+            <div className="mg-rule-card">
+              <span className="mg-rule-badge">4. KẾT THÚC</span>
+              <h4>Vinh Danh 4 Giải</h4>
+              <p>Mở hết hộp quà sẽ trao: <b>Nhất – Nhì – Ba – Khuyến khích</b>.</p>
+            </div>
+          </div>
+
           <div className="mg-actions">
             <button className="mg-btn mg-primary" onClick={start}>
               BẮT ĐẦU XÉ TÚI
@@ -911,24 +1016,41 @@ export default function Minigame() {
               🎯 Quay chọn người
             </button>
             <button
+              className="mg-btn mg-lb-open-btn"
+              onClick={() => setLeaderboardOpen(true)}
+              title="Xem bảng điểm và xếp hạng 4 tổ"
+            >
+              🏆 Bảng Điểm 4 Tổ
+            </button>
+            <button
               className="mg-btn mg-mc-btn"
               onClick={() => setMcQrOpen(true)}
               title="Quét mã QR kết nối MC trên điện thoại để nhìn trước đáp án"
             >
               📱 MC Mobile
             </button>
+            <button className="mg-btn" onClick={() => setHelpOpen(true)}>
+              📜 Luật Chơi Chi Tiết
+            </button>
             <button className="mg-btn" onClick={() => setStage("edit")}>
               Soạn nội dung
             </button>
-            <button className="mg-btn" onClick={() => setHelpOpen(true)}>
-              Hướng dẫn
-            </button>
             {soundBtn}
           </div>
-          <p className="mg-hint">Enter bắt đầu · Space bốc túi · F toàn màn hình · H hướng dẫn · Esc đóng thẻ</p>
+          <p className="mg-hint">Enter bắt đầu · Space bốc túi · F toàn màn hình · H luật chơi · Esc đóng thẻ</p>
         </div>
         {helpOpen && <Help onClose={() => setHelpOpen(false)} />}
         {mcQrOpen && <McQrModal onClose={() => setMcQrOpen(false)} />}
+        {leaderboardOpen && (
+          <LeaderboardModal
+            scores={scores}
+            currentTeam={currentTeam}
+            onAddScore={addScore}
+            onSetTeam={setTeam}
+            onResetScores={resetScores}
+            onClose={() => setLeaderboardOpen(false)}
+          />
+        )}
         {pickerOpen && (
           <StudentPickerModal
             mode={wheelMode}
@@ -1268,11 +1390,54 @@ export default function Minigame() {
         >
           🎯 QUAY CHỌN NGƯỜI
         </button>
+
+        {/* Nút chỉ định lượt thi đấu của 4 Tổ xoay vòng */}
+        <button
+          type="button"
+          className="mg-team-turn-btn"
+          onClick={nextTeam}
+          title="Bấm để chuyển lượt sang tổ tiếp theo (từ trái sang phải)"
+          style={{
+            borderColor: TEAMS[currentTeam - 1].color,
+            color: TEAMS[currentTeam - 1].color,
+          }}
+        >
+          🎯 LƯỢT: <b>{TEAMS[currentTeam - 1].name}</b> ↻
+        </button>
+
+        {/* 4 Thẻ điểm số của 4 Tổ */}
+        <div className="mg-top-teams">
+          {TEAMS.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              className={`mg-top-team-pill ${currentTeam === t.id ? "is-active" : ""}`}
+              onClick={() => setTeam(t.id)}
+              title={`${t.name}: ${scores[t.id] || 0} điểm (Bấm để chọn lượt)`}
+              style={{
+                borderColor: t.color,
+                background: currentTeam === t.id ? t.lightColor : "transparent",
+              }}
+            >
+              <span className="mg-top-team-name" style={{ color: t.color }}>{t.name}</span>
+              <span className="mg-top-team-score">{scores[t.id] || 0}đ</span>
+            </button>
+          ))}
+        </div>
+
         {currentPlayer && (
           <span className="mg-cur-player-badge">
-            Lượt: <b>{currentPlayer}</b>
+            Bạn: <b>{currentPlayer}</b>
           </span>
         )}
+
+        <button
+          className="mg-btn mg-lb-open-btn"
+          onClick={() => setLeaderboardOpen(true)}
+          title="Mở Bảng Tổng Sắp & Xếp Hạng 4 Tổ"
+        >
+          🏆 Bảng Điểm
+        </button>
         <button className="mg-btn" onClick={() => setStage("cover")}>
           Về bìa
         </button>
@@ -1298,7 +1463,7 @@ export default function Minigame() {
           📱 MC Mobile
         </button>
         <button className="mg-btn" onClick={() => setHelpOpen(true)}>
-          Hướng dẫn
+          📜 Luật chơi
         </button>
       </div>
 
@@ -1541,6 +1706,56 @@ export default function Minigame() {
               </div>
             )}
 
+            {/* Thanh chấm điểm nhanh cho 4 Tổ */}
+            <div className="mg-modal-score-bar">
+              <div className="mg-modal-score-meta">
+                <span>🎯 Lượt của: <b style={{ color: TEAMS[currentTeam - 1].color }}>{TEAMS[currentTeam - 1].name}</b></span>
+                <span className="mg-modal-score-badge">Đúng: +1 điểm · Thử thách: Quà hoặc +1 điểm</span>
+              </div>
+              <div className="mg-modal-score-actions">
+                <button
+                  type="button"
+                  className="mg-score-action-btn is-active-team"
+                  onClick={() => addScore(currentTeam, 1)}
+                  style={{ background: TEAMS[currentTeam - 1].color }}
+                  title={`Cộng 1 điểm cho ${TEAMS[currentTeam - 1].name}`}
+                >
+                  ⭐ +1 Điểm {TEAMS[currentTeam - 1].name}
+                </button>
+                <button
+                  type="button"
+                  className="mg-score-action-btn is-gift-btn"
+                  onClick={() => {
+                    alert(`🎁 Trao quà thành công cho thành viên ${TEAMS[currentTeam - 1].name}!`);
+                  }}
+                  title="Trao quà trực tiếp cho thành viên"
+                >
+                  🎁 Tặng Quà
+                </button>
+                <div className="mg-modal-score-others">
+                  {TEAMS.map((t) => (
+                    <button
+                      key={t.id}
+                      type="button"
+                      className={`mg-score-mini-chip ${currentTeam === t.id ? "is-active" : ""}`}
+                      onClick={() => addScore(t.id, 1)}
+                      title={`Cộng 1 điểm cho ${t.name}`}
+                    >
+                      +1 {t.name} ({scores[t.id] || 0})
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    className="mg-score-mini-chip is-next-team"
+                    onClick={nextTeam}
+                    title="Chuyển lượt sang tổ tiếp theo (từ trái sang phải)"
+                  >
+                    Tổ tiếp theo ➔
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <div className="mg-panel-actions">
               {curBox.answer && !answerShown && (
                 <button className="mg-btn mg-reveal" onClick={() => setAnswerShown(true)}>
@@ -1568,6 +1783,16 @@ export default function Minigame() {
       {celebrate && <Burst />}
       {helpOpen && <Help onClose={() => setHelpOpen(false)} />}
       {mcQrOpen && <McQrModal onClose={() => setMcQrOpen(false)} />}
+      {leaderboardOpen && (
+        <LeaderboardModal
+          scores={scores}
+          currentTeam={currentTeam}
+          onAddScore={addScore}
+          onSetTeam={setTeam}
+          onResetScores={resetScores}
+          onClose={() => setLeaderboardOpen(false)}
+        />
+      )}
       {pickerOpen && (
         <StudentPickerModal
           mode={wheelMode}
@@ -1643,48 +1868,196 @@ function McQrModal({ onClose }: { onClose: () => void }) {
   );
 }
 
+function LeaderboardModal({
+  scores,
+  currentTeam,
+  onAddScore,
+  onSetTeam,
+  onResetScores,
+  onClose,
+}: {
+  scores: Record<number, number>;
+  currentTeam: number;
+  onAddScore: (teamId: number, delta: number) => void;
+  onSetTeam: (teamId: number) => void;
+  onResetScores: () => void;
+  onClose: () => void;
+}) {
+  const ranked = [...TEAMS].sort((a, b) => (scores[b.id] || 0) - (scores[a.id] || 0));
+  const medals = ["🥇 GIẢI NHẤT", "🥈 GIẢI NHÌ", "🥉 GIẢI BA", "🎖️ GIẢI KHUYẾN KHÍCH"];
+  const medalClasses = ["is-rank-1", "is-rank-2", "is-rank-3", "is-rank-4"];
+
+  return (
+    <div className="mg-modal" onClick={onClose}>
+      <div className="mg-panel mg-leaderboard-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="mg-panel-head">
+          <span className="mg-badge">🏆 BẢNG TỔNG SẮP ĐIỂM SỐ 4 TỔ</span>
+          <button className="mg-close" onClick={onClose}>✕</button>
+        </div>
+        <h3 className="mg-lb-title">Xếp Hạng Thi Đấu 12A6</h3>
+        <p className="mg-lb-sub">
+          4 Tổ thi đấu lần lượt từ trái sang phải · Đúng +1 điểm · Thử thách nhận Quà hoặc +1 điểm
+        </p>
+
+        <div className="mg-lb-cards">
+          {ranked.map((team, idx) => (
+            <div
+              key={team.id}
+              className={`mg-lb-card ${medalClasses[idx]} ${currentTeam === team.id ? "is-current-turn" : ""}`}
+            >
+              <div className="mg-lb-rank-badge">{medals[idx]}</div>
+              <div className="mg-lb-team-info">
+                <span className="mg-lb-team-name" style={{ color: team.color }}>
+                  {team.name}
+                  {currentTeam === team.id && <span className="mg-lb-turn-pill">Đang đến lượt 🎯</span>}
+                </span>
+                <span className="mg-lb-team-score">{scores[team.id] || 0} <i>điểm</i></span>
+              </div>
+              <div className="mg-lb-actions">
+                <button
+                  type="button"
+                  className="mg-lb-btn is-sub"
+                  onClick={() => onAddScore(team.id, -1)}
+                  title="Trừ 1 điểm"
+                >
+                  -1
+                </button>
+                <button
+                  type="button"
+                  className="mg-lb-btn is-add"
+                  onClick={() => onAddScore(team.id, 1)}
+                  title="Cộng 1 điểm"
+                >
+                  +1 điểm
+                </button>
+                <button
+                  type="button"
+                  className={`mg-lb-btn is-turn ${currentTeam === team.id ? "is-active" : ""}`}
+                  onClick={() => onSetTeam(team.id)}
+                  title="Chuyển lượt sang tổ này"
+                >
+                  {currentTeam === team.id ? "✓ Đang lượt" : "Đặt lượt"}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mg-lb-foot">
+          <button type="button" className="mg-btn mg-reset-btn" onClick={onResetScores}>
+            🔄 Đặt lại 0 điểm
+          </button>
+          <button type="button" className="mg-btn mg-primary" onClick={onClose}>
+            Đóng bảng điểm
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Help({ onClose }: { onClose: () => void }) {
   return (
     <div className="mg-modal" onClick={onClose}>
-      <div className="mg-panel mg-help" onClick={(e) => e.stopPropagation()}>
-        <h3>
-          <SparkleSvg size={26} color="#ffd166" /> TÚI MÙ ĐỐ VUI 12A6 — CÁCH CHƠI
-        </h3>
-        <ol>
-          <li>
-            <b>Bước 1:</b> bấm <b>BẮT ĐẦU XÉ TÚI</b> ở bìa, rồi nhấn <kbd>F</kbd> để chiếu toàn màn hình lên TV/máy chiếu.
-          </li>
-          <li>
-            <b>Bước 2:</b> bấm nút lớn <b>🎲 BỐC TÚI MÙ NGẪU NHIÊN</b> (hoặc nhấn <kbd>Space</kbd>). Dải sáng chạy qua 100 chiếc túi mù rồi dừng trên <b>1 túi mù may mắn</b>. Hoặc bấm <b>🎯 QUAY CHỌN NGƯỜI</b> để chọn ngẫu nhiên một bạn trong lớp lên xé túi!
-          </li>
-          <li>
-            <b>Bước 3:</b> màn hình <b>tự cuộn tới túi mù vừa trúng</b>, túi đó <b>phát sáng và nhấp nháy</b> — bạn có thể <b>bấm nút lớn '✂️ XÉ TÚI MÙ NGAY' ở trên</b> hoặc bấm thẳng vào túi đó (hoặc nhấn <kbd>Space</kbd> / <kbd>Enter</kbd>) để xé túi.
-          </li>
-          <li>
-            <b>Bước 4:</b> túi mù mở ra chứa các câu hỏi đa dạng: <b>TOÁN - LÍ - VĂN - ANH 12 (giữa kì 1)</b>, <b>ĐỐ MẸO DÂN GIAN</b>, <b>ĐỐ MẸO XÀM XÀM BỰA</b>, <b>THỬ THÁCH & HÌNH PHẠT</b> hoặc <b>QUÀ MAY MẮN & BẢO BỐI</b> lấy quà liền tay!
-          </li>
-          <li>
-            <b>Bước 5:</b> nếu túi có <b>video</b>, xem hết video (hoặc bấm <b>Bỏ qua video</b>) thì <b>đồng hồ đếm ngược mới bắt đầu</b>.
-          </li>
-          <li>
-            <b>Hộp quà Vòng Quay & Trợ giúp:</b> Mở trúng <b>🎡 Vòng Quay May Mắn</b> sẽ kích hoạt 2 lựa chọn: <b>🎯 Quay ngẫu nhiên 1 bạn trả lời tiếp theo</b> hoặc <b>🎁 Quay ngẫu nhiên 1 bạn lên bốc hộp quà</b>. Các <b>Hộp quà Cô Chủ Nhiệm</b> và <b>Hộp quà Bạn bè</b> mang lại phần quà ăn vặt và đặc quyền cứu nguy trực tiếp từ Cô và đồng đội!
-          </li>
-          <li>
-            <b>Bước 6:</b> quản trò / cả lớp xác nhận xong, bấm <b>HIỆN ĐÁP ÁN</b> để xem đáp án (với các câu đố vui).
-          </li>
-          <li>
-            <b>Bước 7:</b> bấm <b>Đã xé xong túi này / Nhận quà / Kích hoạt bảo bối</b> để đóng túi.
-          </li>
-          <li>
-            <b>Túi mù đã xé</b> sẽ mờ đi và không mở lại được. Mở lần lượt đến khi hết <b>100 túi mù</b>.
-          </li>
-          <li>
-            <b>Mẹo:</b> <kbd>Space</kbd> bốc túi/xé túi · <kbd>F</kbd> toàn màn hình · <kbd>H</kbd> hướng dẫn · <kbd>Esc</kbd> đóng thẻ.
-          </li>
-        </ol>
-        <button className="mg-btn mg-primary" onClick={onClose}>
-          Đã hiểu
-        </button>
+      <div className="mg-panel mg-help mg-rules-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="mg-rules-header">
+          <div className="mg-badge">📜 ĐIỀU LỆ CHÍNH THỨC</div>
+          <h3>
+            <SparkleSvg size={28} color="#ffd166" /> HỘP QUÀ BÍ ẨN 12A6 — QUY TẮC & LUẬT CHƠI
+          </h3>
+          <p className="mg-rules-tagline">
+            Trận đấu trí tuệ và may mắn giữa 4 tổ lớp 12A6 · Tinh thần đồng đội & Vui hết mình!
+          </p>
+        </div>
+
+        <div className="mg-rules-body">
+          {/* PHẦN 1: ĐỘI HÌNH & THỨ TỰ */}
+          <div className="mg-rule-block">
+            <div className="mg-rule-icon">👥</div>
+            <div className="mg-rule-content">
+              <h4>1. ĐỘI HÌNH & THỨ TỰ LƯỢT THI ĐẤU</h4>
+              <ul>
+                <li><b>4 Tổ là 4 Đội chơi:</b> Tổ 1, Tổ 2, Tổ 3 và Tổ 4.</li>
+                <li>
+                  <b>Thứ tự lượt chơi:</b> Lần lượt thi đấu xoay vòng <b>từ trái sang phải</b>:{" "}
+                  <code>Tổ 1 ➔ Tổ 2 ➔ Tổ 3 ➔ Tổ 4 ➔ lặp lại Tổ 1</code>.
+                </li>
+                <li>
+                  <b>Phân công lượt cá nhân:</b> Khi đến lượt của tổ mình, <b>mỗi lượt chơi sẽ là 1 người trong tổ lần lượt tham gia</b> (có thể dùng Vòng quay chọn người nếu chưa biết gọi ai).
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* PHẦN 2: CÁCH CHƠI & BỐC HỘP */}
+          <div className="mg-rule-block">
+            <div className="mg-rule-icon">🎁</div>
+            <div className="mg-rule-content">
+              <h4>2. CÁCH THỨC XÉ HỘP & THỜI GIAN</h4>
+              <ul>
+                <li>
+                  Thành viên đại diện bấm nút <b>🎲 Bốc Túi Mù / Hộp Quà Ngẫu Nhiên</b> (hoặc nhấn phím <b>Space</b>). Dải sáng sẽ quét và chọn ngẫu nhiên 1 hộp quà trên bảng.
+                </li>
+                <li>
+                  Mỗi hộp câu hỏi có <b>đồng hồ đếm ngược</b> (thường từ 20 đến 30 giây). Thành viên cần đưa ra câu trả lời trước khi hết giờ!
+                </li>
+                <li>
+                  Hộp có <b>video clip</b>: Xem hết clip (hoặc bấm bỏ qua) thì đồng hồ đếm ngược mới bắt đầu tính.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* PHẦN 3: TÍNH ĐIỂM & THỬ THÁCH */}
+          <div className="mg-rule-block">
+            <div className="mg-rule-icon">⭐</div>
+            <div className="mg-rule-content">
+              <h4>3. CƠ CHẾ TÍNH ĐIỂM & THỬ THÁCH MAY MẮN</h4>
+              <ul>
+                <li>
+                  <b>Trả lời đúng:</b> Mỗi lượt trả lời đúng của thành viên trong đội sẽ được tính là <b>+1 ĐIỂM</b> cho tổ!
+                </li>
+                <li>
+                  <b>Hộp Thử Thách & May Mắn:</b> Trong số các hộp quà, có các thử thách và may mắn. Nếu bạn <b>hoàn thành yêu cầu của 1 thử thách</b>, đội của bạn / người tham gia thử thách sẽ nhận được <b>1 PHẦN QUÀ</b> hoặc được <b>CỘNG 1 ĐIỂM</b> cho đội!
+                </li>
+                <li>
+                  <b>Quyền cứu viện:</b> Nếu thành viên bế tắc hoặc trả lời sai, các thành viên khác trong lớp hoặc cùng tổ có thể cứu bồ theo điều phối của MC.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* PHẦN 4: KẾT THÚC & TRAO GIẢI */}
+          <div className="mg-rule-block">
+            <div className="mg-rule-icon">🏆</div>
+            <div className="mg-rule-content">
+              <h4>4. KẾT THÚC & XẾP HẠNG TRAO THƯỞNG</h4>
+              <ul>
+                <li>
+                  <b>Thời điểm kết thúc:</b> Trò chơi chính thức kết thúc khi <b>toàn bộ số lượng hộp quà được mở hết</b>.
+                </li>
+                <li>
+                  <b>Xếp hạng chung cuộc:</b> Cuối cùng, tổng điểm số của 4 tổ sẽ được phân chia theo 4 thứ hạng danh dự:
+                  <div className="mg-award-pills">
+                    <span className="mg-award-pill is-gold">🥇 GIẢI NHẤT</span>
+                    <span className="mg-award-pill is-silver">🥈 GIẢI NHÌ</span>
+                    <span className="mg-award-pill is-bronze">🥉 GIẢI BA</span>
+                    <span className="mg-award-pill is-consolation">🎖️ GIẢI KHUYẾN KHÍCH</span>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div className="mg-rules-footer">
+          <p className="mg-rules-shortcuts">
+            Phím tắt: <kbd>Space</kbd> bốc hộp · <kbd>F</kbd> toàn màn hình · <kbd>H</kbd> mở luật chơi · <kbd>Esc</kbd> đóng bảng
+          </p>
+          <button type="button" className="mg-btn mg-primary" onClick={onClose}>
+            ✓ ĐÃ NẮM RÕ QUY TẮC & LUẬT CHƠI
+          </button>
+        </div>
       </div>
     </div>
   );

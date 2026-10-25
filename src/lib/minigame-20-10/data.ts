@@ -409,8 +409,8 @@ export function recoverStoredData(): MinigameData | null {
 
 export function emptyData(): MinigameData {
   return {
-    title: "100 TÚI MÙ ĐỐ VUI · LỚP 12A6",
-    wish: "100 chiếc túi mù trộn lẫn lộn: Suy luận Logic đỉnh cao, Toán & Lí 12 Giữa Kì 1, Đố mẹo xàm bựa, Thử thách & Hình phạt, Thêm lượt, Mất lượt và Vòng quay may mắn rải đều khắp nơi!",
+    title: "HỘP QUÀ BÍ ẨN 12A6",
+    wish: "4 Tổ là 4 đội chơi thi đấu lần lượt từ trái sang phải. Trả lời đúng +1 điểm; hoàn thành thử thách nhận Quà hoặc +1 điểm. Đua top Nhất – Nhì – Ba – Khuyến khích!",
     boxes: defaultBoxes(),
   };
 }

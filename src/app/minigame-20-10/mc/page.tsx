@@ -6,6 +6,13 @@ import { type LiveGameState } from "@/app/api/minigame-20-10/live/route";
 
 const POLL_INTERVAL = 800; // ms
 
+const TEAMS = [
+  { id: 1, name: "Tổ 1", color: "#ff4d6d" },
+  { id: 2, name: "Tổ 2", color: "#00b4d8" },
+  { id: 3, name: "Tổ 3", color: "#ffb703" },
+  { id: 4, name: "Tổ 4", color: "#10b981" },
+];
+
 export default function MobileMCPage() {
   const [liveState, setLiveState] = useState<LiveGameState | null>(null);
   const [connected, setConnected] = useState<boolean>(false);
@@ -14,7 +21,7 @@ export default function MobileMCPage() {
   const [wakeLockActive, setWakeLockActive] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [allBoxes, setAllBoxes] = useState<Array<{ id: string; num: number; title: string; prompt?: string; answer?: string; type: string }>>([]);
-  const [tab, setTab] = useState<"live" | "cheatSheet">("live");
+  const [tab, setTab] = useState<"live" | "cheatSheet" | "rules">("live");
 
   const lastBoxIdRef = useRef<string | null>(null);
 
@@ -117,7 +124,7 @@ export default function MobileMCPage() {
   }, [poll]);
 
   // Gửi lệnh điều khiển từ xa đến máy chiếu
-  const sendCommand = async (cmd: "reveal" | "close" | "spin_wheel") => {
+  const sendCommand = async (cmd: string) => {
     setSendingCmd(cmd);
     try {
       if (navigator.vibrate) {
@@ -143,9 +150,19 @@ export default function MobileMCPage() {
   const curBox = liveState?.curBox;
   const curIdx = liveState?.curIdx;
   const currentPlayer = liveState?.currentPlayer;
+  const currentTeam = liveState?.currentTeam || 1;
+  const scores: Record<number, number> = liveState?.scores || { 1: 0, 2: 0, 3: 0, 4: 0 };
   const answerShown = liveState?.answerShown;
   const timeLeft = liveState?.timeLeft;
   const expired = liveState?.expired;
+
+  const sendTeamScore = (teamId: number) => {
+    sendCommand(`score_team_${teamId}`);
+  };
+
+  const sendNextTeam = () => {
+    sendCommand("next_team");
+  };
 
   // Filter boxes cho tab tra cứu
   const filteredBoxes = allBoxes.filter((b) => {
@@ -179,19 +196,53 @@ export default function MobileMCPage() {
         </div>
       </header>
 
+      {/* 4 Teams Live Score Bar on MC phone */}
+      <section className="mc-teams-bar">
+        <div className="mc-teams-meta">
+          <span>
+            🎯 Đang lượt: <b style={{ color: TEAMS[(currentTeam || 1) - 1].color }}>{TEAMS[(currentTeam || 1) - 1].name}</b>
+          </span>
+          <button type="button" className="mc-next-turn-btn" onClick={sendNextTeam}>
+            Tổ tiếp ➔
+          </button>
+        </div>
+        <div className="mc-teams-chips">
+          {TEAMS.map((t) => (
+            <div key={t.id} className={`mc-team-chip ${currentTeam === t.id ? "is-active" : ""}`}>
+              <span className="mc-team-chip-name" style={{ color: t.color }}>{t.name}</span>
+              <span className="mc-team-chip-score">{scores[t.id] || 0}đ</span>
+              <button
+                type="button"
+                className="mc-team-add-btn"
+                onClick={() => sendTeamScore(t.id)}
+                title={`+1 điểm cho ${t.name}`}
+              >
+                +1
+              </button>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Tabs */}
       <nav className="mc-nav-tabs">
         <button
           className={`mc-tab ${tab === "live" ? "is-active" : ""}`}
           onClick={() => setTab("live")}
         >
-          🔴 Trực Tiếp {curBox ? "(Đang Có Câu)" : ""}
+          🔴 Trực Tiếp {curBox ? "(Đang Có)" : ""}
         </button>
         <button
           className={`mc-tab ${tab === "cheatSheet" ? "is-active" : ""}`}
           onClick={() => setTab("cheatSheet")}
         >
-          📖 Sổ Tay 100 Câu ({allBoxes.length})
+          📖 Sổ Tay ({allBoxes.length})
+        </button>
+        <button
+          className={`mc-tab ${tab === "rules" ? "is-active" : ""}`}
+          onClick={() => setTab("rules")}
+        >
+          📜 Luật Chơi (4 Tổ)
         </button>
       </nav>
 
@@ -270,6 +321,25 @@ export default function MobileMCPage() {
               {/* REMOTE CONTROL BUTTONS */}
               <div className="mc-controls">
                 <div className="mc-controls-label">🎮 ĐIỀU KHIỂN TỪ XA MÁY CHIẾU:</div>
+
+                <div className="mc-score-row">
+                  <button
+                    type="button"
+                    className="mc-btn mc-btn-team-score"
+                    style={{ background: TEAMS[(currentTeam || 1) - 1].color }}
+                    onClick={() => sendTeamScore(currentTeam)}
+                  >
+                    ⭐ +1đ cho {TEAMS[(currentTeam || 1) - 1].name}
+                  </button>
+                  <button
+                    type="button"
+                    className="mc-btn mc-btn-turn-next"
+                    onClick={sendNextTeam}
+                  >
+                    Tổ tiếp ➔
+                  </button>
+                </div>
+
                 {!answerShown ? (
                   <button
                     className="mc-btn mc-btn-reveal"
@@ -309,9 +379,34 @@ export default function MobileMCPage() {
                 Ngay khi máy chiếu bốc trúng túi nào, câu hỏi và <b>đáp án bí mật</b> sẽ lập tức hiện tại đây!
               </p>
 
+              <div className="mc-standby-team-box">
+                <span className="mc-standby-team-label">🎯 Đang đến lượt thi đấu:</span>
+                <b className="mc-standby-team-val" style={{ color: TEAMS[(currentTeam || 1) - 1].color }}>
+                  {TEAMS[(currentTeam || 1) - 1].name}
+                </b>
+                <div className="mc-btn-row" style={{ marginTop: 8 }}>
+                  <button
+                    type="button"
+                    className="mc-btn mc-btn-team-score"
+                    style={{ background: TEAMS[(currentTeam || 1) - 1].color, flex: 1 }}
+                    onClick={() => sendTeamScore(currentTeam)}
+                  >
+                    ⭐ +1đ ({TEAMS[(currentTeam || 1) - 1].name})
+                  </button>
+                  <button
+                    type="button"
+                    className="mc-btn mc-btn-turn-next"
+                    style={{ flex: 1 }}
+                    onClick={sendNextTeam}
+                  >
+                    Tổ tiếp ➔
+                  </button>
+                </div>
+              </div>
+
               {currentPlayer ? (
                 <div className="mc-standby-player">
-                  <div className="mc-standby-player-label">🎯 LƯỢT TIẾP THEO:</div>
+                  <div className="mc-standby-player-label">🎯 NGƯỜI CHƠI TRÊN BỤC:</div>
                   <div className="mc-standby-player-name">{currentPlayer}</div>
                 </div>
               ) : (
@@ -376,6 +471,55 @@ export default function MobileMCPage() {
             {filteredBoxes.length === 0 && (
               <div className="mc-cheat-empty">Không tìm thấy túi nào khớp với từ khóa.</div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* TAB 3: LUẬT CHƠI 4 TỔ */}
+      {tab === "rules" && (
+        <div className="mc-rules-tab">
+          <div className="mc-rules-card">
+            <div className="mc-rules-tag">📜 HỘP QUÀ BÍ ẨN 12A6</div>
+            <h2 className="mc-rules-title">QUY TẮC & LUẬT CHƠI</h2>
+            <p className="mc-rules-sub">MC đọc và phổ biến điều lệ này trước khi cả lớp bắt đầu thi đấu.</p>
+
+            <div className="mc-rules-item">
+              <div className="mc-rules-item-icon">👥</div>
+              <div className="mc-rules-item-text">
+                <b>1. ĐỘI HÌNH & THỨ TỰ LƯỢT CHƠI:</b>
+                <p>• 4 Tổ trong lớp là 4 đội chơi chính thức: <b>Tổ 1 – Tổ 2 – Tổ 3 – Tổ 4</b>.</p>
+                <p>• Thi đấu lần lượt <b>từ trái sang phải</b>: <code>Tổ 1 ➔ Tổ 2 ➔ Tổ 3 ➔ Tổ 4 ➔ lặp lại Tổ 1</code>.</p>
+                <p>• Khi đến lượt tổ mình: <b>Mỗi lượt chơi sẽ là 1 người trong tổ lần lượt tham gia</b>.</p>
+              </div>
+            </div>
+
+            <div className="mc-rules-item">
+              <div className="mc-rules-item-icon">⏱️</div>
+              <div className="mc-rules-item-text">
+                <b>2. BỐC HỘP & THỜI GIAN:</b>
+                <p>• Người chơi đại diện bấm bốc hộp ngẫu nhiên hoặc chọn túi mù trên bảng.</p>
+                <p>• Mỗi câu hỏi có đồng hồ đếm ngược (20s - 30s). Cần trả lời trước khi hết giờ.</p>
+                <p>• Hộp có video clip: Chạy hết video clip mới bắt đầu đếm ngược.</p>
+              </div>
+            </div>
+
+            <div className="mc-rules-item">
+              <div className="mc-rules-item-icon">⭐</div>
+              <div className="mc-rules-item-text">
+                <b>3. CƠ CHẾ TÍNH ĐIỂM & THỬ THÁCH:</b>
+                <p>• <b>Trả lời đúng:</b> Mỗi lượt trả lời đúng của thành viên tính là <b>+1 ĐIỂM</b> cho tổ!</p>
+                <p>• <b>Thử thách & May mắn:</b> Nếu hoàn thành yêu cầu của 1 thử thách, đội hoặc người tham gia sẽ nhận được <b>1 PHẦN QUÀ</b> hoặc được <b>CỘNG 1 ĐIỂM</b> cho đội!</p>
+              </div>
+            </div>
+
+            <div className="mc-rules-item">
+              <div className="mc-rules-item-icon">🏆</div>
+              <div className="mc-rules-item-text">
+                <b>4. KẾT THÚC & XẾP HẠNG TRAO THƯỞNG:</b>
+                <p>• Trò chơi kết thúc khi <b>toàn bộ số lượng hộp quà được mở hết</b>.</p>
+                <p>• Bảng tổng sắp điểm số của 4 tổ sẽ phân chia theo 4 thứ hạng danh dự: <b>🥇 Nhất – 🥈 Nhì – 🥉 Ba – 🎖️ Khuyến Khích</b>.</p>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -974,6 +1118,198 @@ export default function MobileMCPage() {
           padding: 40px 14px;
           color: #64748b;
           font-size: 14px;
+        }
+
+        /* 4 Teams Live Score Bar on Mobile */
+        .mc-teams-bar {
+          background: #15112b;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          padding: 8px 12px;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+
+        .mc-teams-meta {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          font-size: 12px;
+          color: #cbd5e1;
+        }
+
+        .mc-next-turn-btn {
+          background: #334155;
+          color: #ffd166;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 6px;
+          padding: 3px 8px;
+          font-size: 11px;
+          font-weight: 800;
+          cursor: pointer;
+        }
+
+        .mc-teams-chips {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 6px;
+        }
+
+        .mc-team-chip {
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          padding: 4px 6px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 2px;
+        }
+
+        .mc-team-chip.is-active {
+          border-color: #ffd166;
+          background: rgba(255, 209, 102, 0.12);
+        }
+
+        .mc-team-chip-name {
+          font-size: 11px;
+          font-weight: 800;
+        }
+
+        .mc-team-chip-score {
+          font-size: 14px;
+          font-weight: 900;
+          color: #fff;
+        }
+
+        .mc-team-add-btn {
+          background: #10b981;
+          color: #fff;
+          border: none;
+          border-radius: 4px;
+          padding: 2px 8px;
+          font-size: 11px;
+          font-weight: 800;
+          cursor: pointer;
+          width: 100%;
+        }
+
+        .mc-score-row {
+          display: flex;
+          gap: 8px;
+        }
+
+        .mc-btn-team-score {
+          flex: 2;
+          color: #fff;
+          font-size: 15px;
+          font-weight: 800;
+        }
+
+        .mc-btn-turn-next {
+          flex: 1;
+          background: #334155;
+          color: #ffd166;
+          font-size: 13px;
+          font-weight: 800;
+        }
+
+        .mc-standby-team-box {
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px dashed rgba(255, 255, 255, 0.2);
+          border-radius: 12px;
+          padding: 10px 14px;
+          width: 100%;
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+
+        .mc-standby-team-label {
+          font-size: 11px;
+          color: #94a3b8;
+        }
+
+        .mc-standby-team-val {
+          font-size: 20px;
+          font-weight: 900;
+        }
+
+        /* Rules Tab on Mobile */
+        .mc-rules-tab {
+          padding: 14px;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .mc-rules-card {
+          background: #16122c;
+          border-radius: 16px;
+          border: 1px solid rgba(255, 209, 102, 0.25);
+          padding: 16px;
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+        }
+
+        .mc-rules-tag {
+          font-size: 11px;
+          font-weight: 900;
+          color: #ffd166;
+          letter-spacing: 0.08em;
+        }
+
+        .mc-rules-title {
+          font-size: 20px;
+          font-weight: 900;
+          color: #fff;
+          margin: 0;
+        }
+
+        .mc-rules-sub {
+          font-size: 12px;
+          color: #94a3b8;
+          margin: 0;
+          line-height: 1.4;
+        }
+
+        .mc-rules-item {
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          border-radius: 10px;
+          padding: 12px;
+          display: flex;
+          gap: 10px;
+        }
+
+        .mc-rules-item-icon {
+          font-size: 22px;
+        }
+
+        .mc-rules-item-text {
+          font-size: 13px;
+          line-height: 1.5;
+          color: #cbd5e1;
+        }
+
+        .mc-rules-item-text b {
+          color: #ffd166;
+          display: block;
+          margin-bottom: 4px;
+        }
+
+        .mc-rules-item-text p {
+          margin: 0 0 4px 0;
+        }
+
+        .mc-rules-item-text code {
+          background: rgba(255, 209, 102, 0.15);
+          color: #ffd166;
+          padding: 1px 4px;
+          border-radius: 4px;
+          font-size: 11px;
         }
 
         .mc-footer {

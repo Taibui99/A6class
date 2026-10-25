@@ -22,7 +22,9 @@ export type LiveGameState = {
   expired: boolean;
   answerShown: boolean;
   stage: string;
-  remoteCommand?: "reveal" | "close" | "spin_wheel" | null;
+  currentTeam: number; // 1 | 2 | 3 | 4
+  scores: Record<number, number>; // { 1: 0, 2: 0, 3: 0, 4: 0 }
+  remoteCommand?: string | null;
   updatedAt: number;
 };
 
@@ -36,6 +38,8 @@ let memoryCache: LiveGameState = {
   expired: false,
   answerShown: false,
   stage: "cover",
+  currentTeam: 1,
+  scores: { 1: 0, 2: 0, 3: 0, 4: 0 },
   remoteCommand: null,
   updatedAt: Date.now(),
 };
@@ -111,15 +115,17 @@ export async function POST(req: Request) {
   }
 }
 
-// MC trên điện thoại gửi lệnh điều khiển từ xa (Bấm Hiện Đáp Án / Đóng Hộp / Mở Vòng Quay)
+// MC trên điện thoại gửi lệnh điều khiển từ xa hoặc cập nhật điểm số
 export async function PATCH(req: Request) {
   try {
     const body = await req.json();
-    const command = body?.command as "reveal" | "close" | "spin_wheel" | null;
+    const command = body?.command as string | null;
 
     memoryCache = {
       ...memoryCache,
-      remoteCommand: command,
+      ...(body.scores ? { scores: { ...memoryCache.scores, ...body.scores } } : {}),
+      ...(body.currentTeam !== undefined ? { currentTeam: body.currentTeam } : {}),
+      remoteCommand: command !== undefined ? command : memoryCache.remoteCommand,
       updatedAt: Date.now(),
     };
 
@@ -137,7 +143,7 @@ export async function PATCH(req: Request) {
       })
       .catch(() => {});
 
-    return NextResponse.json({ ok: true, command });
+    return NextResponse.json({ ok: true, state: memoryCache });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ ok: false, error: msg }, { status: 500 });

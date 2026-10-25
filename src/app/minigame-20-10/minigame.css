@@ -1843,3 +1843,410 @@
   margin-bottom: 16px;
 }
 
+/* Cover Page Rules Summary */
+.mg-rules-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  max-width: 960px;
+  width: 100%;
+  margin: 18px auto 20px;
+}
+@media (max-width: 768px) {
+  .mg-rules-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+.mg-rule-card {
+  background: rgba(25, 20, 48, 0.7);
+  border: 1px solid rgba(255, 209, 102, 0.25);
+  border-radius: 14px;
+  padding: 12px 14px;
+  text-align: left;
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.mg-rule-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 209, 102, 0.6);
+}
+.mg-rule-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 900;
+  color: #ffd166;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.mg-rule-card h4 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  color: #ffffff;
+}
+.mg-rule-card p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #cbd5e1;
+}
+
+/* Top Bar Team Chips & Turn Indicator */
+.mg-team-turn-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 2px solid #ff4d6d;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.mg-team-turn-btn:hover {
+  transform: scale(1.04);
+  background: rgba(255, 255, 255, 0.08);
+}
+.mg-top-teams {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.mg-top-team-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.mg-top-team-pill:hover {
+  transform: translateY(-1px);
+}
+.mg-top-team-pill.is-active {
+  box-shadow: 0 0 10px rgba(255, 209, 102, 0.4);
+  border-width: 2px;
+}
+.mg-top-team-name {
+  font-weight: 900;
+}
+.mg-top-team-score {
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-size: 11px;
+}
+.mg-lb-open-btn {
+  background: linear-gradient(135deg, #d97706, #f59e0b) !important;
+  color: #fff !important;
+  font-weight: 800 !important;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.3) !important;
+}
+
+/* Modal In-Game Scoring Bar */
+.mg-modal-score-bar {
+  background: rgba(15, 12, 30, 0.85);
+  border: 1px solid rgba(255, 209, 102, 0.3);
+  border-radius: 14px;
+  padding: 12px 16px;
+  margin: 12px 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.mg-modal-score-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #cbd5e1;
+}
+.mg-modal-score-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffd166;
+  background: rgba(255, 209, 102, 0.12);
+  padding: 3px 8px;
+  border-radius: 8px;
+}
+.mg-modal-score-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.mg-score-action-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  color: #ffffff;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+.mg-score-action-btn:hover {
+  transform: scale(1.03);
+  filter: brightness(1.1);
+}
+.mg-score-action-btn.is-gift-btn {
+  background: linear-gradient(135deg, #ec4899, #d946ef);
+}
+.mg-modal-score-others {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+.mg-score-mini-chip {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #e2e8f0;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.mg-score-mini-chip:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+.mg-score-mini-chip.is-active {
+  border-color: #ffd166;
+  color: #ffd166;
+  background: rgba(255, 209, 102, 0.15);
+}
+.mg-score-mini-chip.is-next-team {
+  background: #334155;
+  color: #ffd166;
+  font-weight: 800;
+}
+
+/* Leaderboard Modal (Bảng Tổng Sắp) */
+.mg-leaderboard-modal {
+  max-width: 640px !important;
+  text-align: center;
+  padding: 24px !important;
+}
+.mg-lb-title {
+  margin: 10px 0 4px;
+  font-size: 24px;
+  font-weight: 900;
+  color: #ffd166;
+}
+.mg-lb-sub {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0 0 18px;
+  line-height: 1.45;
+}
+.mg-lb-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.mg-lb-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  border-radius: 14px;
+  background: #191432;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.15s ease;
+}
+.mg-lb-card.is-rank-1 {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.1));
+  border: 2px solid #f59e0b;
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.25);
+}
+.mg-lb-card.is-current-turn {
+  outline: 2px dashed #38bdf8;
+  outline-offset: 2px;
+}
+.mg-lb-rank-badge {
+  font-size: 13px;
+  font-weight: 900;
+  color: #ffd166;
+  min-width: 140px;
+  text-align: left;
+}
+.mg-lb-team-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  flex: 1;
+}
+.mg-lb-team-name {
+  font-size: 17px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.mg-lb-turn-pill {
+  font-size: 10px;
+  font-weight: 800;
+  background: #0284c7;
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+.mg-lb-team-score {
+  font-size: 16px;
+  font-weight: 800;
+  color: #ffffff;
+}
+.mg-lb-team-score i {
+  font-size: 12px;
+  font-style: normal;
+  color: #94a3b8;
+}
+.mg-lb-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.mg-lb-btn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #251d45;
+  color: #e2e8f0;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.mg-lb-btn:hover {
+  transform: scale(1.05);
+}
+.mg-lb-btn.is-add {
+  background: #10b981;
+  color: #fff;
+  border-color: #059669;
+}
+.mg-lb-btn.is-turn.is-active {
+  background: #0284c7;
+  color: #fff;
+  border-color: #0369a1;
+}
+.mg-lb-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.mg-reset-btn {
+  background: #475569 !important;
+  color: #cbd5e1 !important;
+  font-size: 12px !important;
+}
+
+/* Detailed Rules Modal */
+.mg-rules-modal {
+  max-width: 760px !important;
+  max-height: 85vh;
+  overflow-y: auto;
+  text-align: left !important;
+  padding: 28px !important;
+}
+.mg-rules-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 16px;
+  margin-bottom: 18px;
+}
+.mg-rules-header h3 {
+  font-size: 22px;
+  font-weight: 900;
+  color: #ffd166;
+  margin: 8px 0 4px;
+}
+.mg-rules-tagline {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0;
+}
+.mg-rules-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.mg-rule-block {
+  display: flex;
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+.mg-rule-icon {
+  font-size: 26px;
+  flex-shrink: 0;
+}
+.mg-rule-content h4 {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 800;
+  color: #ffd166;
+}
+.mg-rule-content ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #cbd5e1;
+}
+.mg-rule-content code {
+  background: rgba(255, 209, 102, 0.15);
+  color: #ffd166;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+.mg-award-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.mg-award-pill {
+  font-size: 11px;
+  font-weight: 900;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+.mg-award-pill.is-gold { background: #f59e0b; color: #fff; }
+.mg-award-pill.is-silver { background: #94a3b8; color: #fff; }
+.mg-award-pill.is-bronze { background: #b45309; color: #fff; }
+.mg-award-pill.is-consolation { background: #6366f1; color: #fff; }
+
+.mg-rules-footer {
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.mg-rules-shortcuts {
+  font-size: 11px;
+  color: #64748b;
+  margin: 0;
+}
+
+
