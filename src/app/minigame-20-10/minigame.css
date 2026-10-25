@@ -2249,4 +2249,434 @@
   margin: 0;
 }
 
+/* ============================================================
+   HIDE CONTROLS ON FULLSCREEN
+   Khi ấn xem full màn hình: ẩn sạch các nút thao tác quản lý,
+   chỉ giữ lại logo/thương hiệu, số hộp, âm thanh và nút thu nhỏ.
+   ============================================================ */
+:fullscreen .mg-hide-on-fs,
+:-webkit-full-screen .mg-hide-on-fs,
+.mg.is-fullscreen .mg-hide-on-fs {
+  display: none !important;
+}
+
+/* ============================================================
+   TRÌNH CHIẾU LUẬT CHƠI (STAGE === "rules")
+   Thiết kế to, rõ ràng, phong cách Projector / Slide thuyết trình
+   ============================================================ */
+.mg-rules-stage {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(14px, 2.5vw, 28px);
+  box-sizing: border-box;
+  background:
+    radial-gradient(ellipse 90% 60% at 50% 10%, rgba(121, 40, 202, 0.35) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 50% at 85% 85%, rgba(255, 0, 122, 0.22) 0%, transparent 60%),
+    #070714;
+  color: #ffffff;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.mg-rules-stage-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: clamp(12px, 2vh, 24px);
+  flex-wrap: wrap;
+}
+
+.mg-rules-stage-back,
+.mg-rules-stage-skip {
+  padding: 10px 18px;
+  font-size: clamp(13px, 1.3vw, 15px);
+  font-weight: 700;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+
+.mg-rules-stage-back {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #e2e8f0;
+}
+.mg-rules-stage-back:hover {
+  background: rgba(255, 255, 255, 0.16);
+  transform: translateY(-1px);
+}
+
+.mg-rules-stage-skip {
+  background: linear-gradient(135deg, rgba(255, 209, 102, 0.2), rgba(255, 159, 28, 0.2));
+  border: 1px solid rgba(255, 209, 102, 0.4);
+  color: #ffd166;
+}
+.mg-rules-stage-skip:hover {
+  background: linear-gradient(135deg, #ffd166, #ff9f1c);
+  color: #0b0c1e;
+  transform: translateY(-1px);
+}
+
+.mg-rules-slide-viewport {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(6px, 1.5vh, 20px) 0;
+  width: 100%;
+}
+
+.mg-rules-slide-card {
+  width: 100%;
+  max-width: 1100px;
+  min-height: clamp(380px, 60vh, 580px);
+  background: rgba(18, 18, 38, 0.85);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(255, 209, 102, 0.35);
+  box-shadow:
+    0 24px 60px -15px rgba(0, 0, 0, 0.8),
+    0 0 50px -10px rgba(121, 40, 202, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  border-radius: 28px;
+  padding: clamp(24px, 4vw, 44px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+  animation: mgSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes mgSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.mg-slide-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: clamp(10px, 2vh, 18px);
+}
+
+.mg-slide-badge {
+  font-size: clamp(12px, 1.2vw, 15px);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ffd166;
+  background: rgba(255, 209, 102, 0.14);
+  border: 1px solid rgba(255, 209, 102, 0.3);
+  padding: 6px 14px;
+  border-radius: 999px;
+}
+
+.mg-slide-counter {
+  font-size: clamp(13px, 1.3vw, 16px);
+  font-weight: 800;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 6px 14px;
+  border-radius: 999px;
+  letter-spacing: 0.05em;
+}
+
+.mg-slide-title {
+  margin: 0 0 clamp(8px, 1.5vh, 16px);
+  font-size: clamp(26px, 3.6vw, 44px);
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #ffffff 40%, #ffd166 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.mg-slide-desc {
+  font-size: clamp(16px, 2vw, 22px);
+  line-height: 1.6;
+  color: #e2e8f0;
+  margin: 0 0 clamp(16px, 3vh, 28px);
+  font-weight: 500;
+}
+
+/* FLOW 4 TỔ (SLIDE 1) */
+.mg-rules-visual-flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 1.5vw, 16px);
+  flex-wrap: wrap;
+  margin: clamp(14px, 2vh, 24px) 0;
+  padding: clamp(16px, 2vw, 24px);
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 20px;
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+}
+
+.mg-team-flow-box {
+  flex: 1 1 160px;
+  max-width: 220px;
+  padding: 16px 12px;
+  border-radius: 16px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.mg-team-flow-box:hover {
+  transform: translateY(-4px);
+}
+.mg-team-flow-box.is-t1 {
+  border-color: #ff007a;
+  background: linear-gradient(180deg, rgba(255, 0, 122, 0.18), rgba(255, 0, 122, 0.04));
+  box-shadow: 0 8px 24px -6px rgba(255, 0, 122, 0.3);
+}
+.mg-team-flow-box.is-t2 {
+  border-color: #0070f3;
+  background: linear-gradient(180deg, rgba(0, 112, 243, 0.18), rgba(0, 112, 243, 0.04));
+  box-shadow: 0 8px 24px -6px rgba(0, 112, 243, 0.3);
+}
+.mg-team-flow-box.is-t3 {
+  border-color: #06d6a0;
+  background: linear-gradient(180deg, rgba(6, 214, 160, 0.18), rgba(6, 214, 160, 0.04));
+  box-shadow: 0 8px 24px -6px rgba(6, 214, 160, 0.3);
+}
+.mg-team-flow-box.is-t4 {
+  border-color: #ffd166;
+  background: linear-gradient(180deg, rgba(255, 209, 102, 0.18), rgba(255, 209, 102, 0.04));
+  box-shadow: 0 8px 24px -6px rgba(255, 209, 102, 0.3);
+}
+
+.mg-team-badge {
+  font-size: clamp(16px, 1.8vw, 22px);
+  font-weight: 900;
+  color: #ffffff;
+}
+
+.mg-team-flow-arrow {
+  font-size: clamp(20px, 2.2vw, 28px);
+  color: #ffd166;
+  font-weight: 900;
+  opacity: 0.85;
+}
+
+.mg-team-flow-sub {
+  text-align: center;
+  font-size: clamp(14px, 1.4vw, 17px);
+  color: #94a3b8;
+  margin: 8px 0 0;
+  font-style: italic;
+}
+
+/* HIGHLIGHT BOX (SLIDE 2) */
+.mg-rules-highlight-box {
+  background: linear-gradient(135deg, rgba(121, 40, 202, 0.22), rgba(0, 112, 243, 0.18));
+  border: 1.5px solid rgba(121, 40, 202, 0.4);
+  border-radius: 20px;
+  padding: clamp(18px, 2.5vw, 28px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.mg-rules-highlight-box > div {
+  font-size: clamp(16px, 1.8vw, 22px);
+  line-height: 1.5;
+  color: #f1f5f9;
+}
+.mg-rules-highlight-box b {
+  color: #ffd166;
+}
+
+/* 2-COLUMN SCORING (SLIDE 3) */
+.mg-rules-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: clamp(14px, 2vw, 24px);
+  margin-top: 8px;
+}
+.mg-rule-card-col {
+  padding: clamp(20px, 2.8vw, 32px);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-sizing: border-box;
+  transition: transform 0.2s ease;
+}
+.mg-rule-card-col:hover {
+  transform: translateY(-3px);
+}
+.mg-rule-card-col.is-correct {
+  background: linear-gradient(160deg, rgba(6, 214, 160, 0.18), rgba(6, 214, 160, 0.05));
+  border: 2px solid rgba(6, 214, 160, 0.45);
+  box-shadow: 0 12px 30px -10px rgba(6, 214, 160, 0.25);
+}
+.mg-rule-card-col.is-challenge {
+  background: linear-gradient(160deg, rgba(255, 159, 28, 0.2), rgba(255, 0, 122, 0.08));
+  border: 2px solid rgba(255, 159, 28, 0.45);
+  box-shadow: 0 12px 30px -10px rgba(255, 159, 28, 0.25);
+}
+
+.mg-col-badge {
+  font-size: clamp(17px, 2vw, 24px);
+  font-weight: 900;
+  color: #ffffff;
+}
+.mg-col-text {
+  font-size: clamp(15px, 1.7vw, 20px);
+  line-height: 1.55;
+  color: #e2e8f0;
+  margin: 0;
+}
+.mg-rule-tag {
+  align-self: flex-start;
+  font-size: clamp(13px, 1.4vw, 17px);
+  font-weight: 800;
+  padding: 6px 14px;
+  border-radius: 999px;
+  margin-top: 6px;
+}
+.mg-rule-card-col.is-correct .mg-rule-tag {
+  background: #06d6a0;
+  color: #052c1e;
+}
+.mg-rule-card-col.is-challenge .mg-rule-tag {
+  background: #ff9f1c;
+  color: #3b1702;
+}
+
+/* 4 AWARDS (SLIDE 4) */
+.mg-rules-awards-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: clamp(10px, 1.5vw, 18px);
+  margin-top: 8px;
+}
+.mg-big-award-card {
+  padding: clamp(18px, 2.5vw, 28px) 14px;
+  border-radius: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.2s ease;
+}
+.mg-big-award-card:hover {
+  transform: translateY(-4px) scale(1.02);
+}
+.mg-big-award-card.is-1 {
+  background: linear-gradient(160deg, rgba(245, 158, 11, 0.25), rgba(245, 158, 11, 0.05));
+  border: 2px solid #f59e0b;
+  box-shadow: 0 12px 30px -10px rgba(245, 158, 11, 0.4);
+}
+.mg-big-award-card.is-2 {
+  background: linear-gradient(160deg, rgba(148, 163, 184, 0.22), rgba(148, 163, 184, 0.05));
+  border: 2px solid #94a3b8;
+  box-shadow: 0 12px 30px -10px rgba(148, 163, 184, 0.3);
+}
+.mg-big-award-card.is-3 {
+  background: linear-gradient(160deg, rgba(180, 83, 9, 0.22), rgba(180, 83, 9, 0.05));
+  border: 2px solid #b45309;
+  box-shadow: 0 12px 30px -10px rgba(180, 83, 9, 0.3);
+}
+.mg-big-award-card.is-4 {
+  background: linear-gradient(160deg, rgba(99, 102, 241, 0.22), rgba(99, 102, 241, 0.05));
+  border: 2px solid #6366f1;
+  box-shadow: 0 12px 30px -10px rgba(99, 102, 241, 0.3);
+}
+.mg-big-award-trophy {
+  font-size: clamp(32px, 4vw, 48px);
+}
+.mg-big-award-title {
+  font-size: clamp(16px, 1.8vw, 22px);
+  font-weight: 900;
+  color: #ffffff;
+}
+.mg-big-award-sub {
+  font-size: clamp(12px, 1.3vw, 15px);
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+/* FOOTER BAR: PREV / DOTS / NEXT */
+.mg-rules-stage-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-top: clamp(14px, 2vh, 24px);
+  flex-wrap: wrap;
+}
+
+.mg-slide-dots {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.mg-slide-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s ease;
+}
+.mg-slide-dot.is-active {
+  width: 36px;
+  background: linear-gradient(90deg, #ff007a, #ffd166);
+  box-shadow: 0 0 12px rgba(255, 209, 102, 0.6);
+}
+
+.mg-rules-action-btn {
+  padding: clamp(12px, 1.5vh, 18px) clamp(22px, 2.5vw, 36px);
+  border-radius: 999px;
+  font-size: clamp(15px, 1.6vw, 20px);
+  font-weight: 900;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+.mg-rules-action-btn:hover {
+  transform: translateY(-2px);
+}
+.mg-rules-action-btn.is-prev {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.mg-rules-action-btn.is-prev:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.mg-rules-action-btn.is-next {
+  background: linear-gradient(135deg, #7928ca, #ff007a);
+  color: #ffffff;
+  box-shadow: 0 10px 30px -6px rgba(255, 0, 122, 0.5);
+}
+.mg-rules-action-btn.is-next:hover {
+  box-shadow: 0 14px 36px -4px rgba(255, 0, 122, 0.7);
+}
+
+.mg-rules-action-btn.is-launch {
+  background: linear-gradient(135deg, #06d6a0, #0070f3);
+  color: #ffffff;
+  box-shadow: 0 10px 30px -6px rgba(6, 214, 160, 0.5);
+}
+.mg-rules-action-btn.is-launch:hover {
+  box-shadow: 0 14px 36px -4px rgba(6, 214, 160, 0.7);
+}
+
+
 

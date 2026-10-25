@@ -6,13 +6,6 @@ import { type LiveGameState } from "@/app/api/minigame-20-10/live/route";
 
 const POLL_INTERVAL = 800; // ms
 
-const TEAMS = [
-  { id: 1, name: "Tổ 1", color: "#ff4d6d" },
-  { id: 2, name: "Tổ 2", color: "#00b4d8" },
-  { id: 3, name: "Tổ 3", color: "#ffb703" },
-  { id: 4, name: "Tổ 4", color: "#10b981" },
-];
-
 export default function MobileMCPage() {
   const [liveState, setLiveState] = useState<LiveGameState | null>(null);
   const [connected, setConnected] = useState<boolean>(false);
@@ -150,19 +143,9 @@ export default function MobileMCPage() {
   const curBox = liveState?.curBox;
   const curIdx = liveState?.curIdx;
   const currentPlayer = liveState?.currentPlayer;
-  const currentTeam = liveState?.currentTeam || 1;
-  const scores: Record<number, number> = liveState?.scores || { 1: 0, 2: 0, 3: 0, 4: 0 };
   const answerShown = liveState?.answerShown;
   const timeLeft = liveState?.timeLeft;
   const expired = liveState?.expired;
-
-  const sendTeamScore = (teamId: number) => {
-    sendCommand(`score_team_${teamId}`);
-  };
-
-  const sendNextTeam = () => {
-    sendCommand("next_team");
-  };
 
   // Filter boxes cho tab tra cứu
   const filteredBoxes = allBoxes.filter((b) => {
@@ -195,34 +178,6 @@ export default function MobileMCPage() {
           </button>
         </div>
       </header>
-
-      {/* 4 Teams Live Score Bar on MC phone */}
-      <section className="mc-teams-bar">
-        <div className="mc-teams-meta">
-          <span>
-            🎯 Đang lượt: <b style={{ color: TEAMS[(currentTeam || 1) - 1].color }}>{TEAMS[(currentTeam || 1) - 1].name}</b>
-          </span>
-          <button type="button" className="mc-next-turn-btn" onClick={sendNextTeam}>
-            Tổ tiếp ➔
-          </button>
-        </div>
-        <div className="mc-teams-chips">
-          {TEAMS.map((t) => (
-            <div key={t.id} className={`mc-team-chip ${currentTeam === t.id ? "is-active" : ""}`}>
-              <span className="mc-team-chip-name" style={{ color: t.color }}>{t.name}</span>
-              <span className="mc-team-chip-score">{scores[t.id] || 0}đ</span>
-              <button
-                type="button"
-                className="mc-team-add-btn"
-                onClick={() => sendTeamScore(t.id)}
-                title={`+1 điểm cho ${t.name}`}
-              >
-                +1
-              </button>
-            </div>
-          ))}
-        </div>
-      </section>
 
       {/* Tabs */}
       <nav className="mc-nav-tabs">
@@ -322,24 +277,6 @@ export default function MobileMCPage() {
               <div className="mc-controls">
                 <div className="mc-controls-label">🎮 ĐIỀU KHIỂN TỪ XA MÁY CHIẾU:</div>
 
-                <div className="mc-score-row">
-                  <button
-                    type="button"
-                    className="mc-btn mc-btn-team-score"
-                    style={{ background: TEAMS[(currentTeam || 1) - 1].color }}
-                    onClick={() => sendTeamScore(currentTeam)}
-                  >
-                    ⭐ +1đ cho {TEAMS[(currentTeam || 1) - 1].name}
-                  </button>
-                  <button
-                    type="button"
-                    className="mc-btn mc-btn-turn-next"
-                    onClick={sendNextTeam}
-                  >
-                    Tổ tiếp ➔
-                  </button>
-                </div>
-
                 {!answerShown ? (
                   <button
                     className="mc-btn mc-btn-reveal"
@@ -378,31 +315,6 @@ export default function MobileMCPage() {
               <p className="mc-standby-sub">
                 Ngay khi máy chiếu bốc trúng túi nào, câu hỏi và <b>đáp án bí mật</b> sẽ lập tức hiện tại đây!
               </p>
-
-              <div className="mc-standby-team-box">
-                <span className="mc-standby-team-label">🎯 Đang đến lượt thi đấu:</span>
-                <b className="mc-standby-team-val" style={{ color: TEAMS[(currentTeam || 1) - 1].color }}>
-                  {TEAMS[(currentTeam || 1) - 1].name}
-                </b>
-                <div className="mc-btn-row" style={{ marginTop: 8 }}>
-                  <button
-                    type="button"
-                    className="mc-btn mc-btn-team-score"
-                    style={{ background: TEAMS[(currentTeam || 1) - 1].color, flex: 1 }}
-                    onClick={() => sendTeamScore(currentTeam)}
-                  >
-                    ⭐ +1đ ({TEAMS[(currentTeam || 1) - 1].name})
-                  </button>
-                  <button
-                    type="button"
-                    className="mc-btn mc-btn-turn-next"
-                    style={{ flex: 1 }}
-                    onClick={sendNextTeam}
-                  >
-                    Tổ tiếp ➔
-                  </button>
-                </div>
-              </div>
 
               {currentPlayer ? (
                 <div className="mc-standby-player">
